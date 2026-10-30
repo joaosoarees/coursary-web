@@ -1,6 +1,11 @@
 export type Theme = 'light' | 'dark' | 'system';
 export type ResolvedTheme = Exclude<Theme, 'system'>;
 
+export const THEMES: readonly string[] = [
+  'light',
+  'dark',
+  'system',
+] satisfies Theme[];
 export const THEME_STORAGE_KEY = 'coursary-theme';
 export const DARK_QUERY = '(prefers-color-scheme: dark)';
 
@@ -10,7 +15,7 @@ export const themeScript = `(function () {
   var theme = 'system';
   try {
     var stored = window.localStorage.getItem('${THEME_STORAGE_KEY}');
-    if (stored === 'light' || stored === 'dark' || stored === 'system') theme = stored;
+    if (${JSON.stringify(THEMES)}.indexOf(stored) !== -1) theme = stored;
   } catch (error) {}
   if (theme === 'system') {
     theme = window.matchMedia('${DARK_QUERY}').matches ? 'dark' : 'light';
