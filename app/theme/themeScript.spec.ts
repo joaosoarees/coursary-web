@@ -40,15 +40,19 @@ describe('themeScript', () => {
     expect(run({ stored: 'dark' })).toBe('dark');
   });
 
-  it('should resolve system, or nothing stored, from the system', () => {
+  it('should resolve a stored system choice from the system', () => {
     expect(run({ stored: 'system', systemDark: true })).toBe('dark');
-    document.documentElement.className = '';
+  });
+
+  it('should follow the system when nothing is stored', () => {
     expect(run({ systemDark: false })).toBe('light');
   });
 
-  it('should fall back to the system on an unknown value or blocked storage', () => {
+  it('should ignore a stored value that is not a theme', () => {
     expect(run({ stored: 'blue', systemDark: true })).toBe('dark');
-    document.documentElement.className = '';
+  });
+
+  it('should follow the system when storage is blocked', () => {
     expect(run({ storageThrows: true })).toBe('light');
   });
 });
