@@ -3,6 +3,11 @@ const baseUrl: string = import.meta.env.DEV
   ? '/api'
   : (import.meta.env.VITE_API_URL as string);
 
+// Only a separate host is worth a preconnect; the development proxy shares the page's origin.
+export const apiOrigin: string | undefined = baseUrl.startsWith('http')
+  ? new URL(baseUrl).origin
+  : undefined;
+
 export class ApiError extends Error {
   constructor(
     readonly status: number,
@@ -17,8 +22,14 @@ interface ErrorBody {
   error?: { code?: string };
 }
 
-export async function apiGet<TBody>(path: string): Promise<TBody> {
-  const response = await fetch(`${baseUrl}${path}`, { credentials: 'include' });
+export async function apiGet<TBody>(
+  path: string,
+  { signal }: { signal?: AbortSignal } = {},
+): Promise<TBody> {
+  const response = await fetch(`${baseUrl}${path}`, {
+    credentials: 'include',
+    signal,
+  });
 
   if (!response.ok) {
     const body = (await response.json().catch(() => ({}))) as ErrorBody;
