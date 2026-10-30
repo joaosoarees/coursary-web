@@ -1,9 +1,10 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
-@custom-variant dark (&:where(.dark, .dark *));
+/* `.light` lets a block show the light theme inside a dark page, as the /design palette does:
+   it takes the light tokens, and dark: utilities stop inside it. */
+@custom-variant dark (&:where(.dark, .dark *):not(:where(.dark .light, .dark .light *)));
 
-/* `.light` lets a block show the light tokens inside a dark page, as the /design palette does. */
 .light,
 :root {
   color-scheme: light;
