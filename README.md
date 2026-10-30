@@ -22,12 +22,21 @@ pnpm typecheck
 pnpm lint
 pnpm format
 pnpm test
+pnpm test:coverage
 pnpm build    # VITE_API_URL diz onde fica a API no build
 ```
 
+## Variáveis de ambiente
+
+Copie o `.env.example` para `.env` quando for rodar `pnpm build` na máquina; o `pnpm dev` não precisa de nenhuma.
+
+| Variável | Valor em dev | Para quê |
+|---|---|---|
+| `VITE_API_URL` | `https://api-dev.coursary.joaodevdude.com` | Endereço da API no build; entra no bundle, então nunca um segredo |
+
 ## Deploy
 
-O `dev` é deployado pelo GitHub Actions quando disparado à mão na `develop` (Actions → Deploy dev → Run workflow, ou `gh workflow run deploy-dev.yml --ref develop`; Q495, Q516): build, role `coursary-web-deployer` por OIDC, `assets/` com `immutable`, o resto com `no-cache`, `index.html` por último, e invalidação só do `/index.html`. O bucket e a distribuição vêm do SSM (`/coursary-api/dev/site/*`), criados pela stack da API.
+O `dev` é deployado pelo GitHub Actions quando disparado à mão na `develop` (Actions → Deploy dev → Run workflow com **`develop`** em "Use workflow from", ou `gh workflow run deploy-dev.yml --ref develop`; Q495, Q516; disparado de outra branch, falha logo no início): build, role `coursary-web-deployer` por OIDC, `assets/` com `immutable`, o resto com `no-cache`, `index.html` por último, e invalidação só do `/index.html`. O bucket e a distribuição vêm do SSM (`/coursary-api/dev/site/*`), criados pela stack da API.
 
 | Secret do Environment `dev` | Valor |
 |---|---|
