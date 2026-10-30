@@ -1,5 +1,10 @@
 import { useEffect } from 'react';
-import { isRouteErrorResponse, Outlet } from 'react-router';
+import {
+  isRouteErrorResponse,
+  Outlet,
+  useLocation,
+  useNavigate,
+} from 'react-router';
 
 import { AppShell } from '~/components/AppShell';
 import { ErrorState } from '~/components/ErrorState';
@@ -17,6 +22,8 @@ export default function Layout() {
 // A page that fails keeps the navigation around it, so the reader can leave without reloading.
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   const notFound = isRouteErrorResponse(error) && error.status === 404;
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     if (!notFound) {
@@ -34,7 +41,8 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
       ) : (
         <ErrorState
           onRetry={() => {
-            window.location.reload();
+            // Navigating to the same address clears the error and runs the route again.
+            void navigate(location, { replace: true });
           }}
         />
       )}
