@@ -15,7 +15,7 @@ export default defineConfig([
   reactHooks.configs.flat.recommended,
   {
     languageOptions: {
-      globals: { ...globals.browser, ...globals.node },
+      globals: globals.browser,
       parserOptions: {
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
@@ -34,6 +34,11 @@ export default defineConfig([
       curly: ['error', 'all'],
       '@typescript-eslint/method-signature-style': ['error', 'property'],
     },
+  },
+  // Only the build's own configuration runs in Node; the app runs in the browser.
+  {
+    files: ['*.config.{js,ts}', 'vitest.setup.ts'],
+    languageOptions: { globals: globals.node },
   },
   {
     files: ['**/*.js'],
