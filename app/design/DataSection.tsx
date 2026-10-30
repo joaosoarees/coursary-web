@@ -89,8 +89,8 @@ export function DataSection() {
         <TableHeader>
           <TableRow>
             <TableHead>Aluno</TableHead>
-            <TableHead>Situação</TableHead>
             <TableHead className="text-right">Progresso</TableHead>
+            <TableHead>Situação</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -104,8 +104,8 @@ export function DataSection() {
                   {name}
                 </span>
               </TableCell>
-              <TableCell>{status}</TableCell>
               <TableCell className="text-right">{progress}</TableCell>
+              <TableCell>{status}</TableCell>
             </TableRow>
           ))}
         </TableBody>
