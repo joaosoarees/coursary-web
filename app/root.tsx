@@ -1,5 +1,8 @@
+import '@fontsource-variable/atkinson-hyperlegible-next/wght.css';
+import '@fontsource-variable/bricolage-grotesque/wght.css';
 import './app.css';
 
+import bodyFont from '@fontsource-variable/atkinson-hyperlegible-next/files/atkinson-hyperlegible-next-latin-wght-normal.woff2?url';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState } from 'react';
 import {
@@ -12,6 +15,17 @@ import {
 } from 'react-router';
 
 import type { Route } from './+types/root';
+
+// The body face is on every page: fetched with the HTML instead of after the stylesheet.
+export const links: Route.LinksFunction = () => [
+  {
+    rel: 'preload',
+    href: bodyFont,
+    as: 'font',
+    type: 'font/woff2',
+    crossOrigin: 'anonymous',
+  },
+];
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
