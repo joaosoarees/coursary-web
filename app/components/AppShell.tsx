@@ -61,7 +61,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <NavLink
                   to={to}
                   end={to === '/'}
-                  className="group flex min-h-10 flex-col justify-center rounded-md px-3 py-2 text-shell-foreground/85 transition-colors hover:bg-shell-foreground/5 hover:text-shell-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chalk-yellow aria-[current=page]:bg-shell-foreground/5 aria-[current=page]:font-bold aria-[current=page]:text-shell-foreground"
+                  className="group flex min-h-10 flex-col justify-center rounded-md px-3 py-2 text-shell-foreground/85 transition-colors hover:bg-shell-hover hover:text-shell-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chalk-yellow aria-[current=page]:bg-shell-hover aria-[current=page]:font-bold aria-[current=page]:text-shell-foreground"
                 >
                   <span>{label}</span>
                   <ChalkStroke className="hidden w-16 text-chalk-yellow group-aria-[current=page]:block" />
