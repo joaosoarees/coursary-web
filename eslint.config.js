@@ -35,7 +35,7 @@ export default defineConfig([
       '@typescript-eslint/method-signature-style': ['error', 'property'],
     },
   },
-  // The theme replaces Tailwind's palette, so an unknown class is a colour outside the tokens.
+  // Only the theme's tokens make colour classes: an unknown class is a typo or a colour outside them.
   {
     files: ['app/**/*.{ts,tsx}'],
     plugins: { 'better-tailwindcss': betterTailwindcss },
@@ -47,7 +47,13 @@ export default defineConfig([
         {
           restrict: [
             {
-              pattern: '^.*-\\[(#|rgb|hsl|oklch|color|var\\().*\\]$',
+              pattern:
+                '^(?:[\\w-]+:)*(?:bg|fill|stroke|from|via|to|decoration|caret|accent|placeholder|divide)-[\\[(]',
+              message: 'Use a colour token from app/app.css.',
+            },
+            {
+              pattern:
+                '^(?:[\\w-]+:)*(?:text|border(?:-[trblxyse])?|ring|outline|shadow)-[\\[(](?![\\d.]|calc|length:)',
               message: 'Use a colour token from app/app.css.',
             },
           ],
