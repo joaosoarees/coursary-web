@@ -9,6 +9,16 @@ function Broken(): React.ReactNode {
   throw new Error('render failed');
 }
 
+let flakyFails = true;
+
+function Flaky() {
+  if (flakyFails) {
+    throw new Error('first render failed');
+  }
+
+  return <p>Voltou</p>;
+}
+
 const Stub = createRoutesStub([
   {
     path: '/',
@@ -20,6 +30,7 @@ const Stub = createRoutesStub([
         Component: () => <Link to="/quebrada">Abrir a página quebrada</Link>,
       },
       { path: 'quebrada', Component: Broken },
+      { path: 'instavel', Component: Flaky },
       {
         path: '*',
         loader: () => {
@@ -89,5 +100,17 @@ describe('the layout', () => {
       await screen.findByRole('link', { name: 'Abrir a página quebrada' }),
     ).toBeInTheDocument();
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('should try the page again in place', async () => {
+    renderAt('/instavel');
+    await screen.findByRole('heading', { name: 'Algo deu errado' });
+    flakyFails = false;
+
+    act(() => {
+      screen.getByRole('button', { name: 'Tentar de novo' }).click();
+    });
+
+    expect(await screen.findByText('Voltou')).toBeInTheDocument();
   });
 });
