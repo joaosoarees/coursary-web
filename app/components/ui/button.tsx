@@ -19,7 +19,7 @@ const buttonVariants = cva(
           'not-disabled:hover:bg-accent not-disabled:hover:text-accent-foreground',
         destructive:
           'bg-destructive text-destructive-foreground not-disabled:hover:bg-destructive-hover',
-        link: 'text-link underline-offset-4 not-disabled:hover:underline',
+        link: 'text-link underline-offset-4 not-disabled:hover:bg-accent not-disabled:hover:underline',
       },
       size: {
         default: 'h-11 px-5',
@@ -27,7 +27,6 @@ const buttonVariants = cva(
         icon: 'size-10',
       },
     },
-    compoundVariants: [{ variant: 'link', className: 'h-auto px-0' }],
     defaultVariants: {
       variant: 'default',
       size: 'default',
