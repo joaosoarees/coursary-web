@@ -4,19 +4,12 @@ import './app.css';
 
 import bodyFont from '@fontsource-variable/atkinson-hyperlegible-next/files/atkinson-hyperlegible-next-latin-wght-normal.woff2?url';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useState } from 'react';
-import {
-  isRouteErrorResponse,
-  Links,
-  Meta,
-  Outlet,
-  Scripts,
-  ScrollRestoration,
-} from 'react-router';
+import { useEffect, useState } from 'react';
+import { Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router';
 
+import { ErrorState } from '~/components/ErrorState';
 import { ThemeProvider } from '~/theme/ThemeProvider';
 import { themeScript } from '~/theme/themeScript';
-import { ThemeSwitcher } from '~/theme/ThemeSwitcher';
 
 import type { Route } from './+types/root';
 
@@ -43,7 +36,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body className="flex min-h-screen flex-col">
+      <body>
         {children}
         <ScrollRestoration />
         <Scripts />
@@ -58,42 +51,29 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <header className="bg-shell text-shell-foreground">
-          <div className="container mx-auto flex h-14 items-center justify-between px-4">
-            <span className="font-display text-lg font-bold">Coursary</span>
-            <ThemeSwitcher />
-          </div>
-        </header>
-        <main className="container mx-auto flex-1 px-4 py-8">
-          <Outlet />
-        </main>
-        <footer className="border-t">
-          <div className="container mx-auto px-4 py-4 text-sm text-muted-foreground">
-            Coursary · ambiente de desenvolvimento
-          </div>
-        </footer>
+        <Outlet />
       </ThemeProvider>
     </QueryClientProvider>
   );
 }
 
 export function HydrateFallback() {
-  return <p className="p-4 text-muted-foreground">Carregando…</p>;
+  return <p className="p-5 text-muted-foreground">Carregando…</p>;
 }
 
+// The last resort, without the navigation: only an error in the layout itself lands here.
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  const notFound = isRouteErrorResponse(error) && error.status === 404;
+  useEffect(() => {
+    console.error(error);
+  }, [error]);
 
   return (
-    <main className="container mx-auto p-4 pt-16">
-      <h1 className="text-2xl font-semibold">
-        {notFound ? 'Página não encontrada' : 'Algo deu errado'}
-      </h1>
-      <p className="mt-2 text-muted-foreground">
-        {notFound
-          ? 'O endereço não corresponde a nenhuma página.'
-          : 'Tente de novo em instantes.'}
-      </p>
+    <main className="px-5">
+      <ErrorState
+        onRetry={() => {
+          window.location.reload();
+        }}
+      />
     </main>
   );
 }
