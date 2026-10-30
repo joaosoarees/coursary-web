@@ -1,4 +1,5 @@
 import { TriangleAlert } from 'lucide-react';
+import { Link } from 'react-router';
 
 import { Button } from '~/components/ui/button';
 import { cn } from '~/lib/utils';
@@ -55,7 +56,7 @@ export function ErrorState({
         )}
         {page && (
           <Button variant="outline" asChild>
-            <a href="/">Ir para o início</a>
+            <Link to="/">Ir para o início</Link>
           </Button>
         )}
       </div>
