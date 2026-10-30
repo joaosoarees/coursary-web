@@ -11,3 +11,4 @@ node_modules/
 
 # Impeccable decision-page runtime logs
 .impeccable/questions/
+/coverage/
