@@ -12,6 +12,7 @@ import {
   type ResolvedTheme,
   type Theme,
   THEME_STORAGE_KEY,
+  THEMES,
 } from '~/theme/themeScript';
 
 export interface ThemeContextValue {
@@ -21,8 +22,6 @@ export interface ThemeContextValue {
 }
 
 export const ThemeContext = createContext<ThemeContextValue | null>(null);
-
-const THEMES: readonly string[] = ['light', 'dark', 'system'] satisfies Theme[];
 
 const isTheme = (value: string | null): value is Theme =>
   value !== null && THEMES.includes(value);
@@ -57,6 +56,20 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     () => 'light' as const,
   );
   const resolvedTheme = theme === 'system' ? systemTheme : theme;
+
+  useEffect(() => {
+    const onStorage = (event: StorageEvent) => {
+      if (event.key === THEME_STORAGE_KEY) {
+        setThemeState(isTheme(event.newValue) ? event.newValue : 'system');
+      }
+    };
+
+    window.addEventListener('storage', onStorage);
+
+    return () => {
+      window.removeEventListener('storage', onStorage);
+    };
+  }, []);
 
   useEffect(() => {
     const root = document.documentElement;
