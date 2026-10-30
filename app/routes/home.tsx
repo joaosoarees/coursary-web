@@ -11,7 +11,6 @@ interface Health {
   status: 'ok';
 }
 
-// The first page: whether the API answers, through CORS and the session's fetch (Q496).
 export default function Home() {
   const health = useQuery({
     queryKey: ['health'],

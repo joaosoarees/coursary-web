@@ -1,6 +1,6 @@
 import { defineConfig } from 'vitest/config';
 
-// Without the React Router plugin, which builds the whole app: tests render components (Q471).
+// Without the React Router plugin, which builds the whole app: tests render components.
 export default defineConfig({
   resolve: {
     tsconfigPaths: true,
