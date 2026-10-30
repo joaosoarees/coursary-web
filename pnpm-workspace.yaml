@@ -1,0 +1,6 @@
+allowBuilds:
+  esbuild: false
+  lefthook: false
+minimumReleaseAgeExclude:
+  - eslint@10.14.0
+saveExact: true

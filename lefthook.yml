@@ -1,0 +1,17 @@
+commit-msg:
+  commands:
+    commitlint:
+      run: pnpm exec commitlint --edit {1}
+
+pre-commit:
+  parallel: true
+  commands:
+    protected-branch:
+      run: test "$(git branch --show-current)" != main && test "$(git branch --show-current)" != develop || { echo 'Commit on a feature branch and open a pull request.'; exit 1; }
+    prettier:
+      glob: '*.{js,ts,tsx,json,yml,yaml,css}'
+      run: pnpm exec prettier --write {staged_files}
+      stage_fixed: true
+    eslint:
+      glob: '*.{js,ts,tsx}'
+      run: pnpm exec eslint {staged_files}
