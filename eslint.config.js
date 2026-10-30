@@ -6,7 +6,6 @@ import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
-// The API's rules (Q478), with the browser's globals and the rules of hooks.
 export default defineConfig([
   { ignores: ['node_modules/', 'build/', '.react-router/'] },
   js.configs.recommended,

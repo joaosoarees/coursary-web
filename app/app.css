@@ -3,7 +3,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* The shadcn/ui neutral palette (Q470), light only for now. */
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
