@@ -12,7 +12,7 @@ Frontend da Coursary (React Router 8 SPA, React Query, Tailwind 4, shadcn/ui). F
 ## Toda interface
 
 - Todo elemento clicável tem `cursor: pointer` (botões já têm pela base do `app.css`), **hover visível** (mudança de fundo ou borda, não só de cor de texto), **foco visível** (`focus-visible:outline-2 outline-ring` ou equivalente com contraste de 3:1) e alvo de pelo menos **40 px**.
-- Contraste AA nos **dois temas**; par novo de cores entra no `app/theme.test.ts`.
+- Contraste AA nos **dois temas**; par novo de cores entra no `app/theme.spec.ts`.
 - `prefers-reduced-motion` respeitado; tudo usável por teclado.
 - Textos em português, sem i18n (Q473); componente do shadcn chega em inglês, traduza.
 - **Antes do PR, olhe no navegador**: `pnpm dev`, a tela nos temas claro e escuro, com hover e foco por teclado em cada controle novo. Teste verde não prova que o hover aparece.
