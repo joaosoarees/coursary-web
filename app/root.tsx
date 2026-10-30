@@ -61,7 +61,7 @@ export default function App() {
         <header className="bg-shell text-shell-foreground">
           <div className="container mx-auto flex h-14 items-center justify-between px-4">
             <span className="font-display text-lg font-bold">Coursary</span>
-            <ThemeSwitcher className="flex gap-1" />
+            <ThemeSwitcher />
           </div>
         </header>
         <main className="container mx-auto flex-1 px-4 py-8">
