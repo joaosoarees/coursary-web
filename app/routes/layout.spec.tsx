@@ -1,8 +1,9 @@
 import { act, render, screen } from '@testing-library/react';
-import { createRoutesStub, data, Link } from 'react-router';
+import { createRoutesStub, Link } from 'react-router';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import Layout, { ErrorBoundary } from '~/routes/layout';
+import NotFound, { clientLoader as notFoundLoader } from '~/routes/not-found';
 import { ThemeProvider } from '~/theme/ThemeProvider';
 
 function Broken(): React.ReactNode {
@@ -31,14 +32,7 @@ const Stub = createRoutesStub([
       },
       { path: 'quebrada', Component: Broken },
       { path: 'instavel', Component: Flaky },
-      {
-        path: '*',
-        loader: () => {
-          // eslint-disable-next-line @typescript-eslint/only-throw-error -- a thrown data() is a 404 response.
-          throw data(null, { status: 404 });
-        },
-        Component: () => null,
-      },
+      { path: '*', loader: notFoundLoader, Component: NotFound },
     ],
   },
 ]);
@@ -51,6 +45,7 @@ const renderAt = (path: string) =>
   );
 
 beforeEach(() => {
+  flakyFails = true;
   vi.stubGlobal('matchMedia', () => ({
     matches: false,
     addEventListener: () => undefined,

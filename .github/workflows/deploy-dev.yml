@@ -5,15 +5,24 @@ on:
 
 permissions:
   contents: read
-  id-token: write
+
+env:
+  LEFTHOOK: 0
 
 jobs:
+  branch:
+    runs-on: ubuntu-latest
+    steps:
+      - if: github.ref != 'refs/heads/develop'
+        run: |
+          echo "::error::Deploy dev roda só a partir da develop: escolha develop em 'Use workflow from'."
+          exit 1
+
   check:
+    needs: branch
     uses: ./.github/workflows/ci.yml
-    secrets: inherit
 
   deploy:
-    if: github.ref == 'refs/heads/develop'
     needs: check
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -31,6 +40,7 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
+          package-manager-cache: false
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
         env:
@@ -43,9 +53,11 @@ jobs:
       # index.html last, then only it is invalidated.
       - name: Upload the build
         run: |
+          test -f build/client/index.html && test -d build/client/assets
           bucket=$(aws ssm get-parameter --name /coursary-api/dev/site/bucket --query Parameter.Value --output text)
           distribution=$(aws ssm get-parameter --name /coursary-api/dev/site/distribution-id --query Parameter.Value --output text)
           aws s3 sync build/client/assets "s3://$bucket/assets" --cache-control 'public, max-age=31536000, immutable'
-          aws s3 sync build/client "s3://$bucket" --exclude 'assets/*' --exclude index.html --cache-control no-cache
+          aws s3 sync build/client "s3://$bucket" --exclude 'assets/*' --exclude index.html --cache-control no-cache --delete
           aws s3 cp build/client/index.html "s3://$bucket/index.html" --cache-control no-cache
-          aws cloudfront create-invalidation --distribution-id "$distribution" --paths /index.html
+          invalidation=$(aws cloudfront create-invalidation --distribution-id "$distribution" --paths /index.html --query Invalidation.Id --output text)
+          aws cloudfront wait invalidation-completed --distribution-id "$distribution" --id "$invalidation"

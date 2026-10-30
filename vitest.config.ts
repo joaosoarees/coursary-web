@@ -8,7 +8,12 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     setupFiles: ['./vitest.setup.ts'],
-    include: ['app/**/*.test.{ts,tsx}'],
+    include: ['app/**/*.{spec,test}.{ts,tsx}'],
+    coverage: {
+      provider: 'v8',
+      include: ['app/**/*.{ts,tsx}'],
+      exclude: ['app/**/*.{spec,test}.{ts,tsx}', 'app/**/+types/**'],
+    },
     clearMocks: true,
     restoreMocks: true,
     unstubEnvs: true,

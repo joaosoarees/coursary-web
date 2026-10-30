@@ -1,28 +1,21 @@
-import { useQuery } from '@tanstack/react-query';
-
 import { PageHeader } from '~/components/PageHeader';
 import { Button } from '~/components/ui/button';
-import { apiGet } from '~/lib/api';
+import { useHealth } from '~/queries/health';
 
 import type { Route } from './+types/home';
 
-export const meta: Route.MetaFunction = () => [{ title: 'Coursary' }];
-
-interface Health {
-  status: 'ok';
-}
+export const meta: Route.MetaFunction = () => [{ title: 'Início · Coursary' }];
 
 export default function Home() {
-  const health = useQuery({
-    queryKey: ['health'],
-    queryFn: () => apiGet<Health>('/health'),
-  });
+  const health = useHealth();
 
-  const status = health.isPending
+  const status = health.isLoading
     ? 'Verificando a API…'
     : health.isError
       ? 'A API não respondeu.'
-      : 'A API está no ar.';
+      : health.data
+        ? 'A API está no ar.'
+        : 'Sem conexão: a verificação espera a rede voltar.';
 
   return (
     <section className="flex flex-col items-start gap-6">
