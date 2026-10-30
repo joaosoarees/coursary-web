@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router';
 
 import { ErrorState } from '~/components/ErrorState';
+import { Toaster } from '~/components/ui/sonner';
 import { ThemeProvider } from '~/theme/ThemeProvider';
 import { themeScript } from '~/theme/themeScript';
 
@@ -52,6 +53,7 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <Outlet />
+        <Toaster />
       </ThemeProvider>
     </QueryClientProvider>
   );
