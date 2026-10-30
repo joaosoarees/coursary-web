@@ -25,6 +25,10 @@ describe('ThemeSwitcher', () => {
       </ThemeProvider>,
     );
 
+    expect(screen.getByRole('button', { name: 'Claro' })).toHaveAttribute(
+      'aria-pressed',
+      'false',
+    );
     expect(screen.getByRole('button', { name: 'Sistema' })).toHaveAttribute(
       'aria-pressed',
       'true',
