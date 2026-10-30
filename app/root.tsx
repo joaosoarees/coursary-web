@@ -33,7 +33,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-// One cache for the whole app; the server's data lives only here (Q465).
 export default function App() {
   const [queryClient] = useState(() => new QueryClient());
 
