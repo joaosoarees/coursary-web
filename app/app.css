@@ -3,6 +3,8 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* `.light` lets a block show the light tokens inside a dark page, as the /design palette does. */
+.light,
 :root {
   color-scheme: light;
   --background: #f3f5f1;
