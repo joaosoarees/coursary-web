@@ -30,7 +30,6 @@ jobs:
         env:
           VITE_API_URL: https://api-dev.coursary.joaodevdude.com
 
-  # The build goes to the site's bucket in the API stack; the role may only do this (Q492, Q495).
   deploy-dev:
     if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/develop'
     needs: check
@@ -59,7 +58,7 @@ jobs:
           role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
           aws-region: sa-east-1
       # Hashed files first and never deleted, so a tab on the previous version still finds its own;
-      # index.html last, then only it is invalidated (Q475, Q495).
+      # index.html last, then only it is invalidated.
       - name: Upload the build
         run: |
           bucket=$(aws ssm get-parameter --name /coursary-api/dev/site/bucket --query Parameter.Value --output text)
