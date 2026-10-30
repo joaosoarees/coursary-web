@@ -1,5 +1,6 @@
 import { Monitor, Moon, Sun } from 'lucide-react';
 
+import { cn } from '~/lib/utils';
 import type { Theme } from '~/theme/themeScript';
 import { useTheme } from '~/theme/useTheme';
 
@@ -13,7 +14,7 @@ export function ThemeSwitcher({ className }: { className?: string }) {
   const { theme, setTheme } = useTheme();
 
   return (
-    <div role="group" aria-label="Tema" className={className}>
+    <div role="group" aria-label="Tema" className={cn('flex gap-1', className)}>
       {OPTIONS.map(({ value, label, Icon }) => (
         <button
           key={value}
