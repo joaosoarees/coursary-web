@@ -53,6 +53,8 @@ const text: [string, string][] = [
   ['destructive', 'background'],
   ['destructive', 'card'],
   ['success', 'success-soft'],
+  ['success', 'background'],
+  ['success', 'card'],
   ['highlight-foreground', 'highlight'],
   ['link', 'background'],
   ['link', 'card'],
