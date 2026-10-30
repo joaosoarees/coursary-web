@@ -118,6 +118,21 @@ describe('ThemeProvider', () => {
     expect(screen.getByText('dark/dark')).toBeInTheDocument();
   });
 
+  it('should follow a choice made in another tab', () => {
+    renderProvider();
+
+    act(() => {
+      window.dispatchEvent(
+        new StorageEvent('storage', {
+          key: THEME_STORAGE_KEY,
+          newValue: 'dark',
+        }),
+      );
+    });
+
+    expect(screen.getByText('dark/dark')).toBeInTheDocument();
+  });
+
   it('should refuse useTheme outside the provider', () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined);
 
