@@ -3,12 +3,14 @@ import '@fontsource-variable/bricolage-grotesque/wght.css';
 import './app.css';
 
 import bodyFont from '@fontsource-variable/atkinson-hyperlegible-next/files/atkinson-hyperlegible-next-latin-wght-normal.woff2?url';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { useEffect } from 'react';
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router';
 
 import { ErrorState } from '~/components/ErrorState';
 import { Toaster } from '~/components/ui/sonner';
+import { queryClient } from '~/lib/queryClient';
 import { ThemeProvider } from '~/theme/ThemeProvider';
 import { themeScript } from '~/theme/themeScript';
 
@@ -47,14 +49,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  const [queryClient] = useState(() => new QueryClient());
-
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <Outlet />
         <Toaster />
       </ThemeProvider>
+      <ReactQueryDevtools />
     </QueryClientProvider>
   );
 }
