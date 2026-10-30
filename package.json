@@ -15,7 +15,7 @@
   },
   "scripts": {
     "dev": "react-router dev",
-    "build": "react-router build",
+    "build": "node -e \"if (!process.env.VITE_API_URL) { console.error('Set VITE_API_URL to build: it is where the site finds the API.'); process.exit(1); }\" && react-router build",
     "typecheck": "react-router typegen && tsc",
     "lint": "eslint .",
     "format": "prettier --write .",
