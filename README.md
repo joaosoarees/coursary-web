@@ -27,7 +27,7 @@ pnpm build    # VITE_API_URL diz onde fica a API no build
 
 ## Deploy
 
-O `dev` é deployado pelo GitHub Actions quando disparado à mão na `develop` (Actions → CI → Run workflow, ou `gh workflow run ci.yml --ref develop`; Q495, Q516): build, role `coursary-web-deployer` por OIDC, `assets/` com `immutable`, o resto com `no-cache`, `index.html` por último, e invalidação só do `/index.html`. O bucket e a distribuição vêm do SSM (`/coursary-api/dev/site/*`), criados pela stack da API.
+O `dev` é deployado pelo GitHub Actions quando disparado à mão na `develop` (Actions → Deploy dev → Run workflow, ou `gh workflow run deploy-dev.yml --ref develop`; Q495, Q516): build, role `coursary-web-deployer` por OIDC, `assets/` com `immutable`, o resto com `no-cache`, `index.html` por último, e invalidação só do `/index.html`. O bucket e a distribuição vêm do SSM (`/coursary-api/dev/site/*`), criados pela stack da API.
 
 | Secret do Environment `dev` | Valor |
 |---|---|
