@@ -61,6 +61,7 @@ const text: [string, string][] = [
   ['highlight-foreground', 'highlight'],
   ['link', 'background'],
   ['link', 'card'],
+  ['link', 'accent'],
   ['shell-foreground', 'shell'],
   ['shell-muted', 'shell'],
   ['shell-foreground', 'shell-hover'],
