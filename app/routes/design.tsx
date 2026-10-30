@@ -32,7 +32,7 @@ export default function Design() {
             <li key={id}>
               <a
                 href={`#${id}`}
-                className="inline-flex min-h-10 items-center rounded-sm text-link underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                className="-mx-2 inline-flex min-h-10 items-center rounded-md px-2 text-link underline-offset-4 hover:bg-accent hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
               >
                 {label}
               </a>
