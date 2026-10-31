@@ -1,4 +1,5 @@
 import { env } from '~/lib/env';
+import { endSession, getAccessToken, startSession } from '~/session/session';
 
 // The API in the deployed build; in development, the Vite proxy in front of it.
 const baseUrl = env.DEV ? '/api' : env.VITE_API_URL;
@@ -22,19 +23,97 @@ interface ErrorBody {
   error?: { code?: string };
 }
 
-export async function apiGet<TBody>(
+interface Tokens {
+  accessToken: string;
+  expiresIn: number;
+}
+
+export interface ApiRequestOptions {
+  method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+  body?: unknown;
+  signal?: AbortSignal;
+}
+
+const send = (
   path: string,
-  { signal }: { signal?: AbortSignal } = {},
-): Promise<TBody> {
-  const response = await fetch(`${baseUrl}${path}`, {
+  { method = 'GET', body, signal }: ApiRequestOptions,
+  token: string | undefined,
+) => {
+  const headers: Record<string, string> = {};
+
+  if (body !== undefined) {
+    headers['Content-Type'] = 'application/json';
+  }
+
+  if (token !== undefined) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  return fetch(`${baseUrl}${path}`, {
+    method,
+    headers,
+    body: body === undefined ? undefined : JSON.stringify(body),
     credentials: 'include',
     signal,
   });
+};
+
+let refreshing: Promise<boolean> | undefined;
+
+const renewSession = async () => {
+  const response = await send('/auth/refresh', { method: 'POST' }, undefined);
+
+  if (!response.ok) {
+    endSession();
+    return false;
+  }
+
+  const { accessToken } = (await response.json()) as Tokens;
+  startSession(accessToken);
+
+  return true;
+};
+
+export const refreshSession = () => {
+  refreshing ??= renewSession().finally(() => {
+    refreshing = undefined;
+  });
+
+  return refreshing;
+};
+
+export const restoreSession = () => refreshSession().catch(() => false);
+
+export async function apiRequest<TBody>(
+  path: string,
+  options: ApiRequestOptions = {},
+): Promise<TBody> {
+  const token = getAccessToken();
+  let response = await send(path, options, token);
+
+  if (response.status === 401 && token !== undefined) {
+    const current = getAccessToken();
+    const renewed =
+      (current !== undefined && current !== token) || (await refreshSession());
+
+    if (renewed) {
+      response = await send(path, options, getAccessToken());
+    }
+  }
 
   if (!response.ok) {
     const body = (await response.json().catch(() => ({}))) as ErrorBody;
     throw new ApiError(response.status, body.error?.code);
   }
 
+  if (response.status === 204) {
+    return undefined as TBody;
+  }
+
   return (await response.json()) as TBody;
 }
+
+export const apiGet = <TBody>(
+  path: string,
+  { signal }: { signal?: AbortSignal } = {},
+) => apiRequest<TBody>(path, { signal });
