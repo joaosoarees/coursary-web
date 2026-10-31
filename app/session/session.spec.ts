@@ -4,6 +4,7 @@ import { queryClient } from '~/lib/queryClient';
 import {
   endSession,
   getAccessToken,
+  getSessionGeneration,
   getSessionStatus,
   startSession,
   subscribeToSession,
@@ -45,6 +46,15 @@ describe('session', () => {
     endSession();
 
     expect(queryClient.getQueryData(['me'])).toBeUndefined();
+  });
+
+  it('should change its generation every time it ends', () => {
+    const before = getSessionGeneration();
+    startSession('token-1');
+
+    endSession();
+
+    expect(getSessionGeneration()).toBe(before + 1);
   });
 
   it('should do nothing when ending a session that is not there', () => {
