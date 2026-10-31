@@ -8,6 +8,7 @@ import {
 export default [
   layout('routes/layout.tsx', [
     index('routes/home.tsx'),
+    ...(import.meta.env.DEV ? [route('design', 'routes/design.tsx')] : []),
     route('*', 'routes/not-found.tsx'),
   ]),
 ] satisfies RouteConfig;

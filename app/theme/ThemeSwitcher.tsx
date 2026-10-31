@@ -25,9 +25,9 @@ export function ThemeSwitcher({ className }: { className?: string }) {
           onClick={() => {
             setTheme(value);
           }}
-          className="inline-grid size-10 place-items-center rounded-md text-shell-muted transition-colors hover:text-shell-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chalk-yellow aria-pressed:bg-shell-foreground/10 aria-pressed:text-chalk-yellow"
+          className="inline-grid size-10 place-items-center rounded-md text-shell-muted transition-colors hover:bg-shell-hover hover:text-shell-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chalk-yellow aria-pressed:bg-shell-hover aria-pressed:text-chalk-yellow"
         >
-          <Icon aria-hidden="true" className="size-[1.125rem]" />
+          <Icon aria-hidden="true" className="size-4.5" />
         </button>
       ))}
     </div>

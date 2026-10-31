@@ -1,8 +1,11 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
-@custom-variant dark (&:where(.dark, .dark *));
+/* `.light` lets a block show the light theme inside a dark page, as the /design palette does:
+   it takes the light tokens, and dark: utilities stop inside it. */
+@custom-variant dark (&:where(.dark, .dark *):not(:where(.dark .light, .dark .light *)));
 
+.light,
 :root {
   color-scheme: light;
   --background: #f3f5f1;
@@ -12,6 +15,7 @@
   --popover: #ffffff;
   --popover-foreground: #13241b;
   --primary: #1f3a2e;
+  --primary-hover: #2f5746;
   --primary-foreground: #f3f5f1;
   --secondary: #e6ece7;
   --secondary-foreground: #13241b;
@@ -20,6 +24,7 @@
   --accent: #d9e3db;
   --accent-foreground: #13241b;
   --destructive: #b3372a;
+  --destructive-hover: #8f2a20;
   --destructive-foreground: #ffffff;
   --success: #1d5c3a;
   --success-soft: #e3f1e8;
@@ -32,6 +37,7 @@
   --ring: #2b6b52;
 
   --shell: #1f3a2e;
+  --shell-hover: #2f5746;
   --shell-foreground: #eef3ee;
   --shell-muted: #a8c2b3;
   --board: #1f3a2e;
@@ -50,14 +56,16 @@
   --popover: #183026;
   --popover-foreground: #eaf0ea;
   --primary: #f2c94c;
+  --primary-hover: #f7dc85;
   --primary-foreground: #112019;
   --secondary: #1f3a2e;
   --secondary-foreground: #eaf0ea;
   --muted: #1f3a2e;
   --muted-foreground: #a9bfb1;
-  --accent: #1f3a2e;
+  --accent: #2a4a3b;
   --accent-foreground: #eaf0ea;
   --destructive: #f08a7a;
+  --destructive-hover: #f5ada1;
   --destructive-foreground: #112019;
   --success: #b8ecc9;
   --success-soft: #1f4a35;
@@ -69,7 +77,8 @@
   --input: #5f7d6d;
   --ring: #f2c94c;
 
-  --shell: #0b1712;
+  --shell: #1f3a2e;
+  --shell-hover: #2a4a3b;
 }
 
 @theme inline {
@@ -83,6 +92,7 @@
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
@@ -91,6 +101,7 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
+  --color-destructive-hover: var(--destructive-hover);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-success: var(--success);
   --color-success-soft: var(--success-soft);
@@ -102,6 +113,7 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-shell: var(--shell);
+  --color-shell-hover: var(--shell-hover);
   --color-shell-foreground: var(--shell-foreground);
   --color-shell-muted: var(--shell-muted);
   --color-board: var(--board);
@@ -117,8 +129,7 @@
 
   --radius-sm: 0.25rem;
   --radius-md: 0.375rem;
-  --radius-lg: 0.5rem;
-  --radius-xl: 0.75rem;
+  --radius-lg: 0.375rem;
 
   --shadow-sm: 0 1px 2px rgb(17 32 25 / 0.08);
   --shadow-md:
@@ -130,9 +141,30 @@
     @apply border-border outline-ring;
   }
 
+  html {
+    scrollbar-color: var(--input) var(--background);
+  }
+
   body {
     @apply bg-background text-foreground;
+    caret-color: var(--ring);
     font-variant-numeric: tabular-nums;
+  }
+
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 
   ::selection {

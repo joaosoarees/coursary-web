@@ -1,0 +1,1199 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-31T04:20:54+00:00",
+  "title": "Design System: Coursary",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Verde Lousa",
+        "canonical": "#1f3a2e",
+        "theme": "light",
+        "cssVar": "--primary",
+        "tonalRamp": [
+          "#000f08",
+          "#102b20",
+          "#2d493c",
+          "#4c695b",
+          "#6d8a7c",
+          "#8fad9e",
+          "#b2d2c2",
+          "#d7f7e7"
+        ]
+      },
+      "primary-hover": {
+        "role": "primary",
+        "displayName": "Verde Lousa Claro",
+        "canonical": "#2f5746",
+        "theme": "light",
+        "cssVar": "--primary-hover",
+        "tonalRamp": [
+          "#000f08",
+          "#022d1e",
+          "#234b3b",
+          "#436b59",
+          "#648d7a",
+          "#86b09c",
+          "#a9d5c0",
+          "#cefbe5"
+        ]
+      },
+      "primary-foreground": {
+        "role": "neutral",
+        "displayName": "Pó de Giz",
+        "canonical": "#f3f5f1",
+        "theme": "light",
+        "cssVar": "--primary-foreground",
+        "tonalRamp": [
+          "#0a0c09",
+          "#242623",
+          "#41433f",
+          "#60625e",
+          "#81837f",
+          "#a4a6a2",
+          "#c8cac6",
+          "#edefeb"
+        ]
+      },
+      "background": {
+        "role": "neutral",
+        "displayName": "Pó de Giz",
+        "canonical": "#f3f5f1",
+        "theme": "light",
+        "cssVar": "--background",
+        "tonalRamp": [
+          "#0a0c09",
+          "#242623",
+          "#41433f",
+          "#60625e",
+          "#81837f",
+          "#a4a6a2",
+          "#c8cac6",
+          "#edefeb"
+        ]
+      },
+      "foreground": {
+        "role": "neutral",
+        "displayName": "Tinta Floresta",
+        "canonical": "#13241b",
+        "theme": "light",
+        "cssVar": "--foreground",
+        "tonalRamp": [
+          "#020f07",
+          "#182920",
+          "#35473d",
+          "#53675c",
+          "#74887c",
+          "#96ab9f",
+          "#bacfc3",
+          "#dff5e8"
+        ]
+      },
+      "card": {
+        "role": "neutral",
+        "displayName": "Folha Branca",
+        "canonical": "#ffffff",
+        "theme": "light",
+        "cssVar": "--card",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#a5a5a5",
+          "#c9c9c9",
+          "#eeeeee"
+        ]
+      },
+      "popover": {
+        "role": "neutral",
+        "displayName": "Folha Branca",
+        "canonical": "#ffffff",
+        "theme": "light",
+        "cssVar": "--popover",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#a5a5a5",
+          "#c9c9c9",
+          "#eeeeee"
+        ]
+      },
+      "secondary": {
+        "role": "neutral",
+        "displayName": "Névoa de Giz",
+        "canonical": "#e6ece7",
+        "theme": "light",
+        "cssVar": "--secondary",
+        "tonalRamp": [
+          "#080c09",
+          "#222623",
+          "#3f433f",
+          "#5e635e",
+          "#7f847f",
+          "#a1a7a2",
+          "#c5cbc6",
+          "#eaf0eb"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Névoa de Giz",
+        "canonical": "#e6ece7",
+        "theme": "light",
+        "cssVar": "--muted",
+        "tonalRamp": [
+          "#080c09",
+          "#222623",
+          "#3f433f",
+          "#5e635e",
+          "#7f847f",
+          "#a1a7a2",
+          "#c5cbc6",
+          "#eaf0eb"
+        ]
+      },
+      "muted-foreground": {
+        "role": "neutral",
+        "displayName": "Verde Grafite",
+        "canonical": "#47594f",
+        "theme": "light",
+        "cssVar": "--muted-foreground",
+        "tonalRamp": [
+          "#020f07",
+          "#192921",
+          "#35473d",
+          "#54665c",
+          "#75887d",
+          "#97ab9f",
+          "#bacfc3",
+          "#dff5e8"
+        ]
+      },
+      "accent": {
+        "role": "neutral",
+        "displayName": "Sálvia Pálida",
+        "canonical": "#d9e3db",
+        "theme": "light",
+        "cssVar": "--accent",
+        "tonalRamp": [
+          "#070d08",
+          "#202721",
+          "#3c443e",
+          "#5b645d",
+          "#7c857e",
+          "#9ea8a0",
+          "#c2ccc4",
+          "#e7f2e9"
+        ]
+      },
+      "destructive": {
+        "role": "tertiary",
+        "displayName": "Tijolo",
+        "canonical": "#b3372a",
+        "theme": "light",
+        "cssVar": "--destructive",
+        "tonalRamp": [
+          "#1e0100",
+          "#4b0402",
+          "#7e0c05",
+          "#aa2e22",
+          "#d25444",
+          "#fa7866",
+          "#fdb4a8",
+          "#ffe9e5"
+        ]
+      },
+      "destructive-hover": {
+        "role": "tertiary",
+        "displayName": "Tijolo Queimado",
+        "canonical": "#8f2a20",
+        "theme": "light",
+        "cssVar": "--destructive-hover",
+        "tonalRamp": [
+          "#1f0000",
+          "#4d0101",
+          "#7b140d",
+          "#a13b2f",
+          "#c75e50",
+          "#ef8171",
+          "#fdb4a8",
+          "#fee9e5"
+        ]
+      },
+      "destructive-foreground": {
+        "role": "neutral",
+        "displayName": "Folha Branca",
+        "canonical": "#ffffff",
+        "theme": "light",
+        "cssVar": "--destructive-foreground",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#a5a5a5",
+          "#c9c9c9",
+          "#eeeeee"
+        ]
+      },
+      "success": {
+        "role": "tertiary",
+        "displayName": "Verde Aprovado",
+        "canonical": "#1d5c3a",
+        "theme": "light",
+        "cssVar": "--success",
+        "tonalRamp": [
+          "#000f05",
+          "#012e17",
+          "#0b4f2e",
+          "#32704c",
+          "#55926d",
+          "#78b58f",
+          "#9bdab2",
+          "#c5ffd9"
+        ]
+      },
+      "success-soft": {
+        "role": "tertiary",
+        "displayName": "Verde Aprovado Suave",
+        "canonical": "#e3f1e8",
+        "theme": "light",
+        "cssVar": "--success-soft",
+        "tonalRamp": [
+          "#050e08",
+          "#1d2821",
+          "#3a453e",
+          "#59655d",
+          "#79867e",
+          "#9ca9a0",
+          "#c0cdc4",
+          "#e5f3ea"
+        ]
+      },
+      "highlight": {
+        "role": "tertiary",
+        "displayName": "Creme de Giz",
+        "canonical": "#fcf3d4",
+        "theme": "light",
+        "cssVar": "--highlight",
+        "tonalRamp": [
+          "#0f0b00",
+          "#2c250b",
+          "#494228",
+          "#696146",
+          "#8a8266",
+          "#aea588",
+          "#d2c9ab",
+          "#f8efd0"
+        ]
+      },
+      "highlight-border": {
+        "role": "tertiary",
+        "displayName": "Ocre de Giz",
+        "canonical": "#b8952a",
+        "theme": "light",
+        "cssVar": "--highlight-border",
+        "tonalRamp": [
+          "#100a00",
+          "#2f2301",
+          "#523f03",
+          "#775e09",
+          "#9e7e11",
+          "#c4a139",
+          "#e9c561",
+          "#ffedc0"
+        ]
+      },
+      "link": {
+        "role": "secondary",
+        "displayName": "Verde Folha",
+        "canonical": "#2b6b52",
+        "theme": "light",
+        "cssVar": "--link",
+        "tonalRamp": [
+          "#000f08",
+          "#012d1e",
+          "#044f37",
+          "#2f6f56",
+          "#529177",
+          "#75b599",
+          "#99dabc",
+          "#c1ffe2"
+        ]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Fio de Sálvia",
+        "canonical": "#cfd9d1",
+        "theme": "light",
+        "cssVar": "--border",
+        "tonalRamp": [
+          "#070d08",
+          "#202721",
+          "#3c443e",
+          "#5b645d",
+          "#7c857e",
+          "#9ea8a0",
+          "#c2ccc4",
+          "#e7f2e9"
+        ]
+      },
+      "input": {
+        "role": "neutral",
+        "displayName": "Cinza-Musgo",
+        "canonical": "#7d9186",
+        "theme": "light",
+        "cssVar": "--input",
+        "tonalRamp": [
+          "#020f08",
+          "#182921",
+          "#35473d",
+          "#53665c",
+          "#74887d",
+          "#96ab9f",
+          "#bacfc3",
+          "#dff5e9"
+        ]
+      },
+      "ring": {
+        "role": "secondary",
+        "displayName": "Verde Folha",
+        "canonical": "#2b6b52",
+        "theme": "light",
+        "cssVar": "--ring",
+        "tonalRamp": [
+          "#000f08",
+          "#012d1e",
+          "#044f37",
+          "#2f6f56",
+          "#529177",
+          "#75b599",
+          "#99dabc",
+          "#c1ffe2"
+        ]
+      },
+      "shell": {
+        "role": "primary",
+        "displayName": "Verde Lousa",
+        "canonical": "#1f3a2e",
+        "theme": "light",
+        "cssVar": "--shell",
+        "tonalRamp": [
+          "#000f08",
+          "#102b20",
+          "#2d493c",
+          "#4c695b",
+          "#6d8a7c",
+          "#8fad9e",
+          "#b2d2c2",
+          "#d7f7e7"
+        ]
+      },
+      "shell-hover": {
+        "role": "primary",
+        "displayName": "Verde Lousa Claro",
+        "canonical": "#2f5746",
+        "theme": "light",
+        "cssVar": "--shell-hover",
+        "tonalRamp": [
+          "#000f08",
+          "#022d1e",
+          "#234b3b",
+          "#436b59",
+          "#648d7a",
+          "#86b09c",
+          "#a9d5c0",
+          "#cefbe5"
+        ]
+      },
+      "shell-foreground": {
+        "role": "neutral",
+        "displayName": "Giz Branco",
+        "canonical": "#eef3ee",
+        "theme": "light",
+        "cssVar": "--shell-foreground",
+        "tonalRamp": [
+          "#090c09",
+          "#232623",
+          "#3f433f",
+          "#5e635e",
+          "#7f847f",
+          "#a2a6a2",
+          "#c6cbc6",
+          "#ebf0eb"
+        ]
+      },
+      "shell-muted": {
+        "role": "neutral",
+        "displayName": "Musgo Claro",
+        "canonical": "#a8c2b3",
+        "theme": "light",
+        "cssVar": "--shell-muted",
+        "tonalRamp": [
+          "#000f07",
+          "#152a1f",
+          "#31483c",
+          "#50685a",
+          "#71897b",
+          "#93ac9e",
+          "#b6d1c1",
+          "#dbf6e7"
+        ]
+      },
+      "board": {
+        "role": "primary",
+        "displayName": "Verde Lousa",
+        "canonical": "#1f3a2e",
+        "theme": "light",
+        "cssVar": "--board",
+        "tonalRamp": [
+          "#000f08",
+          "#102b20",
+          "#2d493c",
+          "#4c695b",
+          "#6d8a7c",
+          "#8fad9e",
+          "#b2d2c2",
+          "#d7f7e7"
+        ]
+      },
+      "chalk": {
+        "role": "neutral",
+        "displayName": "Giz Branco",
+        "canonical": "#eef3ee",
+        "theme": "light",
+        "cssVar": "--chalk",
+        "tonalRamp": [
+          "#090c09",
+          "#232623",
+          "#3f433f",
+          "#5e635e",
+          "#7f847f",
+          "#a2a6a2",
+          "#c6cbc6",
+          "#ebf0eb"
+        ]
+      },
+      "chalk-yellow": {
+        "role": "primary",
+        "displayName": "Giz Amarelo",
+        "canonical": "#f2c94c",
+        "theme": "light",
+        "cssVar": "--chalk-yellow",
+        "tonalRamp": [
+          "#100a00",
+          "#2f2401",
+          "#514004",
+          "#765e0a",
+          "#9e7e13",
+          "#c8a007",
+          "#edc447",
+          "#ffeebe"
+        ]
+      },
+      "chalk-blue": {
+        "role": "secondary",
+        "displayName": "Giz Azul",
+        "canonical": "#9fd0ee",
+        "theme": "light",
+        "cssVar": "--chalk-blue",
+        "tonalRamp": [
+          "#000d16",
+          "#02293b",
+          "#174760",
+          "#396782",
+          "#5a89a5",
+          "#7cacc9",
+          "#a0d1ef",
+          "#def2ff"
+        ]
+      },
+      "chalk-pink": {
+        "role": "secondary",
+        "displayName": "Giz Rosa",
+        "canonical": "#f4a9b8",
+        "theme": "light",
+        "cssVar": "--chalk-pink",
+        "tonalRamp": [
+          "#1e0007",
+          "#460a1e",
+          "#682a3a",
+          "#8c4a59",
+          "#b06b7a",
+          "#d68d9c",
+          "#fdb1c0",
+          "#fee8ec"
+        ]
+      },
+      "background-dark": {
+        "role": "neutral",
+        "displayName": "Lousa Noturna",
+        "canonical": "#112019",
+        "theme": "dark",
+        "cssVar": "--background",
+        "tonalRamp": [
+          "#020e08",
+          "#1a2922",
+          "#36463e",
+          "#55665d",
+          "#75877e",
+          "#98aaa1",
+          "#bbcfc5",
+          "#e0f4ea"
+        ]
+      },
+      "foreground-dark": {
+        "role": "neutral",
+        "displayName": "Giz Pálido",
+        "canonical": "#eaf0ea",
+        "theme": "dark",
+        "cssVar": "--foreground",
+        "tonalRamp": [
+          "#090c09",
+          "#222622",
+          "#3f433f",
+          "#5e635e",
+          "#7f847f",
+          "#a1a7a1",
+          "#c5cbc5",
+          "#eaf0ea"
+        ]
+      },
+      "card-dark": {
+        "role": "neutral",
+        "displayName": "Lousa Funda",
+        "canonical": "#162b22",
+        "theme": "dark",
+        "cssVar": "--card",
+        "tonalRamp": [
+          "#000f08",
+          "#152a21",
+          "#32483e",
+          "#50675d",
+          "#71897d",
+          "#93aca0",
+          "#b7d0c4",
+          "#dcf6e9"
+        ]
+      },
+      "popover-dark": {
+        "role": "neutral",
+        "displayName": "Lousa Erguida",
+        "canonical": "#183026",
+        "theme": "dark",
+        "cssVar": "--popover",
+        "tonalRamp": [
+          "#000f08",
+          "#132b21",
+          "#30483d",
+          "#4e685c",
+          "#6f897d",
+          "#91ada0",
+          "#b5d1c4",
+          "#d9f7e9"
+        ]
+      },
+      "primary-dark": {
+        "role": "primary",
+        "displayName": "Giz Amarelo",
+        "canonical": "#f2c94c",
+        "theme": "dark",
+        "cssVar": "--primary",
+        "tonalRamp": [
+          "#100a00",
+          "#2f2401",
+          "#514004",
+          "#765e0a",
+          "#9e7e13",
+          "#c8a007",
+          "#edc447",
+          "#ffeebe"
+        ]
+      },
+      "primary-hover-dark": {
+        "role": "primary",
+        "displayName": "Giz Amarelo Claro",
+        "canonical": "#f7dc85",
+        "theme": "dark",
+        "cssVar": "--primary-hover",
+        "tonalRamp": [
+          "#0f0b00",
+          "#2e2402",
+          "#504006",
+          "#755f02",
+          "#9a8024",
+          "#bda34c",
+          "#e2c771",
+          "#ffeeb9"
+        ]
+      },
+      "primary-foreground-dark": {
+        "role": "neutral",
+        "displayName": "Lousa Noturna",
+        "canonical": "#112019",
+        "theme": "dark",
+        "cssVar": "--primary-foreground",
+        "tonalRamp": [
+          "#020e08",
+          "#1a2922",
+          "#36463e",
+          "#55665d",
+          "#75877e",
+          "#98aaa1",
+          "#bbcfc5",
+          "#e0f4ea"
+        ]
+      },
+      "secondary-dark": {
+        "role": "neutral",
+        "displayName": "Verde Lousa",
+        "canonical": "#1f3a2e",
+        "theme": "dark",
+        "cssVar": "--secondary",
+        "tonalRamp": [
+          "#000f08",
+          "#102b20",
+          "#2d493c",
+          "#4c695b",
+          "#6d8a7c",
+          "#8fad9e",
+          "#b2d2c2",
+          "#d7f7e7"
+        ]
+      },
+      "muted-dark": {
+        "role": "neutral",
+        "displayName": "Verde Lousa",
+        "canonical": "#1f3a2e",
+        "theme": "dark",
+        "cssVar": "--muted",
+        "tonalRamp": [
+          "#000f08",
+          "#102b20",
+          "#2d493c",
+          "#4c695b",
+          "#6d8a7c",
+          "#8fad9e",
+          "#b2d2c2",
+          "#d7f7e7"
+        ]
+      },
+      "muted-foreground-dark": {
+        "role": "neutral",
+        "displayName": "Sálvia de Giz",
+        "canonical": "#a9bfb1",
+        "theme": "dark",
+        "cssVar": "--muted-foreground",
+        "tonalRamp": [
+          "#010f06",
+          "#182a1f",
+          "#34473c",
+          "#53675a",
+          "#73887b",
+          "#96ab9e",
+          "#b9d0c1",
+          "#def5e7"
+        ]
+      },
+      "accent-dark": {
+        "role": "neutral",
+        "displayName": "Lousa Gasta",
+        "canonical": "#2a4a3b",
+        "theme": "dark",
+        "cssVar": "--accent",
+        "tonalRamp": [
+          "#000f07",
+          "#0b2c1e",
+          "#2a4a3b",
+          "#496a5a",
+          "#698b7a",
+          "#8baf9d",
+          "#afd3c1",
+          "#d4f9e6"
+        ]
+      },
+      "destructive-dark": {
+        "role": "tertiary",
+        "displayName": "Tijolo Claro",
+        "canonical": "#f08a7a",
+        "theme": "dark",
+        "cssVar": "--destructive",
+        "tonalRamp": [
+          "#1e0100",
+          "#4c0301",
+          "#771c13",
+          "#9d3f33",
+          "#c36153",
+          "#ea8475",
+          "#feb4a7",
+          "#ffe9e5"
+        ]
+      },
+      "destructive-hover-dark": {
+        "role": "tertiary",
+        "displayName": "Tijolo Rosado",
+        "canonical": "#f5ada1",
+        "theme": "dark",
+        "cssVar": "--destructive-hover",
+        "tonalRamp": [
+          "#1f0000",
+          "#460e08",
+          "#692d25",
+          "#8c4d43",
+          "#b06e63",
+          "#d69085",
+          "#fdb4a8",
+          "#fee9e5"
+        ]
+      },
+      "destructive-foreground-dark": {
+        "role": "neutral",
+        "displayName": "Lousa Noturna",
+        "canonical": "#112019",
+        "theme": "dark",
+        "cssVar": "--destructive-foreground",
+        "tonalRamp": [
+          "#020e08",
+          "#1a2922",
+          "#36463e",
+          "#55665d",
+          "#75877e",
+          "#98aaa1",
+          "#bbcfc5",
+          "#e0f4ea"
+        ]
+      },
+      "success-dark": {
+        "role": "tertiary",
+        "displayName": "Verde Broto",
+        "canonical": "#b8ecc9",
+        "theme": "dark",
+        "cssVar": "--success",
+        "tonalRamp": [
+          "#000f05",
+          "#002e17",
+          "#1d4d31",
+          "#3d6d4f",
+          "#5f8f70",
+          "#81b392",
+          "#a4d8b5",
+          "#c9feda"
+        ]
+      },
+      "success-soft-dark": {
+        "role": "tertiary",
+        "displayName": "Verde Mata",
+        "canonical": "#1f4a35",
+        "theme": "dark",
+        "cssVar": "--success-soft",
+        "tonalRamp": [
+          "#000f07",
+          "#022d1b",
+          "#214c37",
+          "#416c55",
+          "#628e76",
+          "#84b198",
+          "#a8d6bc",
+          "#ccfce1"
+        ]
+      },
+      "highlight-dark": {
+        "role": "tertiary",
+        "displayName": "Oliva Noturna",
+        "canonical": "#2c3418",
+        "theme": "dark",
+        "cssVar": "--highlight",
+        "tonalRamp": [
+          "#090d00",
+          "#21290d",
+          "#3e4629",
+          "#5c6648",
+          "#7d8768",
+          "#a0aa8a",
+          "#c3cfad",
+          "#e9f4d2"
+        ]
+      },
+      "highlight-border-dark": {
+        "role": "tertiary",
+        "displayName": "Ocre Velho",
+        "canonical": "#a08a2e",
+        "theme": "dark",
+        "cssVar": "--highlight-border",
+        "tonalRamp": [
+          "#0f0b00",
+          "#2d2402",
+          "#4e4106",
+          "#736000",
+          "#978123",
+          "#bba44b",
+          "#dfc970",
+          "#feefb3"
+        ]
+      },
+      "link-dark": {
+        "role": "secondary",
+        "displayName": "Giz Amarelo",
+        "canonical": "#f2c94c",
+        "theme": "dark",
+        "cssVar": "--link",
+        "tonalRamp": [
+          "#100a00",
+          "#2f2401",
+          "#514004",
+          "#765e0a",
+          "#9e7e13",
+          "#c8a007",
+          "#edc447",
+          "#ffeebe"
+        ]
+      },
+      "border-dark": {
+        "role": "neutral",
+        "displayName": "Fio de Lousa",
+        "canonical": "#2f4c3e",
+        "theme": "dark",
+        "cssVar": "--border",
+        "tonalRamp": [
+          "#000f07",
+          "#0f2b1f",
+          "#2c493b",
+          "#4b695a",
+          "#6c8b7b",
+          "#8eae9d",
+          "#b1d2c1",
+          "#d6f8e6"
+        ]
+      },
+      "input-dark": {
+        "role": "neutral",
+        "displayName": "Musgo Fundo",
+        "canonical": "#5f7d6d",
+        "theme": "dark",
+        "cssVar": "--input",
+        "tonalRamp": [
+          "#000f07",
+          "#0f2b1e",
+          "#2d493b",
+          "#4c695a",
+          "#6c8b7a",
+          "#8eae9d",
+          "#b2d2c0",
+          "#d7f8e6"
+        ]
+      },
+      "ring-dark": {
+        "role": "secondary",
+        "displayName": "Giz Amarelo",
+        "canonical": "#f2c94c",
+        "theme": "dark",
+        "cssVar": "--ring",
+        "tonalRamp": [
+          "#100a00",
+          "#2f2401",
+          "#514004",
+          "#765e0a",
+          "#9e7e13",
+          "#c8a007",
+          "#edc447",
+          "#ffeebe"
+        ]
+      },
+      "shell-hover-dark": {
+        "role": "primary",
+        "displayName": "Lousa Gasta",
+        "canonical": "#2a4a3b",
+        "theme": "dark",
+        "cssVar": "--shell-hover",
+        "tonalRamp": [
+          "#000f07",
+          "#0b2c1e",
+          "#2a4a3b",
+          "#496a5a",
+          "#698b7a",
+          "#8baf9d",
+          "#afd3c1",
+          "#d4f9e6"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Título de página do cabeçalho de página; um por tela."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Títulos de seção e o título da página de erro."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Título de card, de estado vazio, de bloco."
+      },
+      "wordmark": {
+        "displayName": "Wordmark",
+        "purpose": "Só o \"Coursary\" no trilho."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Texto corrido e rótulos do trilho; parágrafos até 65ch; algarismos tabulares."
+      },
+      "body-sm": {
+        "displayName": "Body small",
+        "purpose": "Apoio, células de tabela, itens de menu, abas; campos a partir de 768 px."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Texto de botão."
+      },
+      "label-sm": {
+        "displayName": "Label small",
+        "purpose": "Selos."
+      },
+      "table-head": {
+        "displayName": "Table head",
+        "purpose": "Cabeçalho de tabela: negrito, caixa alta, cor apagada, no tamanho das células."
+      }
+    },
+    "shadows": [
+      {
+        "name": "shadow-sm",
+        "displayName": "Assentado",
+        "value": "0 1px 2px rgb(17 32 25 / 0.08)",
+        "purpose": "O card, e nada mais."
+      },
+      {
+        "name": "shadow-md",
+        "displayName": "Erguido",
+        "value": "0 1px 2px rgb(17 32 25 / 0.08), 0 8px 24px -8px rgb(17 32 25 / 0.18)",
+        "purpose": "Menus suspensos, listas de seleção e diálogos."
+      }
+    ],
+    "focus": [
+      {
+        "name": "focus-outline",
+        "value": "outline: 2px solid var(--ring); outline-offset: 2px",
+        "purpose": "Todo clicável fora de campos; sobre a lousa, a cor é --chalk-yellow."
+      },
+      {
+        "name": "focus-field",
+        "value": "border-color: var(--ring); box-shadow: 0 0 0 3px var(--ring)",
+        "purpose": "Campos de texto, área de texto e select."
+      },
+      {
+        "name": "focus-menu-item",
+        "value": "outline: 2px solid var(--ring); outline-offset: -2px",
+        "purpose": "Item destacado de menu e de select."
+      }
+    ],
+    "motion": [
+      {
+        "name": "transition-colors",
+        "value": "150ms cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "Hover de fundo, borda e cor em controles."
+      },
+      {
+        "name": "overlay-enter",
+        "value": "fade + zoom 95% a 100%, 200ms",
+        "purpose": "Entrada e saída de diálogos e menus."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "animation-duration: 0.01ms; transition-duration: 0.01ms",
+        "purpose": "Sob prefers-reduced-motion: reduce, em tudo."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px",
+        "purpose": "Diálogo passa a 512 px e alinha o cabeçalho à esquerda."
+      },
+      {
+        "name": "md",
+        "value": "768px",
+        "purpose": "O trilho vira coluna fixa de 256 px; respiro lateral de 56 px; campos em 0.875rem."
+      }
+    ],
+    "base": [
+      {
+        "name": "selection",
+        "value": "background: var(--chalk-yellow); color: #000000"
+      },
+      {
+        "name": "caret",
+        "value": "caret-color: var(--ring)"
+      },
+      {
+        "name": "scrollbar",
+        "value": "scrollbar-color: var(--input) var(--background)"
+      },
+      {
+        "name": "numerals",
+        "value": "font-variant-numeric: tabular-nums"
+      }
+    ],
+    "contrastFloor": {
+      "text": "4.5:1",
+      "nonText": "3:1",
+      "themes": ["light", "dark"],
+      "source": "app/theme.spec.ts"
+    }
+  },
+  "components": [
+    {
+      "name": "Botão primário",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "A ação principal da tela: Verde Lousa no claro, Giz Amarelo no escuro.",
+      "html": "<button class=\"ds-btn ds-btn-primary\">Salvar curso</button>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 20px; border: 1px solid transparent; border-radius: 6px; font-family: \"Atkinson Hyperlegible Next Variable\", ui-sans-serif, system-ui, sans-serif; font-size: 1rem; font-weight: 700; white-space: nowrap; cursor: pointer; transition: background-color 150ms, border-color 150ms, color 150ms; } .ds-btn:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; } .ds-btn-primary { background: var(--primary); color: var(--primary-foreground); } .ds-btn-primary:hover { background: var(--primary-hover); }"
+    },
+    {
+      "name": "Botão contornado",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Ação secundária: folha com borda Cinza-Musgo; no hover a borda passa ao anel e o fundo a Sálvia Pálida.",
+      "html": "<button class=\"ds-btn-outline\">Ver o catálogo</button>",
+      "css": ".ds-btn-outline { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 20px; border: 1px solid transparent; border-radius: 6px; font-family: \"Atkinson Hyperlegible Next Variable\", ui-sans-serif, system-ui, sans-serif; font-size: 1rem; font-weight: 700; white-space: nowrap; cursor: pointer; transition: background-color 150ms, border-color 150ms, color 150ms; background: var(--card); color: var(--card-foreground); border-color: var(--input); } .ds-btn-outline:hover { border-color: var(--ring); background: var(--accent); color: var(--accent-foreground); } .ds-btn-outline:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }"
+    },
+    {
+      "name": "Botão destrutivo",
+      "kind": "button",
+      "refersTo": "button-destructive",
+      "description": "Excluir, arquivar, desabilitar: Tijolo, com hover em Tijolo Queimado.",
+      "html": "<button class=\"ds-btn-destructive\">Excluir curso</button>",
+      "css": ".ds-btn-destructive { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 20px; border: 1px solid transparent; border-radius: 6px; font-family: \"Atkinson Hyperlegible Next Variable\", ui-sans-serif, system-ui, sans-serif; font-size: 1rem; font-weight: 700; white-space: nowrap; cursor: pointer; transition: background-color 150ms, border-color 150ms, color 150ms; background: var(--destructive); color: var(--destructive-foreground); } .ds-btn-destructive:hover { background: var(--destructive-hover); } .ds-btn-destructive:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }"
+    },
+    {
+      "name": "Botão link",
+      "kind": "button",
+      "refersTo": "button-link",
+      "description": "Ação em forma de link, com a mesma altura dos botões do seu tamanho e hover de fundo.",
+      "html": "<button class=\"ds-btn-link\">Esqueci a senha</button>",
+      "css": ".ds-btn-link { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 20px; border: 1px solid transparent; border-radius: 6px; font-family: \"Atkinson Hyperlegible Next Variable\", ui-sans-serif, system-ui, sans-serif; font-size: 1rem; font-weight: 700; white-space: nowrap; cursor: pointer; transition: background-color 150ms, border-color 150ms, color 150ms; background: transparent; color: var(--link); text-underline-offset: 4px; } .ds-btn-link:hover { background: var(--accent); text-decoration: underline; } .ds-btn-link:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }"
+    },
+    {
+      "name": "Campo de texto",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Campo de 44 px com borda Cinza-Musgo; no foco, borda e anel de 3 px na cor do anel.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Buscar cursos\" aria-label=\"Buscar cursos\">",
+      "css": ".ds-input { height: 44px; width: 100%; max-width: 320px; padding: 4px 12px; border: 1px solid var(--input); border-radius: 6px; background: transparent; color: var(--foreground); caret-color: var(--ring); font-family: \"Atkinson Hyperlegible Next Variable\", ui-sans-serif, system-ui, sans-serif; font-size: 1rem; outline: none; transition: border-color 150ms, box-shadow 150ms; } .ds-input::placeholder { color: var(--muted-foreground); } .ds-input:focus-visible { border-color: var(--ring); box-shadow: 0 0 0 3px var(--ring); } .ds-input[aria-invalid=\"true\"] { border-color: var(--destructive); }"
+    },
+    {
+      "name": "Trilho de navegação",
+      "kind": "nav",
+      "refersTo": "nav-rail",
+      "description": "A lousa: trilho em Verde Lousa, rótulos em giz, o item atual marcado pelo traço de giz amarelo.",
+      "html": "<nav class=\"ds-rail\" aria-label=\"Principal\"><span class=\"ds-rail-mark\">Coursary</span><a class=\"ds-rail-item\" href=\"#\" aria-current=\"page\"><span>Início</span><svg class=\"ds-chalk-stroke\" viewBox=\"0 0 120 8\" preserveAspectRatio=\"none\" aria-hidden=\"true\"><path d=\"M2 5.2 C 24 3.2, 48 6.8, 72 4.6 S 104 3.9, 118 5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-dasharray=\"30 1.4 22 1 70\"/></svg></a><a class=\"ds-rail-item\" href=\"#\"><span>Catálogo</span></a></nav>",
+      "css": ".ds-rail { display: flex; flex-direction: column; gap: 4px; width: 256px; padding: 28px 20px; background: var(--shell); color: var(--shell-foreground); font-family: \"Atkinson Hyperlegible Next Variable\", ui-sans-serif, system-ui, sans-serif; } .ds-rail-mark { padding: 0 8px 24px; font-family: \"Bricolage Grotesque Variable\", ui-sans-serif, system-ui, sans-serif; font-size: 1.5rem; font-weight: 800; letter-spacing: -0.025em; } .ds-rail-item { display: flex; flex-direction: column; justify-content: center; min-height: 40px; padding: 8px 12px; border-radius: 6px; color: color-mix(in srgb, var(--shell-foreground) 85%, transparent); text-decoration: none; transition: background-color 150ms, color 150ms; } .ds-rail-item:hover { background: var(--shell-hover); color: var(--shell-foreground); } .ds-rail-item:focus-visible { outline: 2px solid var(--chalk-yellow); outline-offset: 2px; } .ds-rail-item[aria-current=\"page\"] { font-weight: 700; color: var(--shell-foreground); } .ds-chalk-stroke { display: block; width: 64px; height: 8px; color: var(--chalk-yellow); }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Folha com borda fina, cantos de 6 px e só a sombra Assentada.",
+      "html": "<div class=\"ds-card\"><div class=\"ds-card-title\">Curso de exemplo: estruturas de dados</div><p class=\"ds-card-desc\">12 aulas · 3 h 40 min</p></div>",
+      "css": ".ds-card { display: flex; flex-direction: column; gap: 8px; max-width: 360px; padding: 24px; border: 1px solid var(--border); border-radius: 6px; background: var(--card); color: var(--card-foreground); box-shadow: 0 1px 2px rgb(17 32 25 / 0.08); font-family: \"Atkinson Hyperlegible Next Variable\", ui-sans-serif, system-ui, sans-serif; font-variant-numeric: tabular-nums; } .ds-card-title { font-family: \"Bricolage Grotesque Variable\", ui-sans-serif, system-ui, sans-serif; font-size: 1.25rem; line-height: 1.375; font-weight: 700; letter-spacing: -0.025em; } .ds-card-desc { margin: 0; font-size: 0.875rem; color: var(--muted-foreground); }"
+    },
+    {
+      "name": "Selo",
+      "kind": "chip",
+      "refersTo": "badge",
+      "description": "Pílula em 0.75rem 700: padrão em primário, contornado com borda Cinza-Musgo.",
+      "html": "<span class=\"ds-badge\">Publicado</span> <span class=\"ds-badge ds-badge-outline\">Rascunho</span>",
+      "css": ".ds-badge { display: inline-flex; align-items: center; padding: 2px 10px; border: 1px solid transparent; border-radius: 9999px; background: var(--primary); color: var(--primary-foreground); font-family: \"Atkinson Hyperlegible Next Variable\", ui-sans-serif, system-ui, sans-serif; font-size: 0.75rem; font-weight: 700; white-space: nowrap; } .ds-badge-outline { background: transparent; color: var(--foreground); border-color: var(--input); }"
+    },
+    {
+      "name": "Cabeçalho de tabela",
+      "kind": "custom",
+      "refersTo": "table-head",
+      "description": "Hierarquia por peso e caixa, nunca por tamanho; números à direita, tabulares.",
+      "html": "<table class=\"ds-table\"><thead><tr><th>Curso</th><th class=\"ds-num\">Alunos</th></tr></thead><tbody><tr><td>Estruturas de dados</td><td class=\"ds-num\">1.111</td></tr><tr><td>Redes</td><td class=\"ds-num\">9.808</td></tr></tbody></table>",
+      "css": ".ds-table { width: 100%; max-width: 420px; border-collapse: collapse; font-family: \"Atkinson Hyperlegible Next Variable\", ui-sans-serif, system-ui, sans-serif; font-size: 0.875rem; font-variant-numeric: tabular-nums; color: var(--foreground); } .ds-table th { height: 40px; padding: 0 8px; text-align: left; font-weight: 700; text-transform: uppercase; color: var(--muted-foreground); border-bottom: 1px solid var(--border); } .ds-table td { padding: 8px; border-bottom: 1px solid var(--border); } .ds-table tbody tr:last-child td { border-bottom: 0; } .ds-table tbody tr:hover { background: color-mix(in srgb, var(--muted) 50%, transparent); } .ds-table .ds-num { text-align: right; }"
+    },
+    {
+      "name": "Estado vazio",
+      "kind": "custom",
+      "refersTo": "card",
+      "description": "Bloco centrado com borda tracejada em Cinza-Musgo, título em display e uma ação.",
+      "html": "<div class=\"ds-empty\"><svg width=\"32\" height=\"32\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 7v14\"/><path d=\"M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z\"/></svg><p class=\"ds-empty-title\">Nenhum curso por aqui ainda</p><p class=\"ds-empty-desc\">Os cursos em que você se matricular aparecem nesta lista.</p></div>",
+      "css": ".ds-empty { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 48px 24px; border: 1px dashed var(--input); border-radius: 6px; text-align: center; color: var(--foreground); font-family: \"Atkinson Hyperlegible Next Variable\", ui-sans-serif, system-ui, sans-serif; } .ds-empty svg { color: var(--muted-foreground); margin-bottom: 8px; } .ds-empty-title { margin: 0; font-family: \"Bricolage Grotesque Variable\", ui-sans-serif, system-ui, sans-serif; font-size: 1.25rem; font-weight: 700; } .ds-empty-desc { margin: 0; color: var(--muted-foreground); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "A Lousa da Sala",
+    "overview": "A Coursary toma emprestada a lousa verde da sala de aula brasileira e a usa como moldura e assinatura do produto. A lousa é o trilho de navegação, em Verde Lousa, e nela só se escreve com giz: Giz Branco para o texto, Giz Amarelo para o que está ativo. O resto da interface é uma superfície de trabalho limpa e serena: no tema claro, um chão frio de Pó de Giz com folhas brancas; no tema escuro, o próprio chão vira lousa, em Lousa Noturna, e o trilho continua em Verde Lousa, um tom acima, para não se perder.\n\nO tom é sereno, legível e deliberado. A densidade é de ferramenta: títulos firmes em Bricolage Grotesque, todo o resto em Atkinson Hyperlegible Next, números com largura fixa para que colunas e contadores se alinhem. Cada controle se anuncia com clareza (fundo ou borda no hover, contorno de foco de 2 px, alvo de pelo menos 40 px) e nada se ergue da página sem motivo. O sistema recusa o padrão da categoria: página branca, botão de marca roxo e cards de curso todos iguais.\n\nO que já está construído é o mundo e a sua gramática: tokens nos dois temas, o trilho com o traço de giz, os componentes e os estados. As telas próprias do mundo ainda não existem e ficam aqui só como direção, **ainda não construídas**: capas de curso como placas de giz (um bloco cor de lousa com o título escrito em display numa única cor de giz: branco, amarelo, azul ou rosa), progresso desenhado como segmentos iguais de módulo sobre uma linha de base, com o atual em Giz Amarelo, e um aviso amarelo que fica marcado até ser visto.",
+    "keyCharacteristics": [
+      "A lousa verde como moldura (o trilho) e o giz como única marca sobre ela.",
+      "Tema claro em Pó de Giz e branco; tema escuro em que o chão é a lousa.",
+      "Superfícies planas com bordas finas; sombra suave só no que flutua.",
+      "Cantos de 6 px em controles e contêineres; pílula só em selos e avatares.",
+      "Hierarquia por peso e caixa, nunca por um degrau a mais de tamanho em tabelas.",
+      "Números tabulares em toda a página; contraste AA medido nos dois temas."
+    ],
+    "rules": [
+      {
+        "name": "The Chalk-Only Rule",
+        "body": "Sobre a lousa (trilho e placas) só se escreve com giz: Giz Branco, Musgo Claro, Giz Amarelo, Giz Azul ou Giz Rosa. Nenhuma cor de superfície ou de marca entra na lousa.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Yellow Rule",
+        "body": "O Giz Amarelo quer dizer \"ativo\" ou \"seu agora\": item atual, tema escolhido, foco e primário no escuro, seleção, o aviso que espera ser visto. Não é decoração.",
+        "section": "colors"
+      },
+      {
+        "name": "The Measured Pair Rule",
+        "body": "Todo par novo de cores entra no teste de contraste antes de ser usado: texto a 4,5:1 e bordas de controle e anel de foco a 3:1, nos dois temas.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tabular Figures Rule",
+        "body": "Todo número da página usa algarismos tabulares (`font-variant-numeric: tabular-nums` no body). Contadores, durações, datas e progresso se alinham em coluna.",
+        "section": "typography"
+      },
+      {
+        "name": "The Rank by Weight Rule",
+        "body": "Em tabelas, o cabeçalho se distingue pelo peso, pela caixa alta e pela cor apagada, no mesmo tamanho das células. Nunca por um tamanho maior.",
+        "section": "typography"
+      },
+      {
+        "name": "The Two Faces Rule",
+        "body": "Bricolage só em títulos e na marca; todo o resto é Atkinson. Não existe terceira família.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat Ground Rule",
+        "body": "Superfícies ficam planas, com borda fina. Só o que flutua sobre a página (menu, popover, diálogo) leva a sombra Erguida; cards levam só a Assentada; o resto não leva nenhuma.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do manter o trilho em Verde Lousa (#1f3a2e) nos dois temas, mais claro que o chão Lousa Noturna no escuro.",
+      "Do escrever sobre a lousa só em giz: Giz Branco, Musgo Claro, Giz Amarelo, Giz Azul, Giz Rosa.",
+      "Do dar a todo clicável um hover de fundo ou de borda, um contorno de foco de 2 px na cor do anel afastado 2 px (Giz Amarelo sobre a lousa) e um alvo de pelo menos 40 px.",
+      "Do usar 6 px de canto em controles e contêineres, 4 px em itens dentro de menus, pílula só em selos e avatares.",
+      "Do classificar cabeçalhos de tabela por peso, caixa alta e cor apagada, no tamanho das células.",
+      "Do usar algarismos tabulares em todo número.",
+      "Do colocar todo par novo de cores no teste de contraste: 4,5:1 para texto, 3:1 para bordas de controle e anel, nos dois temas.",
+      "Do restaurar o estilo do contorno (`outline-solid`) quando um contorno de foco convive com `outline-none` ou `outline-hidden` na mesma classe: o Tailwind 4 zera o estilo e o foco some.",
+      "Do respeitar `prefers-reduced-motion`: animações e transições caem para 0,01 ms."
+    ],
+    "donts": [
+      "Don't voltar ao padrão da categoria: página branca, botão de marca roxo e cards de curso todos iguais.",
+      "Don't usar sombra em superfícies que não flutuam; cards levam só a Assentada, e nenhuma sombra é dura ou preta.",
+      "Don't marcar hover só com a cor do texto.",
+      "Don't subir o tamanho de um cabeçalho de tabela para dar hierarquia.",
+      "Don't introduzir uma terceira família tipográfica nem carregar fontes de CDN.",
+      "Don't gastar o Giz Amarelo em decoração: ele quer dizer ativo, escolhido ou à espera de ser visto."
+    ]
+  }
+}
