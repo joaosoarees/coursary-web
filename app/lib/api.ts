@@ -1,6 +1,11 @@
 import { ApiError } from '~/lib/apiError';
 import { env } from '~/lib/env';
-import { endSession, getAccessToken, startSession } from '~/session/session';
+import {
+  endSession,
+  getAccessToken,
+  getSessionGeneration,
+  startSession,
+} from '~/session/session';
 
 // The API in the deployed build; in development, the Vite proxy in front of it.
 const baseUrl = env.DEV ? '/api' : env.VITE_API_URL;
@@ -52,14 +57,24 @@ const send = (
 let refreshing: Promise<boolean> | undefined;
 
 const renewSession = async () => {
+  const generation = getSessionGeneration();
   const response = await send('/auth/refresh', { method: 'POST' }, undefined);
 
-  if (!response.ok) {
+  if (response.status === 401 || response.status === 403) {
     endSession();
     return false;
   }
 
+  if (!response.ok) {
+    throw new ApiError(response.status, undefined);
+  }
+
   const { accessToken } = (await response.json()) as Tokens;
+
+  if (generation !== getSessionGeneration()) {
+    return false;
+  }
+
   startSession(accessToken);
 
   return true;
@@ -85,7 +100,7 @@ export async function apiRequest<TBody>(
   if (response.status === 401 && token !== undefined) {
     const current = getAccessToken();
     const renewed =
-      (current !== undefined && current !== token) || (await refreshSession());
+      current === token ? await refreshSession() : current !== undefined;
 
     if (renewed) {
       response = await send(path, options, getAccessToken());
