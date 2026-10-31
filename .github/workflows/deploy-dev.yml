@@ -8,6 +8,7 @@ permissions:
 
 env:
   LEFTHOOK: 0
+  VITE_API_URL: https://api-dev.coursary.joaodevdude.com
 
 jobs:
   branch:
@@ -43,8 +44,6 @@ jobs:
           package-manager-cache: false
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
-        env:
-          VITE_API_URL: https://api-dev.coursary.joaodevdude.com
       - uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}

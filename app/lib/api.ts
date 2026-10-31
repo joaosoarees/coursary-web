@@ -1,7 +1,7 @@
+import { env } from '~/lib/env';
+
 // The API in the deployed build; in development, the Vite proxy in front of it.
-const baseUrl: string = import.meta.env.DEV
-  ? '/api'
-  : (import.meta.env.VITE_API_URL as string);
+const baseUrl = env.DEV ? '/api' : env.VITE_API_URL;
 
 // Only a separate host is worth a preconnect; the development proxy shares the page's origin.
 export const apiOrigin: string | undefined = baseUrl.startsWith('http')
