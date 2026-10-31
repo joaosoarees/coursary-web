@@ -15,7 +15,7 @@
   },
   "scripts": {
     "dev": "react-router dev",
-    "build": "react-router build",
+    "build": "pnpm validate:env && react-router build",
     "validate:env": "node scripts/validate-env.ts",
     "typecheck": "react-router typegen && tsc",
     "lint": "eslint .",
