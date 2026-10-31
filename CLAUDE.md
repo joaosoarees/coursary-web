@@ -27,6 +27,7 @@ Frontend da Coursary (React Router 8 SPA, React Query, Tailwind 4, shadcn/ui). F
 
 ## Processo
 
+- **Decisões do autor passam pelo grill-me** (`mattpocock-skills:grilling`): o plano de sub-imp, a escolha entre opções, os achados de revisão que mudam o combinado. Vão em rodadas de perguntas numeradas, cada uma com a recomendação, e só se implementa depois do acordo. Nada de plano pronto para aprovar em bloco.
 - As convenções da API (Q478): um arquivo por commit, cada um compila e passa nos testes (dois arquivos juntos só quando inseparáveis, dizendo por quê); Conventional Commits em inglês; sem `Co-Authored-By` nem linha de atribuição; nada de commit em `main` ou `develop`.
 - `/code-review` antes de cada PR, e no corpo do PR o que ele apontou e o que ficou de fora.
 - Merge só com autorização do autor (merge commit).
