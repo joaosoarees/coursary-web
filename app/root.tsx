@@ -11,8 +11,9 @@ import { Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router';
 
 import { ErrorState } from '~/components/ErrorState';
 import { Toaster } from '~/components/ui/sonner';
-import { apiOrigin } from '~/lib/api';
+import { apiOrigin, restoreSession } from '~/lib/api';
 import { queryClient } from '~/lib/queryClient';
+import { SessionProvider } from '~/session/SessionProvider';
 import { ThemeProvider } from '~/theme/ThemeProvider';
 import { themeScript } from '~/theme/themeScript';
 
@@ -61,11 +62,19 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+export async function clientLoader() {
+  await restoreSession();
+
+  return null;
+}
+
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <Outlet />
+        <SessionProvider>
+          <Outlet />
+        </SessionProvider>
         <Toaster position="top-right" />
       </ThemeProvider>
       <ReactQueryDevtools />
