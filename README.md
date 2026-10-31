@@ -8,6 +8,7 @@ O planejamento, as decisões numeradas e o quadro de tarefas ficam no repositór
 
 ```bash
 pnpm install
+cp .env.example .env
 pnpm dev
 ```
 
@@ -23,16 +24,17 @@ pnpm lint
 pnpm format
 pnpm test
 pnpm test:coverage
-pnpm build    # VITE_API_URL diz onde fica a API no build
+pnpm validate:env    # confere as variáveis que o build vai ler
+pnpm build
 ```
 
 ## Variáveis de ambiente
 
-Copie o `.env.example` para `.env` quando for rodar `pnpm build` na máquina; o `pnpm dev` não precisa de nenhuma.
+Copie o `.env.example` para `.env`. O site valida as variáveis ao carregar (`app/lib/env.ts`), e o CI roda o `pnpm validate:env` antes do build, que sem ele passaria com uma variável faltando.
 
 | Variável | Valor em dev | Para quê |
 |---|---|---|
-| `VITE_API_URL` | `https://api-dev.coursary.joaodevdude.com` | Endereço da API no build; entra no bundle, então nunca um segredo |
+| `VITE_API_URL` | `https://api-dev.coursary.joaodevdude.com` | Endereço da API: o alvo do proxy no `pnpm dev` e a base das chamadas no build. Entra no bundle, então nunca um segredo |
 
 ## Deploy
 
