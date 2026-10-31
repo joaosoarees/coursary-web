@@ -24,13 +24,13 @@ pnpm lint
 pnpm format
 pnpm test
 pnpm test:coverage
-pnpm validate:env    # confere as variáveis que o build vai ler
+pnpm validate:env    # confere as variáveis que o build vai ler; o pnpm build roda antes de empacotar
 pnpm build
 ```
 
 ## Variáveis de ambiente
 
-Copie o `.env.example` para `.env`. O site valida as variáveis ao carregar (`app/lib/env.ts`), e o CI roda o `pnpm validate:env` antes do build, que sem ele passaria com uma variável faltando.
+Copie o `.env.example` para `.env`. O site valida as variáveis ao carregar (`app/lib/env.ts`), e o `pnpm build` roda o `pnpm validate:env` antes de empacotar, porque o Vite empacotaria com uma variável faltando.
 
 | Variável | Valor em dev | Para quê |
 |---|---|---|
