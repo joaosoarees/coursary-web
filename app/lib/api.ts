@@ -1,3 +1,4 @@
+import { ApiError } from '~/lib/apiError';
 import { env } from '~/lib/env';
 import { endSession, getAccessToken, startSession } from '~/session/session';
 
@@ -8,16 +9,6 @@ const baseUrl = env.DEV ? '/api' : env.VITE_API_URL;
 export const apiOrigin: string | undefined = baseUrl.startsWith('http')
   ? new URL(baseUrl).origin
   : undefined;
-
-export class ApiError extends Error {
-  constructor(
-    readonly status: number,
-    readonly code: string | undefined,
-  ) {
-    super(code ?? `HTTP ${String(status)}`);
-    this.name = 'ApiError';
-  }
-}
 
 interface ErrorBody {
   error?: { code?: string };

@@ -1,12 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import {
-  ApiError,
-  apiGet,
-  apiRequest,
-  refreshSession,
-  restoreSession,
-} from '~/lib/api';
+import { apiGet, apiRequest, refreshSession, restoreSession } from '~/lib/api';
+import { ApiError } from '~/lib/apiError';
 import {
   endSession,
   getAccessToken,

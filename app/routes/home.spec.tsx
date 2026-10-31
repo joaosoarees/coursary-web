@@ -2,7 +2,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { ApiError, apiGet } from '~/lib/api';
+import { apiGet } from '~/lib/api';
+import { ApiError } from '~/lib/apiError';
 
 import Home from './home';
 
