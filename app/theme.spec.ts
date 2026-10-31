@@ -61,6 +61,7 @@ const text: [string, string][] = [
   ['highlight-foreground', 'highlight'],
   ['link', 'background'],
   ['link', 'card'],
+  ['link', 'accent'],
   ['shell-foreground', 'shell'],
   ['shell-muted', 'shell'],
   ['shell-foreground', 'shell-hover'],
@@ -79,6 +80,30 @@ const nonText: [string, string][] = [
   ['ring', 'background'],
   ['ring', 'card'],
 ];
+
+// DESIGN.md repeats the tokens for agents that read it instead of app.css.
+const designColors = Object.fromEntries(
+  [
+    ...(
+      /^colors:\n((?: {2}[\w-]+: "#[0-9a-f]{6}"\n)+)/im.exec(
+        readFileSync(new URL('../DESIGN.md', import.meta.url), 'utf8'),
+      )?.[1] ?? ''
+    ).matchAll(/([\w-]+): "(#[0-9a-f]{6})"/gi),
+  ].map(([, name = '', value = '']) => [name, value] as const),
+);
+
+describe('DESIGN.md', () => {
+  it.each(Object.entries(designColors))(
+    'should record %s as app.css does',
+    (name, value) => {
+      const [token, theme] = name.endsWith('-dark')
+        ? [name.slice(0, -'-dark'.length), themes.dark]
+        : [name, themes.light];
+
+      expect(value.toLowerCase()).toBe(theme[token]?.toLowerCase());
+    },
+  );
+});
 
 describe.each(Object.entries(themes))('the %s theme', (_, tokens) => {
   const ratio = (fore: string, back: string) => {

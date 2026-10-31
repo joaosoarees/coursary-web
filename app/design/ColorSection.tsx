@@ -52,7 +52,7 @@ function Palette({ theme }: { theme: 'light' | 'dark' }) {
     <div
       className={cn(
         theme,
-        'flex flex-col gap-5 rounded-xl border bg-background p-5 text-foreground',
+        'flex flex-col gap-5 rounded-lg border bg-background p-5 text-foreground',
       )}
     >
       <h3 className="font-display text-xl font-bold">
