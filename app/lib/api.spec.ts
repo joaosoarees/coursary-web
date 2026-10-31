@@ -178,6 +178,32 @@ describe('apiRequest', () => {
 });
 
 describe('refreshSession', () => {
+  it('should keep the session when the API fails to answer', async () => {
+    startSession('old');
+    fetchMock.mockResolvedValue(new Response(null, { status: 503 }));
+
+    await expect(refreshSession()).rejects.toMatchObject({ status: 503 });
+
+    expect(getAccessToken()).toBe('old');
+  });
+
+  it('should not start a session that ended while it was refreshing', async () => {
+    startSession('old');
+    let answer: (response: Response) => void = () => undefined;
+    fetchMock.mockReturnValue(
+      new Promise((resolve) => {
+        answer = resolve;
+      }),
+    );
+
+    const refreshing = refreshSession();
+    endSession();
+    answer(tokens('new'));
+
+    await expect(refreshing).resolves.toBe(false);
+    expect(getSessionStatus()).toBe('signed-out');
+  });
+
   it('should start the session with the new access token', async () => {
     fetchMock.mockResolvedValue(tokens('token-1'));
 
