@@ -1,14 +1,10 @@
 import { queryOptions, useQuery } from '@tanstack/react-query';
 
-import { apiGet } from '~/lib/api';
-
-interface Health {
-  status: 'ok';
-}
+import { HealthService } from '~/services/HealthService';
 
 export const healthQuery = queryOptions({
   queryKey: ['health'],
-  queryFn: ({ signal }) => apiGet<Health>('/health', { signal }),
+  queryFn: ({ signal }) => HealthService.get(signal),
 });
 
 export const useHealth = () => useQuery(healthQuery);

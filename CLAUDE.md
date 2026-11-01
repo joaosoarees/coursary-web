@@ -37,6 +37,7 @@ Frontend da Coursary (React Router 8 SPA, React Query, Tailwind 4, shadcn/ui). F
 
 ```bash
 pnpm install
+cp .env.example .env
 pnpm dev
 pnpm typecheck
 pnpm lint

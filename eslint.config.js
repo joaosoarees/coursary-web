@@ -33,6 +33,10 @@ export default defineConfig([
       eqeqeq: ['error', 'always'],
       curly: ['error', 'all'],
       '@typescript-eslint/method-signature-style': ['error', 'property'],
+      '@typescript-eslint/no-extraneous-class': [
+        'error',
+        { allowStaticOnly: true },
+      ],
     },
   },
   // Only the theme's tokens make colour classes: an unknown class is a typo or a colour outside them.
@@ -61,9 +65,9 @@ export default defineConfig([
       ],
     },
   },
-  // Only the build's own configuration runs in Node; the app runs in the browser.
+  // Only the build's own configuration and scripts run in Node; the app runs in the browser.
   {
-    files: ['*.config.{js,ts}', 'vitest.setup.ts'],
+    files: ['*.config.{js,ts}', 'vitest.setup.ts', 'scripts/**/*.ts'],
     languageOptions: { globals: globals.node },
   },
   {
