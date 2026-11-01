@@ -83,7 +83,10 @@ describe('installAuthInterceptors', () => {
 
   it('should end the session when the repeated call is refused again', async () => {
     startSession('old');
-    adapter.mockImplementation((config) => respond(config, 401));
+    adapter
+      .mockImplementationOnce((config) => respond(config, 401))
+      .mockImplementationOnce((config) => respond(config, 401))
+      .mockImplementation((config) => respond(config, 200));
 
     await expect(client.get('/me')).rejects.toMatchObject({
       response: { status: 401 },
