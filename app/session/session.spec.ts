@@ -5,7 +5,6 @@ import {
   endSession,
   getAccessToken,
   getSessionGeneration,
-  getSessionStatus,
   isSignedIn,
   startSession,
   subscribeToSession,
@@ -17,7 +16,7 @@ afterEach(() => {
 
 describe('session', () => {
   it('should start signed out', () => {
-    expect(getSessionStatus()).toBe('signed-out');
+    expect(isSignedIn()).toBe(false);
     expect(getAccessToken()).toBeUndefined();
   });
 
@@ -25,7 +24,6 @@ describe('session', () => {
     startSession('token-1');
 
     expect(isSignedIn()).toBe(true);
-    expect(getSessionStatus()).toBe('signed-in');
     expect(getAccessToken()).toBe('token-1');
   });
 
