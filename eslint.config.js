@@ -33,6 +33,10 @@ export default defineConfig([
       eqeqeq: ['error', 'always'],
       curly: ['error', 'all'],
       '@typescript-eslint/method-signature-style': ['error', 'property'],
+      '@typescript-eslint/no-extraneous-class': [
+        'error',
+        { allowStaticOnly: true },
+      ],
     },
   },
   // Only the theme's tokens make colour classes: an unknown class is a typo or a colour outside them.

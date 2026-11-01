@@ -9,14 +9,20 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { useEffect } from 'react';
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router';
 
+import { AuthProvider } from '~/auth/AuthProvider';
 import { ErrorState } from '~/components/ErrorState';
 import { Toaster } from '~/components/ui/sonner';
-import { apiOrigin } from '~/lib/api';
 import { queryClient } from '~/lib/queryClient';
+import { installAuthInterceptors } from '~/services/authInterceptors';
+import { apiOrigin, httpClient } from '~/services/httpClient';
+import { restoreSession } from '~/session/refreshSession';
 import { ThemeProvider } from '~/theme/ThemeProvider';
 import { themeScript } from '~/theme/themeScript';
 
 import type { Route } from './+types/root';
+
+const uninstallAuthInterceptors = installAuthInterceptors(httpClient);
+import.meta.hot?.dispose(uninstallAuthInterceptors);
 
 export const meta: Route.MetaFunction = () => [{ title: 'Coursary' }];
 
@@ -61,11 +67,19 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+export async function clientLoader() {
+  await restoreSession();
+
+  return null;
+}
+
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <Outlet />
+        <AuthProvider>
+          <Outlet />
+        </AuthProvider>
         <Toaster position="top-right" />
       </ThemeProvider>
       <ReactQueryDevtools />
