@@ -1,18 +1,20 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { AxiosError } from 'axios';
+import {
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockInstance,
+  vi,
+} from 'vitest';
 
-import { apiGet } from '~/lib/api';
-import { ApiError } from '~/lib/apiError';
+import { HealthService } from '~/services/HealthService';
 
 import Home from './home';
 
-vi.mock('~/lib/api', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('~/lib/api')>()),
-  apiGet: vi.fn(),
-}));
-
-const apiGetMock = vi.mocked(apiGet);
+let getHealth: MockInstance<typeof HealthService.get>;
 
 const renderHome = () => {
   const client = new QueryClient({
@@ -27,7 +29,8 @@ const renderHome = () => {
 };
 
 beforeEach(() => {
-  apiGetMock.mockResolvedValue({ status: 'ok' });
+  getHealth = vi.spyOn(HealthService, 'get');
+  getHealth.mockResolvedValue({ status: 'ok' });
 });
 
 describe('Home', () => {
@@ -35,10 +38,8 @@ describe('Home', () => {
     renderHome();
 
     await screen.findByText('A API está no ar.');
-    expect(apiGetMock).toHaveBeenCalledOnce();
-    expect(apiGetMock).toHaveBeenCalledWith('/health', {
-      signal: expect.any(AbortSignal) as AbortSignal,
-    });
+    expect(getHealth).toHaveBeenCalledOnce();
+    expect(getHealth).toHaveBeenCalledWith(expect.any(AbortSignal));
   });
 
   it('should say the API is up when /health answers', async () => {
@@ -48,7 +49,7 @@ describe('Home', () => {
   });
 
   it('should say the API did not answer when /health fails', async () => {
-    apiGetMock.mockRejectedValue(new ApiError(500, 'INTERNAL_SERVER_ERROR'));
+    getHealth.mockRejectedValue(new AxiosError('failed', 'ERR_BAD_RESPONSE'));
 
     renderHome();
 
