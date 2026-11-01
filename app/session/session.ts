@@ -1,7 +1,5 @@
 import { queryClient } from '~/lib/queryClient';
 
-export type SessionStatus = 'signed-in' | 'signed-out';
-
 let accessToken: string | undefined;
 let generation = 0;
 
@@ -23,9 +21,6 @@ export const getAccessToken = () => accessToken;
 export const getSessionGeneration = () => generation;
 
 export const isSignedIn = () => accessToken !== undefined;
-
-export const getSessionStatus = (): SessionStatus =>
-  accessToken === undefined ? 'signed-out' : 'signed-in';
 
 export const startSession = (token: string) => {
   accessToken = token;
