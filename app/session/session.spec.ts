@@ -6,6 +6,7 @@ import {
   getAccessToken,
   getSessionGeneration,
   getSessionStatus,
+  isSignedIn,
   startSession,
   subscribeToSession,
 } from '~/session/session';
@@ -23,6 +24,7 @@ describe('session', () => {
   it('should hold the access token while signed in', () => {
     startSession('token-1');
 
+    expect(isSignedIn()).toBe(true);
     expect(getSessionStatus()).toBe('signed-in');
     expect(getAccessToken()).toBe('token-1');
   });
@@ -66,5 +68,37 @@ describe('session', () => {
 
     expect(listener).not.toHaveBeenCalled();
     expect(queryClient.getQueryData(['health'])).toEqual({ status: 'ok' });
+  });
+
+  it('should tell the other tabs when it ends', async () => {
+    const otherTab = new BroadcastChannel('coursary:session');
+    const received = new Promise((resolve) => {
+      otherTab.addEventListener('message', (event) => {
+        resolve(event.data);
+      });
+    });
+    startSession('token-1');
+
+    endSession();
+
+    await expect(received).resolves.toBe('signed-out');
+    otherTab.close();
+  });
+
+  it('should end when another tab signs out', async () => {
+    const otherTab = new BroadcastChannel('coursary:session');
+    startSession('token-1');
+    const ended = new Promise<void>((resolve) => {
+      const unsubscribe = subscribeToSession(() => {
+        unsubscribe();
+        resolve();
+      });
+    });
+
+    otherTab.postMessage('signed-out');
+    await ended;
+
+    expect(isSignedIn()).toBe(false);
+    otherTab.close();
   });
 });
