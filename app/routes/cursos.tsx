@@ -233,6 +233,26 @@ function SearchResults({ query, page }: { query: string; page: number }) {
 
   const courses = data?.items ?? NO_COURSES;
 
+  if (
+    courses.length === 0 &&
+    totalPages !== undefined &&
+    totalPages > 0 &&
+    page > totalPages
+  ) {
+    return (
+      <EmptyState
+        icon={SearchX}
+        title="Esta página da busca não existe"
+        description={`A busca por “${query}” tem ${String(totalPages)} ${totalPages === 1 ? 'página' : 'páginas'}.`}
+        action={
+          <Button variant="outline" asChild>
+            <Link to={searchHref(query, 1)}>Ir para a primeira página</Link>
+          </Button>
+        }
+      />
+    );
+  }
+
   if (courses.length === 0) {
     return (
       <EmptyState
