@@ -40,10 +40,10 @@ export function AccountMenu({
 
   if (me.isPending) {
     return (
-      <div className="flex items-center gap-3 px-1.5 py-1.5" aria-hidden="true">
+      <div className="flex items-center gap-3 p-0.5" aria-hidden="true">
         <Skeleton className="size-9 shrink-0 rounded-full bg-shell-hover" />
         {!compact && (
-          <Skeleton className="h-4 w-28 bg-shell-hover group-data-[collapsible=icon]:hidden" />
+          <Skeleton className="h-4 w-28 bg-shell-hover transition-opacity duration-200 group-data-[collapsible=icon]:opacity-0" />
         )}
       </div>
     );
@@ -58,8 +58,10 @@ export function AccountMenu({
           type="button"
           aria-label={compact ? name : undefined}
           className={cn(
-            'flex min-h-12 items-center gap-3 rounded-md px-1.5 py-1.5 text-left transition-colors hover:bg-shell-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chalk-yellow',
-            compact ? 'rounded-full p-0.5' : 'w-full',
+            'flex items-center gap-3 overflow-hidden p-0.5 text-left transition-[background-color,border-radius] duration-200 hover:bg-shell-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chalk-yellow',
+            compact
+              ? 'rounded-full hover:bg-transparent hover:outline-2 hover:outline-shell-foreground/35'
+              : 'w-full rounded-md group-data-[collapsible=icon]:rounded-full group-data-[collapsible=icon]:hover:bg-transparent group-data-[collapsible=icon]:hover:outline-2 group-data-[collapsible=icon]:hover:outline-shell-foreground/35',
           )}
         >
           <Avatar className="size-9 shrink-0">
@@ -72,12 +74,12 @@ export function AccountMenu({
           </Avatar>
           {!compact && (
             <>
-              <span className="min-w-0 flex-1 truncate font-bold group-data-[collapsible=icon]:sr-only">
+              <span className="min-w-0 flex-1 truncate font-bold transition-opacity duration-200 group-data-[collapsible=icon]:opacity-0">
                 {name}
               </span>
               <ChevronsUpDown
                 aria-hidden="true"
-                className="size-4 shrink-0 text-shell-muted group-data-[collapsible=icon]:hidden"
+                className="mr-1.5 size-4 shrink-0 text-shell-muted transition-opacity duration-200 group-data-[collapsible=icon]:opacity-0"
               />
             </>
           )}
