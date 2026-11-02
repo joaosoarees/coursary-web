@@ -83,9 +83,10 @@ export function useAvatarUpload() {
       return;
     }
 
-    const previous = queryClient.getQueryData(meQuery.queryKey)?.avatarUrl?.[
-      '256'
-    ];
+    const previous = await queryClient
+      .query({ ...meQuery, staleTime: 'static' })
+      .then((me) => me.avatarUrl?.['256'])
+      .catch(() => undefined);
     const local = URL.createObjectURL(file);
     let unconfirmed = false;
 
