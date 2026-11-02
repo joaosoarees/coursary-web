@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router';
 
+import { AccountMenu } from '~/components/AccountMenu';
 import { ChalkStroke } from '~/components/ChalkStroke';
 import { Wordmark } from '~/components/Wordmark';
 import { ThemeSwitcher } from '~/theme/ThemeSwitcher';
@@ -19,7 +20,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="flex-1 px-2 md:flex-none">
           <Wordmark />
         </div>
-        <ThemeSwitcher className="md:order-last md:mt-auto md:border-t md:border-shell-foreground/10 md:pt-4" />
+        <div className="flex items-center gap-2 md:order-last md:mt-auto md:flex-col md:items-stretch md:gap-3 md:border-t md:border-shell-foreground/10 md:pt-4">
+          <ThemeSwitcher />
+          <AccountMenu />
+        </div>
         <nav
           aria-label="Principal"
           className="order-last basis-full md:order-none md:basis-auto"
