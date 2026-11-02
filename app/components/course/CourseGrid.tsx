@@ -4,7 +4,7 @@ import type { CatalogItem } from '~/services/CatalogService';
 
 export function CourseGrid({ courses }: { courses: CatalogItem[] }) {
   return (
-    <ul className="grid grid-cols-[repeat(auto-fill,minmax(16rem,1fr))] gap-x-6 gap-y-8">
+    <ul className="grid grid-cols-[repeat(auto-fill,minmax(18rem,1fr))] gap-x-6 gap-y-8">
       {courses.map((course) => (
         <li key={course.id}>
           <CourseCard course={course} />
@@ -18,7 +18,7 @@ export function CourseGridSkeleton() {
   return (
     <div
       aria-hidden="true"
-      className="grid grid-cols-[repeat(auto-fill,minmax(16rem,1fr))] gap-x-6 gap-y-8"
+      className="grid grid-cols-[repeat(auto-fill,minmax(18rem,1fr))] gap-x-6 gap-y-8"
     >
       {Array.from({ length: 6 }, (_, index) => (
         <div key={index} className="flex flex-col gap-3">
