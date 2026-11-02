@@ -9,6 +9,9 @@ const RATING = new Intl.NumberFormat('pt-BR', {
   maximumFractionDigits: 1,
 });
 
+const countOf = (count: number, one: string, many: string) =>
+  `${String(count)} ${count === 1 ? one : many}`;
+
 export function CourseCard({ course }: { course: CatalogItem }) {
   return (
     <Link
@@ -38,8 +41,8 @@ export function CourseCard({ course }: { course: CatalogItem }) {
               </span>
             </span>
           )}
-          <span>{course.lessonCount} aulas</span>
-          <span>{course.enrollmentCount} alunos</span>
+          <span>{countOf(course.lessonCount, 'aula', 'aulas')}</span>
+          <span>{countOf(course.enrollmentCount, 'aluno', 'alunos')}</span>
         </span>
       </span>
     </Link>
