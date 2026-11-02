@@ -83,7 +83,7 @@ describe('the sign-in page', () => {
     vi.spyOn(AuthService, 'signIn').mockRejectedValue(
       apiError(403, 'EMAIL_NOT_CONFIRMED'),
     );
-    renderSignIn();
+    renderSignIn({ from: '/cursos?pagina=2' });
 
     fill('ana@exemplo.com', 'violao2026');
     fireEvent.click(
@@ -94,6 +94,7 @@ describe('the sign-in page', () => {
       await screen.findByRole('heading', { name: 'Confirmar' }),
     ).toBeVisible();
     expect(screen.getByText('e-mail: ana@exemplo.com')).toBeVisible();
+    expect(screen.getByText('volta para: /cursos?pagina=2')).toBeVisible();
   });
 
   it('should fill in the e-mail another page passed on', () => {
