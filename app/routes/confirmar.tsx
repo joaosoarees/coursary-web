@@ -57,7 +57,12 @@ export default function ConfirmSignUp() {
     try {
       await confirmSignUp.mutateAsync(values);
       toast.success('E-mail confirmado. Entre para começar.');
-      void navigate('/entrar', { state: { email: values.email } });
+      void navigate('/entrar', {
+        state: {
+          email: values.email,
+          from: LocationState.from(location.state),
+        },
+      });
     } catch (error) {
       if (ApiFailure.codeOf(error) === 'INVALID_CODE') {
         form.setError('code', { type: 'server', message: '' });
