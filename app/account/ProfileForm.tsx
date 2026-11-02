@@ -28,14 +28,13 @@ export function ProfileForm({ profile }: { profile: Profile }) {
   const updateMe = useUpdateMe();
   const form = useForm<ProfileValues>({
     resolver: zodResolver(profileSchema),
-    defaultValues: { name: profile.name },
+    values: { name: profile.name },
   });
   const { errors, isSubmitting, isDirty } = form.formState;
 
   const handleSubmit = form.handleSubmit(async ({ name }) => {
     try {
-      const saved = await updateMe.mutateAsync(name);
-      form.reset({ name: saved.name });
+      await updateMe.mutateAsync(name);
       toast.success('Nome salvo.');
     } catch (error) {
       form.setError('root.server', { message: ApiFailure.message(error) });
