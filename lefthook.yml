@@ -10,7 +10,7 @@ pre-commit:
       run: test "$(git branch --show-current)" != main && test "$(git branch --show-current)" != develop || { echo 'Commit on a feature branch and open a pull request.'; exit 1; }
     - name: eslint
       glob: '*.{js,mjs,cjs,ts,tsx}'
-      run: pnpm exec eslint --fix --max-warnings 0 {staged_files}
+      run: pnpm exec eslint --fix --max-warnings 0 --no-warn-ignored {staged_files}
       stage_fixed: true
     - name: prettier
       glob: '*.{js,mjs,cjs,ts,tsx,json,yml,yaml,css}'
