@@ -54,24 +54,23 @@ export function CourseCover({
     );
   }
 
+  // Type and padding follow the plate's width, so the title wraps the same at every card size and
+  // does not jump while the sidebar opens or closes.
   return (
     <div
       aria-hidden="true"
       className={cn(
-        'flex aspect-video w-full flex-col justify-end gap-2 overflow-hidden rounded-md bg-board p-5 ring-1 ring-chalk/10 ring-inset',
+        '@container aspect-video w-full overflow-hidden rounded-md bg-board ring-1 ring-chalk/10 ring-inset',
         chalkOf(courseId),
         className,
       )}
     >
-      <span
-        className={cn(
-          'line-clamp-3 font-display leading-tight font-bold tracking-tight text-balance',
-          large ? 'text-3xl' : 'text-2xl',
-        )}
-      >
-        {title}
-      </span>
-      <ChalkStroke className="w-24" />
+      <div className="flex h-full flex-col justify-end gap-[2.5cqi] p-[6cqi]">
+        <span className="line-clamp-3 font-display text-[7cqi] leading-tight font-bold tracking-tight text-balance">
+          {title}
+        </span>
+        <ChalkStroke className="w-[28cqi]" />
+      </div>
     </div>
   );
 }
