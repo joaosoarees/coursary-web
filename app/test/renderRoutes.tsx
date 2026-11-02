@@ -30,6 +30,7 @@ export function Landing({ title }: { title: string }) {
     <>
       <h1>{title}</h1>
       <p>e-mail: {LocationState.email(location.state) ?? 'nenhum'}</p>
+      <p>volta para: {LocationState.from(location.state) ?? 'nenhum'}</p>
     </>
   );
 }
