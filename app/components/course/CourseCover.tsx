@@ -58,14 +58,14 @@ export function CourseCover({
     <div
       aria-hidden="true"
       className={cn(
-        'flex aspect-video w-full flex-col justify-end gap-2 rounded-md bg-board p-5 ring-1 ring-chalk/10 ring-inset',
+        'flex aspect-video w-full flex-col justify-end gap-2 overflow-hidden rounded-md bg-board p-5 ring-1 ring-chalk/10 ring-inset',
         chalkOf(courseId),
         className,
       )}
     >
       <span
         className={cn(
-          'font-display leading-tight font-bold tracking-tight text-balance',
+          'line-clamp-3 font-display leading-tight font-bold tracking-tight text-balance',
           large ? 'text-3xl' : 'text-2xl',
         )}
       >
