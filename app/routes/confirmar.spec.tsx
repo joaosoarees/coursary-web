@@ -24,7 +24,7 @@ const submitCode = (code: string) => {
 describe('the confirmation page', () => {
   it('should confirm the e-mail it was given and go on to sign-in', async () => {
     const confirm = vi.spyOn(AuthService, 'confirmSignUp').mockResolvedValue();
-    renderConfirm({ email: 'ana@exemplo.com' });
+    renderConfirm({ email: 'ana@exemplo.com', from: '/cursos?pagina=2' });
 
     expect(screen.queryByLabelText('E-mail')).toBeNull();
     submitCode('482913');
@@ -33,6 +33,7 @@ describe('the confirmation page', () => {
       await screen.findByRole('heading', { name: 'Entrar' }),
     ).toBeVisible();
     expect(screen.getByText('e-mail: ana@exemplo.com')).toBeVisible();
+    expect(screen.getByText('volta para: /cursos?pagina=2')).toBeVisible();
     expect(confirm).toHaveBeenCalledWith({
       email: 'ana@exemplo.com',
       code: '482913',
