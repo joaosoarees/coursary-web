@@ -6,6 +6,7 @@ import {
   useNavigate,
 } from 'react-router';
 
+import { AuthGuard } from '~/auth/AuthGuard';
 import { AppShell } from '~/components/AppShell';
 import { ErrorState } from '~/components/ErrorState';
 
@@ -13,9 +14,11 @@ import type { Route } from './+types/layout';
 
 export default function Layout() {
   return (
-    <AppShell>
-      <Outlet />
-    </AppShell>
+    <AuthGuard isPrivate>
+      <AppShell>
+        <Outlet />
+      </AppShell>
+    </AuthGuard>
   );
 }
 
