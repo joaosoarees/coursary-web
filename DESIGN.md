@@ -188,18 +188,34 @@ components:
     typography: "{typography.label-sm}"
     rounded: "{rounded.full}"
     padding: "2px 10px"
-  nav-rail:
+  sidebar:
     backgroundColor: "{colors.shell}"
     textColor: "{colors.shell-foreground}"
     width: "256px"
+  sidebar-collapsed:
+    width: "64px"
+  sidebar-drawer:
+    backgroundColor: "{colors.shell}"
+    textColor: "{colors.shell-foreground}"
+    width: "300px"
   nav-item:
     textColor: "{colors.shell-foreground}"
     typography: "{typography.body}"
     rounded: "{rounded.md}"
-    padding: "8px 12px"
-    height: "40px"
+    padding: "0 11px"
+    height: "44px"
   nav-item-hover:
     backgroundColor: "{colors.shell-hover}"
+  nav-item-collapsed-active:
+    backgroundColor: "{colors.shell-hover}"
+  topbar-mobile:
+    backgroundColor: "{colors.shell}"
+    textColor: "{colors.shell-foreground}"
+    padding: "10px 12px"
+  avatar:
+    backgroundColor: "{colors.chalk-yellow}"
+    rounded: "{rounded.full}"
+    size: "36px"
   table-head:
     textColor: "{colors.muted-foreground}"
     typography: "{typography.table-head}"
@@ -291,7 +307,7 @@ Uma paleta de lousa: verdes profundos e frios como estrutura, giz claro como mar
 - **Display** (700, 2.25rem, 1.25, tracking -0.025em): o título de página do cabeçalho de página. Um por tela.
 - **Headline** (700, 1.875rem, 1.2, tracking -0.025em): títulos de seção e o título da página de erro.
 - **Title** (700, 1.25rem, 1.375): título de card, de estado vazio, de bloco.
-- **Wordmark** (800, 1.5rem, tracking -0.025em): só o "Coursary" no trilho.
+- **Wordmark** (800, 1.5rem, tracking -0.025em): só o "Coursary", no topo do trilho e na barra do celular.
 - **Body** (400, 1rem, 1.5): texto corrido, rótulos do trilho; parágrafos limitados a 65ch (`max-w-prose`).
 - **Body small** (400, 0.875rem): apoio em Verde Grafite, células de tabela, itens de menu, abas; campos descem de 1rem para 0.875rem a partir de 768 px.
 - **Label** (700, 1rem): texto de botão. **Label small** (700, 0.75rem): selos.
@@ -306,7 +322,9 @@ Uma paleta de lousa: verdes profundos e frios como estrutura, giz claro como mar
 
 ## Layout
 
-Um trilho e uma área de trabalho. A partir de 768 px, o trilho de lousa fica fixo à esquerda (256 px de largura, altura da tela, 28 px de respiro vertical): marca no topo, navegação, troca de tema no pé, separada por um fio de giz a 10%. Abaixo de 768 px, o trilho vira uma faixa no topo: marca e tema numa linha, navegação embaixo, em largura total.
+Um trilho e uma área de trabalho. O trilho é uma barra lateral de lousa que se recolhe. A partir de 768 px, fica fixo à esquerda, na altura da tela, sem borda: aberto mede 256 px; recolhido, 64 px, só de ícones. A largura muda em 200 ms com saída suave (ease-out) e o conteúdo acompanha. Os ícones não saem do lugar entre as duas larguras: só os textos somem e aparecem por opacidade, no mesmo tempo, e nada muda de tamanho ou de respiro no meio da transição. De cima para baixo: marca (24 px de respiro no topo), navegação (12 px laterais, 16 px no vertical) e, no pé, separados por um fio de giz a 10%, a troca de tema e a conta. A escolha entre aberto e recolhido fica guardada no navegador (`coursary:sidebar`), e Ctrl/Cmd+B alterna. Na área de trabalho, uma barra fina no topo (12 px por 16 px, fio de Fio de Sálvia embaixo) leva só o botão que abre e recolhe o trilho.
+
+Abaixo de 768 px, o trilho sai da página. No topo fica uma barra de lousa (10 px por 12 px) com o botão de menu, a marca e o avatar; o menu abre o trilho como uma gaveta de 300 px, vinda da esquerda sobre um véu preto a 50%, e seguir um link a fecha.
 
 O conteúdo ocupa no máximo 72rem (1152 px), com respiro lateral de 20 px no celular e 56 px no desktop, 32 a 40 px no vertical. O ritmo segue a escala de 4 px: 4 px entre título e descrição, 12 px entre ações, 16 a 24 px entre blocos, 40 px entre seções. Tabelas rolam na horizontal dentro do próprio contêiner em vez de quebrar a página. O rodapé diz, em Verde Grafite, que cursos, nomes e números são exemplos.
 
@@ -355,8 +373,13 @@ Firmes, legíveis e marcados a giz: cada controle tem tamanho de dedo, bordas qu
 - **Error / Disabled:** inválido troca a borda por Tijolo, e com foco o anel fica em Tijolo a 20% (40% no escuro); desabilitado a 50% de opacidade.
 
 ### Navigation
-- **Trilho:** fundo Verde Lousa nos dois temas, texto Giz Branco. Itens de no mínimo 40 px, 12 px laterais, cantos de 6 px, texto a 85% em repouso, fundo em Verde Lousa Claro (Lousa Gasta no escuro) no hover. O item atual fica em negrito com o **traço de giz** em Giz Amarelo, 64 px, logo abaixo do rótulo. Foco: contorno de 2 px em Giz Amarelo, afastado 2 px.
-- **Troca de tema:** três botões de ícone de 40 px (Claro, Escuro, Sistema) no pé do trilho; o escolhido ganha fundo de hover e ícone em Giz Amarelo.
+- **Trilho:** barra lateral em Verde Lousa nos dois temas, texto Giz Branco. Itens de 44 px, 11 px laterais, cantos de 6 px, ícone de 18 px em Musgo Claro com 12 px de vão, rótulo em Body a 85% em repouso, fundo em Verde Lousa Claro (Lousa Gasta no escuro) no hover. Foco: contorno de 2 px em Giz Amarelo, afastado 2 px.
+- **Item atual:** aberto, fica em negrito, com o ícone em Giz Amarelo e o **traço de giz** em Giz Amarelo, 64 px, logo abaixo do rótulo. Recolhido, sem rótulo para sublinhar, ganha o fundo de hover e mantém o ícone amarelo.
+- **Recolhido:** só os ícones, nas mesmas posições; cada item mostra o próprio nome numa dica (tooltip) à direita, que só existe nessa largura. A marca fica só no desenho do quadro.
+- **Abrir e recolher:** botão fantasma de ícone, 40 px, com o ícone de painel lateral, na barra fina sobre o conteúdo; a dica diz a ação e o atalho (Ctrl+B).
+- **Troca de tema:** aberto, três botões de ícone de 40 px (Claro, Escuro, Sistema) no pé do trilho; o escolhido ganha fundo de hover e ícone em Giz Amarelo. Recolhido, no mesmo lugar, aparece um botão só, de 40 px, que passa de claro para escuro, de escuro para sistema e de sistema para claro, mostrando em Giz Amarelo o ícone do tema escolhido. Os dois se trocam por opacidade.
+- **Conta:** no pé do trilho, abaixo do tema. Aberto: avatar de 36 px, nome em negrito e um chevron em Musgo Claro, numa linha de cantos de 6 px com fundo de hover; o menu abre para cima. Recolhido: só o avatar, num círculo de 40 px que no hover ganha um contorno de 2 px em Giz Branco a 35%, em vez de fundo; o menu abre para a direita. Sem foto, o avatar mostra as iniciais em negrito, pretas, sobre Giz Amarelo.
+- **Celular:** barra de lousa no topo com o botão de menu (40 px), a marca e o avatar, cujo menu abre para baixo. A gaveta de 300 px traz o trilho aberto inteiro, com um botão de fechar de 40 px no canto (hover em Verde Lousa Claro, Lousa Gasta no escuro; foco em Giz Amarelo); seguir um link fecha a gaveta.
 - **Pular para o conteúdo:** primeiro foco da página; aparece em Giz Amarelo com texto preto, cantos de 6 px.
 - **Abas:** sublinhadas, sem caixa; a ativa em negrito com uma barra de 3 px em primário embaixo; hover em Sálvia Pálida.
 
@@ -374,7 +397,7 @@ Firmes, legíveis e marcados a giz: cada controle tem tamanho de dedo, bordas qu
 - **Carregando:** blocos em Sálvia Pálida com cantos de 6 px e pulso, no formato do conteúdo que virá.
 
 ### Traço de Giz (assinatura)
-O marcador do mundo: um traço ondulado de 3 px em `currentColor`, contínuo com falhas ou tracejado, sempre sobre a lousa e sempre em uma cor de giz. Hoje marca o item ativo do trilho.
+O marcador do mundo: um traço ondulado de 3 px em `currentColor`, contínuo com falhas ou tracejado, sempre sobre a lousa e sempre em uma cor de giz. Hoje marca o item ativo do trilho aberto.
 
 **Direção para histórias futuras (ainda não construída, registrada para quando couber):** o traço de giz como marcador da aba ativa no lugar da barra de 3 px; o traço tracejado como contorno do estado vazio no lugar da borda tracejada de CSS; um véu de diálogo tingido de lousa no lugar do preto a 50%; esqueletos de carregamento como pó de giz; um único momento de movimento autoral, o traço ativo se desenhando, respeitando a redução de movimento; e a presença da lousa no tema claro além do trilho (as placas de giz são o primeiro candidato).
 
