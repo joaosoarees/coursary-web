@@ -14,10 +14,10 @@ let mobile = false;
 const renderShell = () => {
   const Stub = createRoutesStub([
     {
-      path: '/',
+      path: '/cursos',
       Component: () => (
         <AppShell>
-          <h1>Início</h1>
+          <h1>Catálogo</h1>
         </AppShell>
       ),
     },
@@ -27,7 +27,7 @@ const renderShell = () => {
     <QueryClientProvider client={new QueryClient()}>
       <ThemeProvider>
         <AuthProvider>
-          <Stub initialEntries={['/']} />
+          <Stub initialEntries={['/cursos']} />
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>,
@@ -61,7 +61,7 @@ const sidebarState = () =>
 describe('the app shell', () => {
   it('should collapse the sidebar and remember it', async () => {
     const { unmount } = renderShell();
-    await screen.findByRole('heading', { name: 'Início' });
+    await screen.findByRole('heading', { name: 'Catálogo' });
 
     fireEvent.click(screen.getByRole('button', { name: 'Recolher o menu' }));
 
@@ -70,7 +70,7 @@ describe('the app shell', () => {
 
     unmount();
     renderShell();
-    await screen.findByRole('heading', { name: 'Início' });
+    await screen.findByRole('heading', { name: 'Catálogo' });
 
     expect(sidebarState()).toBe('collapsed');
     expect(screen.getByRole('button', { name: 'Abrir o menu' })).toBeVisible();
@@ -78,7 +78,7 @@ describe('the app shell', () => {
 
   it('should toggle with Ctrl+B', async () => {
     renderShell();
-    await screen.findByRole('heading', { name: 'Início' });
+    await screen.findByRole('heading', { name: 'Catálogo' });
 
     act(() => {
       fireEvent.keyDown(window, { key: 'b', ctrlKey: true });
@@ -89,7 +89,7 @@ describe('the app shell', () => {
 
   it('should leave Ctrl+B to a text field being typed in', async () => {
     renderShell();
-    await screen.findByRole('heading', { name: 'Início' });
+    await screen.findByRole('heading', { name: 'Catálogo' });
     const field = document.createElement('textarea');
     document.body.append(field);
 
@@ -104,7 +104,7 @@ describe('the app shell', () => {
   it('should open the menu as a drawer on a phone and close it on navigation', async () => {
     mobile = true;
     renderShell();
-    await screen.findByRole('heading', { name: 'Início' });
+    await screen.findByRole('heading', { name: 'Catálogo' });
 
     expect(screen.queryByRole('navigation', { name: 'Principal' })).toBeNull();
 
@@ -113,7 +113,7 @@ describe('the app shell', () => {
     const drawer = await screen.findByRole('dialog', { name: 'Menu' });
     expect(drawer).toBeVisible();
 
-    fireEvent.click(screen.getByRole('link', { name: 'Início' }));
+    fireEvent.click(screen.getByRole('link', { name: 'Catálogo' }));
 
     expect(screen.queryByRole('dialog', { name: 'Menu' })).toBeNull();
   });

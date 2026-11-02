@@ -1,4 +1,4 @@
-import { House } from 'lucide-react';
+import { Library } from 'lucide-react';
 import { NavLink } from 'react-router';
 
 import { AccountMenu } from '~/components/AccountMenu';
@@ -17,7 +17,7 @@ import {
 import { Wordmark } from '~/components/Wordmark';
 import { ThemeCycleButton, ThemeSwitcher } from '~/theme/ThemeSwitcher';
 
-const NAV = [{ to: '/', label: 'Início', Icon: House }];
+const NAV = [{ to: '/cursos', label: 'Catálogo', Icon: Library }];
 
 // Every icon keeps its place in both widths, so collapsing only animates the width and fades the
 // labels: nothing changes size or padding mid-transition.
@@ -48,7 +48,6 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild tooltip={label}>
                     <NavLink
                       to={to}
-                      end={to === '/'}
                       onClick={() => {
                         setOpenMobile(false);
                       }}

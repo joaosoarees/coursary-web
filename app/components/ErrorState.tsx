@@ -25,16 +25,21 @@ export function ErrorState({
       className={cn(
         'flex flex-col gap-4',
         page
-          ? 'mx-auto max-w-prose items-start py-16'
+          ? 'mx-auto min-h-[60vh] max-w-prose items-center justify-center py-16 text-center'
           : 'rounded-lg border border-input bg-card p-5',
       )}
     >
-      <div className="flex items-start gap-3">
+      <div
+        className={cn(
+          'flex gap-3',
+          page ? 'flex-col items-center' : 'items-start',
+        )}
+      >
         <TriangleAlert
           aria-hidden="true"
           className={cn(
             'shrink-0 text-destructive',
-            page ? 'mt-1.5 size-6' : 'mt-0.5 size-5',
+            page ? 'size-8' : 'mt-0.5 size-5',
           )}
         />
         <div className="flex flex-col gap-1">
@@ -48,7 +53,7 @@ export function ErrorState({
           <p className="text-muted-foreground">{message}</p>
         </div>
       </div>
-      <div className="flex flex-wrap gap-3">
+      <div className={cn('flex flex-wrap gap-3', page && 'justify-center')}>
         {onRetry && (
           <Button size={page ? 'default' : 'sm'} onClick={onRetry}>
             Tentar de novo
