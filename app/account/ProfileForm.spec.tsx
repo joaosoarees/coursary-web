@@ -1,5 +1,9 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fireEvent, render, screen } from '@testing-library/react';
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+} from '@tanstack/react-query';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 import { ProfileForm } from '~/account/ProfileForm';
@@ -13,12 +17,21 @@ const profile: Profile = {
   role: 'instructor',
 };
 
-const renderForm = (queryClient = new QueryClient()) =>
-  render(
+function FromCache() {
+  const { data } = useQuery({ ...meQuery, enabled: false });
+
+  return data ? <ProfileForm profile={data} /> : null;
+}
+
+const renderForm = (queryClient = new QueryClient()) => {
+  queryClient.setQueryData(meQuery.queryKey, profile);
+
+  return render(
     <QueryClientProvider client={queryClient}>
-      <ProfileForm profile={profile} />
+      <FromCache />
     </QueryClientProvider>,
   );
+};
 
 describe('ProfileForm', () => {
   it('should show the e-mail and the role, and save only a changed name', async () => {
@@ -37,9 +50,10 @@ describe('ProfileForm', () => {
     });
     fireEvent.click(screen.getByRole('button', { name: 'Salvar' }));
 
-    expect(
-      await screen.findByRole('button', { name: 'Salvar' }),
-    ).toBeDisabled();
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Salvar' })).toBeDisabled();
+    });
+    expect(screen.getByLabelText('Nome')).toHaveValue('Ana Lima');
     expect(updateMe).toHaveBeenCalledWith('Ana Lima');
     expect(queryClient.getQueryData(meQuery.queryKey)).toMatchObject({
       name: 'Ana Lima',
@@ -55,5 +69,25 @@ describe('ProfileForm', () => {
 
     expect(await screen.findByText('Informe o seu nome.')).toBeVisible();
     expect(updateMe).not.toHaveBeenCalled();
+  });
+});
+
+describe('ProfileForm with a refreshed profile', () => {
+  it('should follow a name changed elsewhere', () => {
+    const queryClient = new QueryClient();
+    const { rerender } = render(
+      <QueryClientProvider client={queryClient}>
+        <ProfileForm profile={profile} />
+      </QueryClientProvider>,
+    );
+
+    rerender(
+      <QueryClientProvider client={queryClient}>
+        <ProfileForm profile={{ ...profile, name: 'Ana Lima' }} />
+      </QueryClientProvider>,
+    );
+
+    expect(screen.getByLabelText('Nome')).toHaveValue('Ana Lima');
+    expect(screen.getByRole('button', { name: 'Salvar' })).toBeDisabled();
   });
 });
