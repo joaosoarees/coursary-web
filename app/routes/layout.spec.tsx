@@ -39,6 +39,7 @@ const Stub = createRoutesStub([
       { path: '*', loader: notFoundLoader, Component: NotFound },
     ],
   },
+  { path: '/entrar', Component: () => <h1>Entrar</h1> },
 ]);
 
 const renderAt = (path: string) =>
@@ -100,6 +101,16 @@ describe('the layout', () => {
     expect(
       screen.queryByRole('button', { name: 'Tentar de novo' }),
     ).not.toBeInTheDocument();
+  });
+
+  it('should send a visitor at an unknown address to sign-in', async () => {
+    endSession();
+    renderAt('/nao-existe');
+
+    expect(
+      await screen.findByRole('heading', { name: 'Entrar' }),
+    ).toBeVisible();
+    expect(screen.queryByRole('navigation', { name: 'Principal' })).toBeNull();
   });
 
   it('should leave the error behind on navigation', async () => {
