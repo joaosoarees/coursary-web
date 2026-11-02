@@ -9,6 +9,7 @@ export default [
   layout('routes/visitor-layout.tsx', [
     route('entrar', 'routes/entrar.tsx'),
     route('cadastro', 'routes/cadastro.tsx'),
+    route('confirmar', 'routes/confirmar.tsx'),
   ]),
   layout('routes/layout.tsx', [
     index('routes/home.tsx'),
