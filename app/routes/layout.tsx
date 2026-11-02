@@ -6,6 +6,7 @@ import {
   useNavigate,
 } from 'react-router';
 
+import { AuthGuard } from '~/auth/AuthGuard';
 import { AppShell } from '~/components/AppShell';
 import { ErrorState } from '~/components/ErrorState';
 
@@ -13,9 +14,11 @@ import type { Route } from './+types/layout';
 
 export default function Layout() {
   return (
-    <AppShell>
-      <Outlet />
-    </AppShell>
+    <AuthGuard isPrivate>
+      <AppShell>
+        <Outlet />
+      </AppShell>
+    </AuthGuard>
   );
 }
 
@@ -31,21 +34,24 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
     }
   }, [error, notFound]);
 
+  // The catch-all's loader throws before the layout's guard renders: a visitor still goes to sign-in.
   return (
-    <AppShell>
-      {notFound ? (
-        <ErrorState
-          title="Página não encontrada"
-          message="O endereço não corresponde a nenhuma página."
-        />
-      ) : (
-        <ErrorState
-          onRetry={() => {
-            // Navigating to the same address clears the error and runs the route again.
-            void navigate(location, { replace: true });
-          }}
-        />
-      )}
-    </AppShell>
+    <AuthGuard isPrivate>
+      <AppShell>
+        {notFound ? (
+          <ErrorState
+            title="Página não encontrada"
+            message="O endereço não corresponde a nenhuma página."
+          />
+        ) : (
+          <ErrorState
+            onRetry={() => {
+              // Navigating to the same address clears the error and runs the route again.
+              void navigate(location, { replace: true });
+            }}
+          />
+        )}
+      </AppShell>
+    </AuthGuard>
   );
 }

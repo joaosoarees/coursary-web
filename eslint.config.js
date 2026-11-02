@@ -2,6 +2,7 @@ import js from '@eslint/js';
 import { defineConfig } from 'eslint/config';
 import prettier from 'eslint-config-prettier/flat';
 import betterTailwindcss from 'eslint-plugin-better-tailwindcss';
+import jsxA11y from 'eslint-plugin-jsx-a11y';
 import reactHooks from 'eslint-plugin-react-hooks';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import globals from 'globals';
@@ -13,6 +14,7 @@ export default defineConfig([
   tseslint.configs.strictTypeChecked,
   tseslint.configs.stylisticTypeChecked,
   reactHooks.configs.flat.recommended,
+  jsxA11y.flatConfigs.recommended,
   {
     languageOptions: {
       globals: globals.browser,
@@ -67,11 +69,11 @@ export default defineConfig([
   },
   // Only the build's own configuration and scripts run in Node; the app runs in the browser.
   {
-    files: ['*.config.{js,ts}', 'vitest.setup.ts', 'scripts/**/*.ts'],
+    files: ['*.config.{js,mjs,cjs,ts}', 'vitest.setup.ts', 'scripts/**/*.ts'],
     languageOptions: { globals: globals.node },
   },
   {
-    files: ['**/*.js'],
+    files: ['**/*.{js,mjs,cjs}'],
     extends: [tseslint.configs.disableTypeChecked],
   },
   prettier,
