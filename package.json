@@ -18,7 +18,7 @@
     "build": "pnpm validate:env && react-router build",
     "validate:env": "node scripts/validate-env.ts",
     "typecheck": "react-router typegen && tsc",
-    "lint": "eslint .",
+    "lint": "eslint . --max-warnings 0",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
