@@ -15,7 +15,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <AppSidebar />
       <div className="relative flex min-w-0 flex-1 flex-col bg-background">
         <header className="flex items-center gap-2 bg-shell px-3 py-2.5 text-shell-foreground md:border-b md:bg-transparent md:px-4 md:py-3 md:text-muted-foreground">
-          <SidebarTrigger className="size-10 hover:bg-shell-hover hover:text-shell-foreground md:hover:bg-accent md:hover:text-accent-foreground" />
+          <SidebarTrigger className="size-10 hover:bg-shell-hover hover:text-shell-foreground focus-visible:outline-chalk-yellow md:hover:bg-accent md:hover:text-accent-foreground md:focus-visible:outline-ring" />
           <div className="flex-1 md:hidden">
             <Wordmark />
           </div>
