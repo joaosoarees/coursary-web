@@ -39,7 +39,7 @@ export function AppSidebar() {
           <Wordmark />
         </div>
       </SidebarHeader>
-      <SidebarContent className="px-3 py-4">
+      <SidebarContent className="px-2.5 py-4">
         <SidebarGroup className="p-0">
           <nav aria-label="Principal">
             <SidebarMenu>
@@ -52,7 +52,7 @@ export function AppSidebar() {
                       onClick={() => {
                         setOpenMobile(false);
                       }}
-                      className="group/nav h-11 gap-3 px-[11px] text-shell-foreground/85 transition-[background-color] duration-200 aria-[current=page]:font-bold aria-[current=page]:text-shell-foreground group-data-[collapsible=icon]:aria-[current=page]:bg-sidebar-accent"
+                      className="group/nav h-11 gap-3 px-[13px] text-shell-foreground/85 transition-[background-color] duration-200 aria-[current=page]:font-bold aria-[current=page]:text-shell-foreground group-data-[collapsible=icon]:aria-[current=page]:bg-sidebar-accent"
                     >
                       <Icon
                         aria-hidden="true"
