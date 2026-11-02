@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu';
 import { Skeleton } from '~/components/ui/skeleton';
+import { cn } from '~/lib/utils';
 import { useMe } from '~/queries/me';
 
 const initialsOf = (name: string) =>
@@ -22,7 +23,13 @@ const initialsOf = (name: string) =>
     .map((word) => word.charAt(0).toUpperCase())
     .join('');
 
-export function AccountMenu() {
+export function AccountMenu({
+  compact = false,
+  side = 'top',
+}: {
+  compact?: boolean;
+  side?: 'top' | 'right' | 'bottom';
+}) {
   const { signOut } = useAuth();
   const me = useMe();
 
@@ -33,9 +40,11 @@ export function AccountMenu() {
 
   if (me.isPending) {
     return (
-      <div className="flex items-center gap-3 px-2 py-1.5" aria-hidden="true">
-        <Skeleton className="size-9 rounded-full bg-shell-hover" />
-        <Skeleton className="h-4 w-28 bg-shell-hover max-md:hidden" />
+      <div className="flex items-center gap-3 px-1.5 py-1.5" aria-hidden="true">
+        <Skeleton className="size-9 shrink-0 rounded-full bg-shell-hover" />
+        {!compact && (
+          <Skeleton className="h-4 w-28 bg-shell-hover group-data-[collapsible=icon]:hidden" />
+        )}
       </div>
     );
   }
@@ -47,9 +56,13 @@ export function AccountMenu() {
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="flex min-h-12 items-center gap-3 rounded-md px-2 py-1.5 text-left transition-colors hover:bg-shell-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chalk-yellow md:w-full"
+          aria-label={compact ? name : undefined}
+          className={cn(
+            'flex min-h-12 items-center gap-3 rounded-md px-1.5 py-1.5 text-left transition-colors hover:bg-shell-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chalk-yellow',
+            compact ? 'rounded-full p-0.5' : 'w-full',
+          )}
         >
-          <Avatar className="size-9">
+          <Avatar className="size-9 shrink-0">
             {me.data?.avatarUrl?.['64'] && (
               <AvatarImage src={me.data.avatarUrl['64']} alt="" />
             )}
@@ -57,16 +70,24 @@ export function AccountMenu() {
               {me.data ? initialsOf(me.data.name) : '?'}
             </AvatarFallback>
           </Avatar>
-          <span className="min-w-0 flex-1 truncate font-bold max-md:sr-only">
-            {name}
-          </span>
-          <ChevronsUpDown
-            aria-hidden="true"
-            className="size-4 shrink-0 text-shell-muted max-md:hidden"
-          />
+          {!compact && (
+            <>
+              <span className="min-w-0 flex-1 truncate font-bold group-data-[collapsible=icon]:sr-only">
+                {name}
+              </span>
+              <ChevronsUpDown
+                aria-hidden="true"
+                className="size-4 shrink-0 text-shell-muted group-data-[collapsible=icon]:hidden"
+              />
+            </>
+          )}
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent side="top" align="start" className="w-60">
+      <DropdownMenuContent
+        side={side}
+        align={side === 'bottom' ? 'end' : 'start'}
+        className="w-60"
+      >
         {me.data && (
           <>
             <DropdownMenuLabel className="flex flex-col gap-0.5">
