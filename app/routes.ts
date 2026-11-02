@@ -11,6 +11,7 @@ export default [
     route('cadastro', 'routes/cadastro.tsx'),
     route('confirmar', 'routes/confirmar.tsx'),
     route('recuperar-senha', 'routes/recuperar-senha.tsx'),
+    route('redefinir-senha', 'routes/redefinir-senha.tsx'),
   ]),
   layout('routes/layout.tsx', [
     index('routes/home.tsx'),
