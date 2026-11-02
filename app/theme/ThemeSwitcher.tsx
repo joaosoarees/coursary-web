@@ -10,6 +10,16 @@ const OPTIONS: { value: Theme; label: string; Icon: typeof Sun }[] = [
   { value: 'system', label: 'Sistema', Icon: Monitor },
 ];
 
+const THEMES = Object.fromEntries(
+  OPTIONS.map((option) => [option.value, option]),
+) as Record<Theme, (typeof OPTIONS)[number]>;
+
+const NEXT_THEME: Record<Theme, Theme> = {
+  light: 'dark',
+  dark: 'system',
+  system: 'light',
+};
+
 export function ThemeSwitcher({ className }: { className?: string }) {
   const { theme, setTheme } = useTheme();
 
@@ -31,5 +41,29 @@ export function ThemeSwitcher({ className }: { className?: string }) {
         </button>
       ))}
     </div>
+  );
+}
+
+export function ThemeCycleButton({ className }: { className?: string }) {
+  const { theme, setTheme } = useTheme();
+  const current = THEMES[theme];
+  const next = THEMES[NEXT_THEME[theme]];
+  const { Icon } = current;
+
+  return (
+    <button
+      type="button"
+      aria-label={`Tema: ${current.label}. Trocar para ${next.label.toLowerCase()}`}
+      title={`Tema: ${current.label}`}
+      onClick={() => {
+        setTheme(NEXT_THEME[theme]);
+      }}
+      className={cn(
+        'inline-grid size-10 place-items-center rounded-md text-chalk-yellow transition-colors hover:bg-shell-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chalk-yellow',
+        className,
+      )}
+    >
+      <Icon aria-hidden="true" className="size-4.5" />
+    </button>
   );
 }
