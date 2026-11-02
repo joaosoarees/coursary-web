@@ -26,7 +26,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <main
           id="conteudo"
           tabIndex={-1}
-          className="w-full max-w-6xl flex-1 px-5 py-8 outline-none md:px-14 md:py-10"
+          className="w-full flex-1 px-5 py-8 outline-none md:px-14 md:py-10"
         >
           {children}
         </main>
