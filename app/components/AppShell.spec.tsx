@@ -87,6 +87,20 @@ describe('the app shell', () => {
     expect(sidebarState()).toBe('collapsed');
   });
 
+  it('should leave Ctrl+B to a text field being typed in', async () => {
+    renderShell();
+    await screen.findByRole('heading', { name: 'Início' });
+    const field = document.createElement('textarea');
+    document.body.append(field);
+
+    act(() => {
+      fireEvent.keyDown(field, { key: 'b', ctrlKey: true });
+    });
+
+    expect(sidebarState()).toBe('expanded');
+    field.remove();
+  });
+
   it('should open the menu as a drawer on a phone and close it on navigation', async () => {
     mobile = true;
     renderShell();
