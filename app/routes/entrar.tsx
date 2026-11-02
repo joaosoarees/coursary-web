@@ -82,7 +82,10 @@ export default function SignIn() {
           Confirme o seu e-mail antes de entrar.{' '}
           <Link
             to="/confirmar"
-            state={{ email: unconfirmedEmail }}
+            state={{
+              email: unconfirmedEmail,
+              from: LocationState.from(location.state),
+            }}
             className="font-bold text-link underline-offset-4 hover:underline"
           >
             Confirmar e-mail
