@@ -326,7 +326,7 @@ Um trilho e uma área de trabalho. O trilho é uma barra lateral de lousa que se
 
 Abaixo de 768 px, o trilho sai da página. No topo fica uma barra de lousa (10 px por 12 px) com o botão de menu, a marca e o avatar; o menu abre o trilho como uma gaveta de 300 px, vinda da esquerda sobre um véu preto a 50%, e seguir um link a fecha.
 
-O conteúdo ocupa no máximo 72rem (1152 px), com respiro lateral de 20 px no celular e 56 px no desktop, 32 a 40 px no vertical. O ritmo segue a escala de 4 px: 4 px entre título e descrição, 12 px entre ações, 16 a 24 px entre blocos, 40 px entre seções. Tabelas rolam na horizontal dentro do próprio contêiner em vez de quebrar a página. O rodapé diz, em Verde Grafite, que cursos, nomes e números são exemplos.
+O conteúdo ocupa toda a largura ao lado da sidebar (os parágrafos seguem limitados a 65ch), com respiro lateral de 20 px no celular e 56 px no desktop, 32 a 40 px no vertical. O ritmo segue a escala de 4 px: 4 px entre título e descrição, 12 px entre ações, 16 a 24 px entre blocos, 40 px entre seções. Tabelas rolam na horizontal dentro do próprio contêiner em vez de quebrar a página. O rodapé diz, em Verde Grafite, que cursos, nomes e números são exemplos.
 
 ## Elevation & Depth
 

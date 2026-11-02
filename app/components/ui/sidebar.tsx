@@ -231,10 +231,12 @@ function Sidebar({
       data-side={side}
       data-slot="sidebar"
     >
+      {/* The gap jumps to its new width while the sidebar animates over the page: a gap that
+          animated its width would make the page's grids and text reflow on every frame. */}
       <div
         data-slot="sidebar-gap"
         className={cn(
-          'relative w-(--sidebar-width) bg-transparent transition-[width] duration-200 ease-out',
+          'relative w-(--sidebar-width) bg-transparent',
           'group-data-[collapsible=offcanvas]:w-0',
           'group-data-[side=right]:rotate-180',
           variant === 'floating' || variant === 'inset'
