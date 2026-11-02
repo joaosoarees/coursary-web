@@ -83,7 +83,7 @@ function SearchForm({ query }: { query: string }) {
       method="get"
       action="/cursos"
       role="search"
-      className="flex w-full max-w-md gap-2"
+      className="flex w-full gap-2 md:w-[30rem]"
     >
       <div className="relative flex-1">
         <Search
