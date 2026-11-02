@@ -1,6 +1,8 @@
-import { ChevronsUpDown, LogOut } from 'lucide-react';
+import { ChevronsUpDown, LogOut, UserRound } from 'lucide-react';
+import { Link } from 'react-router';
 import { toast } from 'sonner';
 
+import { initialsOf } from '~/account/initialsOf';
 import { useAuth } from '~/auth/useAuth';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import {
@@ -14,14 +16,6 @@ import {
 import { Skeleton } from '~/components/ui/skeleton';
 import { cn } from '~/lib/utils';
 import { useMe } from '~/queries/me';
-
-const initialsOf = (name: string) =>
-  name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((word) => word.charAt(0).toUpperCase())
-    .join('');
 
 export function AccountMenu({
   compact = false,
@@ -101,6 +95,12 @@ export function AccountMenu({
             <DropdownMenuSeparator />
           </>
         )}
+        <DropdownMenuItem asChild>
+          <Link to="/perfil">
+            <UserRound aria-hidden="true" />
+            Perfil
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuItem onSelect={() => void handleSignOut()}>
           <LogOut aria-hidden="true" />
           Sair
