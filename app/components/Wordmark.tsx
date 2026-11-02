@@ -32,7 +32,7 @@ export function Wordmark() {
           strokeLinecap="round"
         />
       </svg>
-      <span className="font-display text-2xl font-extrabold tracking-tight group-data-[collapsible=icon]:sr-only">
+      <span className="font-display text-2xl font-extrabold tracking-tight whitespace-nowrap transition-opacity duration-200 group-data-[collapsible=icon]:opacity-0">
         Coursary
       </span>
     </span>
