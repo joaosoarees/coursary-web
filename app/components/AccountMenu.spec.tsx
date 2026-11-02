@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, fireEvent, render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AuthProvider } from '~/auth/AuthProvider';
@@ -12,7 +13,9 @@ const renderMenu = () =>
   render(
     <QueryClientProvider client={new QueryClient()}>
       <AuthProvider>
-        <AccountMenu />
+        <MemoryRouter>
+          <AccountMenu />
+        </MemoryRouter>
       </AuthProvider>
     </QueryClientProvider>,
   );
@@ -43,6 +46,16 @@ describe('AccountMenu', () => {
     expect(
       await screen.findByRole('button', { name: /Ana Souza/ }),
     ).toHaveTextContent('AS');
+  });
+
+  it('should lead to the profile', async () => {
+    renderMenu();
+
+    await open();
+
+    expect(
+      await screen.findByRole('menuitem', { name: 'Perfil' }),
+    ).toHaveAttribute('href', '/perfil');
   });
 
   it('should sign out from the menu', async () => {
