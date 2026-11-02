@@ -1,7 +1,13 @@
 export function Wordmark() {
   return (
     <span className="flex items-center gap-2.5">
-      <svg width="28" height="28" viewBox="0 0 34 34" aria-hidden="true">
+      <svg
+        width="28"
+        height="28"
+        viewBox="0 0 34 34"
+        aria-hidden="true"
+        className="shrink-0"
+      >
         <rect
           x="1.5"
           y="5.5"
@@ -26,7 +32,7 @@ export function Wordmark() {
           strokeLinecap="round"
         />
       </svg>
-      <span className="font-display text-2xl font-extrabold tracking-tight">
+      <span className="font-display text-2xl font-extrabold tracking-tight group-data-[collapsible=icon]:sr-only">
         Coursary
       </span>
     </span>
