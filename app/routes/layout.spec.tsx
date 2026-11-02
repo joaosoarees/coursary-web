@@ -31,7 +31,7 @@ const Stub = createRoutesStub([
     ErrorBoundary: ErrorBoundary as never,
     children: [
       {
-        index: true,
+        path: 'cursos',
         Component: () => <Link to="/quebrada">Abrir a página quebrada</Link>,
       },
       { path: 'quebrada', Component: Broken },
@@ -118,7 +118,7 @@ describe('the layout', () => {
     await screen.findByRole('heading', { name: 'Algo deu errado' });
 
     act(() => {
-      screen.getByRole('link', { name: 'Início' }).click();
+      screen.getByRole('link', { name: 'Catálogo' }).click();
     });
 
     expect(
