@@ -2,9 +2,12 @@ import { useCallback, useEffect, useState } from 'react';
 
 const TICK_MS = 250;
 
+const secondsUntil = (endsAt: number) =>
+  Math.max(0, Math.ceil((endsAt - Date.now()) / 1000));
+
 export function useCooldown(seconds: number) {
   const [endsAt, setEndsAt] = useState<number | null>(null);
-  const [now, setNow] = useState(() => Date.now());
+  const [remaining, setRemaining] = useState(0);
 
   useEffect(() => {
     if (endsAt === null) {
@@ -12,10 +15,10 @@ export function useCooldown(seconds: number) {
     }
 
     const timer = setInterval(() => {
-      const current = Date.now();
-      setNow(current);
+      const left = secondsUntil(endsAt);
+      setRemaining(left);
 
-      if (current >= endsAt) {
+      if (left === 0) {
         setEndsAt(null);
       }
     }, TICK_MS);
@@ -26,13 +29,9 @@ export function useCooldown(seconds: number) {
   }, [endsAt]);
 
   const start = useCallback(() => {
-    const current = Date.now();
-    setNow(current);
-    setEndsAt(current + seconds * 1000);
+    setEndsAt(Date.now() + seconds * 1000);
+    setRemaining(seconds);
   }, [seconds]);
-
-  const remaining =
-    endsAt === null ? 0 : Math.max(0, Math.ceil((endsAt - now) / 1000));
 
   return { remaining, start };
 }
