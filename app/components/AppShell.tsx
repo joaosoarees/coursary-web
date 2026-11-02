@@ -1,50 +1,28 @@
-import { NavLink } from 'react-router';
-
 import { AccountMenu } from '~/components/AccountMenu';
-import { ChalkStroke } from '~/components/ChalkStroke';
+import { AppSidebar } from '~/components/AppSidebar';
+import { SidebarProvider, SidebarTrigger } from '~/components/ui/sidebar';
 import { Wordmark } from '~/components/Wordmark';
-import { ThemeSwitcher } from '~/theme/ThemeSwitcher';
-
-const NAV = [{ to: '/', label: 'Início' }];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen flex-col md:flex-row">
+    <SidebarProvider>
       <a
         href="#conteudo"
         className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-chalk-yellow focus:px-4 focus:py-2 focus:font-bold focus:text-black"
       >
         Pular para o conteúdo
       </a>
-      <header className="flex flex-wrap items-center gap-x-4 gap-y-3 bg-shell px-5 py-4 text-shell-foreground md:sticky md:top-0 md:h-screen md:w-64 md:shrink-0 md:flex-col md:flex-nowrap md:items-stretch md:gap-8 md:py-7">
-        <div className="flex-1 px-2 md:flex-none">
-          <Wordmark />
-        </div>
-        <div className="flex items-center gap-2 md:order-last md:mt-auto md:flex-col md:items-stretch md:gap-3 md:border-t md:border-shell-foreground/10 md:pt-4">
-          <ThemeSwitcher />
-          <AccountMenu />
-        </div>
-        <nav
-          aria-label="Principal"
-          className="order-last basis-full md:order-none md:basis-auto"
-        >
-          <ul className="flex flex-wrap gap-1 md:flex-col">
-            {NAV.map(({ to, label }) => (
-              <li key={to}>
-                <NavLink
-                  to={to}
-                  end={to === '/'}
-                  className="group flex min-h-10 flex-col justify-center rounded-md px-3 py-2 text-shell-foreground/85 transition-colors hover:bg-shell-hover hover:text-shell-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chalk-yellow aria-[current=page]:font-bold aria-[current=page]:text-shell-foreground"
-                >
-                  <span>{label}</span>
-                  <ChalkStroke className="hidden w-16 text-chalk-yellow group-aria-[current=page]:block" />
-                </NavLink>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      </header>
-      <div className="flex min-w-0 flex-1 flex-col">
+      <AppSidebar />
+      <div className="relative flex min-w-0 flex-1 flex-col bg-background">
+        <header className="flex items-center gap-2 bg-shell px-3 py-2.5 text-shell-foreground md:border-b md:bg-transparent md:px-4 md:py-3 md:text-muted-foreground">
+          <SidebarTrigger className="size-10 hover:bg-shell-hover hover:text-shell-foreground md:hover:bg-accent md:hover:text-accent-foreground" />
+          <div className="flex-1 md:hidden">
+            <Wordmark />
+          </div>
+          <div className="md:hidden">
+            <AccountMenu compact side="bottom" />
+          </div>
+        </header>
         <main
           id="conteudo"
           tabIndex={-1}
@@ -56,6 +34,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           Projeto de portfólio. Cursos, nomes e números são exemplos.
         </footer>
       </div>
-    </div>
+    </SidebarProvider>
   );
 }
