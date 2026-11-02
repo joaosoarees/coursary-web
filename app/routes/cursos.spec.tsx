@@ -152,4 +152,21 @@ describe('the catalog', () => {
       '/cursos',
     );
   });
+
+  it('should lead back from a search page past the last one', async () => {
+    vi.spyOn(CatalogService, 'search').mockResolvedValue({
+      items: [],
+      page: 39,
+      totalPages: 7,
+      totalItems: 80,
+    });
+    renderAt('/cursos?busca=dados&pagina=40');
+
+    expect(
+      await screen.findByText('Esta página da busca não existe'),
+    ).toBeVisible();
+    expect(
+      screen.getByRole('link', { name: 'Ir para a primeira página' }),
+    ).toHaveAttribute('href', '/cursos?busca=dados&pagina=1');
+  });
 });
