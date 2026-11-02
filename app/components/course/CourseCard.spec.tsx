@@ -42,6 +42,13 @@ describe('CourseCard', () => {
     expect(screen.getByText('Sem avaliações')).toBeVisible();
   });
 
+  it('should count one lesson and one student in the singular', () => {
+    renderCard({ lessonCount: 1, enrollmentCount: 1 });
+
+    expect(screen.getByText('1 aula')).toBeVisible();
+    expect(screen.getByText('1 aluno')).toBeVisible();
+  });
+
   it('should show the uploaded cover in both sizes', () => {
     const { container } = renderCard({
       coverUrl: {
