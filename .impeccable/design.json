@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-31T04:20:54+00:00",
+  "generatedAt": "2026-11-02T00:00:00+00:00",
   "title": "Design System: Coursary",
   "extensions": {
     "colorMeta": {
@@ -938,7 +938,7 @@
       },
       "wordmark": {
         "displayName": "Wordmark",
-        "purpose": "Só o \"Coursary\" no trilho."
+        "purpose": "Só o \"Coursary\", no topo do trilho e na barra do celular."
       },
       "body": {
         "displayName": "Body",
@@ -1004,6 +1004,16 @@
         "purpose": "Entrada e saída de diálogos e menus."
       },
       {
+        "name": "sidebar-collapse",
+        "value": "width 200ms ease-out; opacity 200ms",
+        "purpose": "Trilho abrindo e recolhendo: a largura muda, os textos somem e aparecem por opacidade, os ícones não se movem."
+      },
+      {
+        "name": "drawer",
+        "value": "slide da esquerda, 500ms ao abrir e 300ms ao fechar; véu com fade",
+        "purpose": "Gaveta do trilho no celular."
+      },
+      {
         "name": "reduced-motion",
         "value": "animation-duration: 0.01ms; transition-duration: 0.01ms",
         "purpose": "Sob prefers-reduced-motion: reduce, em tudo."
@@ -1018,7 +1028,7 @@
       {
         "name": "md",
         "value": "768px",
-        "purpose": "O trilho vira coluna fixa de 256 px; respiro lateral de 56 px; campos em 0.875rem."
+        "purpose": "O trilho vira barra lateral fixa (256 px aberta, 64 px recolhida) e a barra de lousa do topo sai; respiro lateral de 56 px; campos em 0.875rem."
       }
     ],
     "base": [
@@ -1090,10 +1100,10 @@
     {
       "name": "Trilho de navegação",
       "kind": "nav",
-      "refersTo": "nav-rail",
-      "description": "A lousa: trilho em Verde Lousa, rótulos em giz, o item atual marcado pelo traço de giz amarelo.",
-      "html": "<nav class=\"ds-rail\" aria-label=\"Principal\"><span class=\"ds-rail-mark\">Coursary</span><a class=\"ds-rail-item\" href=\"#\" aria-current=\"page\"><span>Início</span><svg class=\"ds-chalk-stroke\" viewBox=\"0 0 120 8\" preserveAspectRatio=\"none\" aria-hidden=\"true\"><path d=\"M2 5.2 C 24 3.2, 48 6.8, 72 4.6 S 104 3.9, 118 5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-dasharray=\"30 1.4 22 1 70\"/></svg></a><a class=\"ds-rail-item\" href=\"#\"><span>Catálogo</span></a></nav>",
-      "css": ".ds-rail { display: flex; flex-direction: column; gap: 4px; width: 256px; padding: 28px 20px; background: var(--shell); color: var(--shell-foreground); font-family: \"Atkinson Hyperlegible Next Variable\", ui-sans-serif, system-ui, sans-serif; } .ds-rail-mark { padding: 0 8px 24px; font-family: \"Bricolage Grotesque Variable\", ui-sans-serif, system-ui, sans-serif; font-size: 1.5rem; font-weight: 800; letter-spacing: -0.025em; } .ds-rail-item { display: flex; flex-direction: column; justify-content: center; min-height: 40px; padding: 8px 12px; border-radius: 6px; color: color-mix(in srgb, var(--shell-foreground) 85%, transparent); text-decoration: none; transition: background-color 150ms, color 150ms; } .ds-rail-item:hover { background: var(--shell-hover); color: var(--shell-foreground); } .ds-rail-item:focus-visible { outline: 2px solid var(--chalk-yellow); outline-offset: 2px; } .ds-rail-item[aria-current=\"page\"] { font-weight: 700; color: var(--shell-foreground); } .ds-chalk-stroke { display: block; width: 64px; height: 8px; color: var(--chalk-yellow); }"
+      "refersTo": "sidebar",
+      "description": "A lousa: barra lateral em Verde Lousa que se recolhe a 64 px de ícones; rótulos em giz, o item atual marcado pelo traço de giz amarelo; tema e conta no pé.",
+      "html": "<aside class=\"ds-sidebar\"><div class=\"ds-sidebar-mark\"><svg width=\"28\" height=\"28\" viewBox=\"0 0 34 34\" aria-hidden=\"true\"><rect x=\"1.5\" y=\"5.5\" width=\"31\" height=\"21\" rx=\"2\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/><path d=\"M7 20 C 11 16, 14 18, 18 14\" fill=\"none\" stroke=\"var(--chalk-yellow)\" stroke-width=\"2.4\" stroke-linecap=\"round\"/><path d=\"M10 30.5 h14\" stroke=\"var(--shell-muted)\" stroke-width=\"2\" stroke-linecap=\"round\"/></svg><span>Coursary</span></div><nav aria-label=\"Principal\"><a class=\"ds-sidebar-item\" href=\"#\" aria-current=\"page\"><svg class=\"ds-sidebar-icon\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8\"/><path d=\"M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\"/></svg><span class=\"ds-sidebar-label\">Início<svg class=\"ds-chalk-stroke\" viewBox=\"0 0 120 8\" preserveAspectRatio=\"none\" aria-hidden=\"true\"><path d=\"M2 5.2 C 24 3.2, 48 6.8, 72 4.6 S 104 3.9, 118 5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-dasharray=\"30 1.4 22 1 70\"/></svg></span></a></nav><div class=\"ds-sidebar-foot\"><div class=\"ds-theme\" role=\"group\" aria-label=\"Tema\"><button type=\"button\" aria-pressed=\"true\" aria-label=\"Claro\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41\"/></svg></button><button type=\"button\" aria-pressed=\"false\" aria-label=\"Escuro\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z\"/></svg></button><button type=\"button\" aria-pressed=\"false\" aria-label=\"Sistema\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><rect width=\"20\" height=\"14\" x=\"2\" y=\"3\" rx=\"2\"/><path d=\"M8 21h8M12 17v4\"/></svg></button></div><button class=\"ds-account\" type=\"button\"><span class=\"ds-avatar\">MS</span><span class=\"ds-account-name\">Maria Souza</span></button></div></aside>",
+      "css": ".ds-sidebar { display: flex; flex-direction: column; width: 256px; min-height: 420px; background: var(--shell); color: var(--shell-foreground); font-family: \"Atkinson Hyperlegible Next Variable\", ui-sans-serif, system-ui, sans-serif; transition: width 200ms ease-out; } .ds-sidebar-mark { display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 24px 18px 8px; font-family: \"Bricolage Grotesque Variable\", ui-sans-serif, system-ui, sans-serif; font-size: 1.5rem; font-weight: 800; letter-spacing: -0.025em; white-space: nowrap; } .ds-sidebar nav { flex: 1; padding: 16px 12px; } .ds-sidebar-item { display: flex; align-items: center; gap: 12px; height: 44px; padding: 0 11px; border-radius: 6px; color: color-mix(in srgb, var(--shell-foreground) 85%, transparent); text-decoration: none; transition: background-color 200ms; } .ds-sidebar-item:hover { background: var(--shell-hover); color: var(--shell-foreground); } .ds-sidebar-item:focus-visible { outline: 2px solid var(--chalk-yellow); outline-offset: 2px; } .ds-sidebar-icon { width: 18px; height: 18px; flex-shrink: 0; fill: none; stroke: var(--shell-muted); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; } .ds-sidebar-item[aria-current=\"page\"] { font-weight: 700; color: var(--shell-foreground); } .ds-sidebar-item[aria-current=\"page\"] .ds-sidebar-icon { stroke: var(--chalk-yellow); } .ds-sidebar-label { position: relative; transition: opacity 200ms; } .ds-chalk-stroke { display: none; position: absolute; top: 100%; left: 0; width: 64px; height: 8px; color: var(--chalk-yellow); } .ds-sidebar-item[aria-current=\"page\"] .ds-chalk-stroke { display: block; } .ds-sidebar-foot { display: flex; flex-direction: column; gap: 10px; margin: 0 12px 16px; padding-top: 14px; border-top: 1px solid color-mix(in oklab, var(--shell-foreground) 10%, transparent); } .ds-theme { display: flex; gap: 4px; } .ds-theme button { display: inline-grid; place-items: center; width: 40px; height: 40px; border: 0; border-radius: 6px; background: transparent; color: var(--shell-muted); cursor: pointer; transition: background-color 150ms, color 150ms; } .ds-theme button:hover { background: var(--shell-hover); color: var(--shell-foreground); } .ds-theme button[aria-pressed=\"true\"] { background: var(--shell-hover); color: var(--chalk-yellow); } .ds-theme svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; } .ds-theme button:focus-visible, .ds-account:focus-visible { outline: 2px solid var(--chalk-yellow); outline-offset: 2px; } .ds-account { display: flex; align-items: center; gap: 12px; width: 100%; padding: 2px; border: 0; border-radius: 6px; background: transparent; color: var(--shell-foreground); font: inherit; font-weight: 700; text-align: left; cursor: pointer; transition: background-color 200ms; } .ds-account:hover { background: var(--shell-hover); } .ds-avatar { display: inline-grid; place-items: center; width: 36px; height: 36px; flex-shrink: 0; border-radius: 9999px; background: var(--chalk-yellow); color: #000; font-weight: 700; }"
     },
     {
       "name": "Card",

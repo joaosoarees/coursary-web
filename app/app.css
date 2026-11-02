@@ -116,6 +116,18 @@
   --color-shell-hover: var(--shell-hover);
   --color-shell-foreground: var(--shell-foreground);
   --color-shell-muted: var(--shell-muted);
+  --color-sidebar: var(--shell);
+  --color-sidebar-foreground: var(--shell-foreground);
+  --color-sidebar-accent: var(--shell-hover);
+  --color-sidebar-accent-foreground: var(--shell-foreground);
+  --color-sidebar-border: color-mix(
+    in oklab,
+    var(--shell-foreground) 10%,
+    transparent
+  );
+  --color-sidebar-ring: var(--chalk-yellow);
+  --color-sidebar-primary: var(--chalk-yellow);
+  --color-sidebar-primary-foreground: var(--shell);
   --color-board: var(--board);
   --color-chalk: var(--chalk);
   --color-chalk-yellow: var(--chalk-yellow);
