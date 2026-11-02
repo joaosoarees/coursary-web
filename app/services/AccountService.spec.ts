@@ -61,3 +61,41 @@ describe('AccountService.getMe', () => {
     await expect(AccountService.getMe()).rejects.toThrow();
   });
 });
+
+describe('AccountService.updateMe', () => {
+  it('should patch the name and read the profile back', async () => {
+    answer({ ...profile, name: 'Ana Lima' });
+
+    await expect(AccountService.updateMe('Ana Lima')).resolves.toMatchObject({
+      name: 'Ana Lima',
+    });
+    const [config] = adapter.mock.calls[0] ?? [];
+    expect(config).toMatchObject({ method: 'patch', url: '/me' });
+    expect(config?.data).toBe(JSON.stringify({ name: 'Ana Lima' }));
+  });
+});
+
+describe('AccountService.requestAvatarUpload', () => {
+  it('should ask for a signed form for the file type', async () => {
+    answer({
+      fileId: 'file-1',
+      url: 'https://bucket.s3.amazonaws.com/',
+      fields: { key: 'account/a/avatar/f/original', Policy: 'p' },
+    });
+
+    await expect(
+      AccountService.requestAvatarUpload('image/png'),
+    ).resolves.toMatchObject({ fileId: 'file-1' });
+    const [config] = adapter.mock.calls[0] ?? [];
+    expect(config).toMatchObject({ method: 'post', url: '/me/avatar' });
+    expect(config?.data).toBe(JSON.stringify({ contentType: 'image/png' }));
+  });
+
+  it('should refuse an answer without a URL', async () => {
+    answer({ fileId: 'file-1', url: 'not a url', fields: {} });
+
+    await expect(
+      AccountService.requestAvatarUpload('image/png'),
+    ).rejects.toThrow();
+  });
+});
