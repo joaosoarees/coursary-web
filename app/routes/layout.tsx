@@ -34,21 +34,24 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
     }
   }, [error, notFound]);
 
+  // The catch-all's loader throws before the layout's guard renders: a visitor still goes to sign-in.
   return (
-    <AppShell>
-      {notFound ? (
-        <ErrorState
-          title="Página não encontrada"
-          message="O endereço não corresponde a nenhuma página."
-        />
-      ) : (
-        <ErrorState
-          onRetry={() => {
-            // Navigating to the same address clears the error and runs the route again.
-            void navigate(location, { replace: true });
-          }}
-        />
-      )}
-    </AppShell>
+    <AuthGuard isPrivate>
+      <AppShell>
+        {notFound ? (
+          <ErrorState
+            title="Página não encontrada"
+            message="O endereço não corresponde a nenhuma página."
+          />
+        ) : (
+          <ErrorState
+            onRetry={() => {
+              // Navigating to the same address clears the error and runs the route again.
+              void navigate(location, { replace: true });
+            }}
+          />
+        )}
+      </AppShell>
+    </AuthGuard>
   );
 }
