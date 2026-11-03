@@ -13,11 +13,13 @@ interface InfiniteList {
 export function LoadMore({
   list,
   labels,
+  auto = true,
   className,
   children,
 }: {
   list: InfiniteList;
   labels: { more: string; loading: string; failed: string };
+  auto?: boolean;
   className?: string;
   children?: React.ReactNode;
 }) {
@@ -42,7 +44,7 @@ export function LoadMore({
 
   return (
     <>
-      <div ref={sentinelRef} aria-hidden="true" />
+      {auto && <div ref={sentinelRef} aria-hidden="true" />}
       <div className={cn('flex flex-col gap-2.5', className)}>
         {isFetchNextPageError && (
           <p role="alert" className="text-destructive">
