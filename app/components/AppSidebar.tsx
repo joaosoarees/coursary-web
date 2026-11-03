@@ -1,4 +1,4 @@
-import { Library } from 'lucide-react';
+import { GraduationCap, Library } from 'lucide-react';
 import { NavLink } from 'react-router';
 
 import { AccountMenu } from '~/components/AccountMenu';
@@ -17,7 +17,10 @@ import {
 import { Wordmark } from '~/components/Wordmark';
 import { ThemeCycleButton, ThemeSwitcher } from '~/theme/ThemeSwitcher';
 
-const NAV = [{ to: '/cursos', label: 'Catálogo', Icon: Library }];
+const NAV = [
+  { to: '/cursos', label: 'Catálogo', Icon: Library },
+  { to: '/minhas-matriculas', label: 'Minhas matrículas', Icon: GraduationCap },
+];
 
 // Every icon keeps its place in both widths, so collapsing only animates the width and fades the
 // labels: nothing changes size or padding mid-transition.
