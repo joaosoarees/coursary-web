@@ -2,9 +2,8 @@ import { Star } from 'lucide-react';
 
 import { CourseFormat } from '~/components/course/CourseFormat';
 import { ErrorState } from '~/components/ErrorState';
-import { Button } from '~/components/ui/button';
+import { LoadMore } from '~/components/LoadMore';
 import { Skeleton } from '~/components/ui/skeleton';
-import { useLoadMoreOnIntersect } from '~/hooks/useLoadMoreOnIntersect';
 import { cn } from '~/lib/utils';
 import { useReviews } from '~/queries/course';
 import type { Review } from '~/services/CourseService';
@@ -13,29 +12,9 @@ const NO_REVIEWS: Review[] = [];
 const STARS = [1, 2, 3, 4, 5];
 
 export function ReviewList({ courseId }: { courseId: string }) {
-  const {
-    data,
-    isLoading,
-    isLoadingError,
-    isFetching,
-    isFetchingNextPage,
-    isFetchNextPageError,
-    hasNextPage,
-    fetchNextPage,
-    refetch,
-  } = useReviews(courseId);
+  const list = useReviews(courseId);
+  const { data, isLoading, isLoadingError, refetch } = list;
   const reviews = data?.pages.flatMap((page) => page.items) ?? NO_REVIEWS;
-  const loadMore = () => {
-    void fetchNextPage({ cancelRefetch: false });
-  };
-  const sentinelRef = useLoadMoreOnIntersect({
-    loadMore,
-    hasMore:
-      hasNextPage &&
-      !(isFetching && !isFetchingNextPage) &&
-      !isFetchNextPageError,
-    isLoadingMore: isFetchingNextPage,
-  });
 
   if (isLoading) {
     return (
@@ -65,9 +44,9 @@ export function ReviewList({ courseId }: { courseId: string }) {
   return (
     <div className="flex flex-col gap-2">
       <ul>
-        {reviews.map((review) => (
+        {reviews.map((review, index) => (
           <li
-            key={`${review.studentName}-${review.createdAt}`}
+            key={`${String(index)}-${review.createdAt}`}
             className="flex flex-col gap-1.5 border-t py-4"
           >
             <div className="flex flex-wrap items-center gap-x-3.5 gap-y-2">
@@ -100,23 +79,15 @@ export function ReviewList({ courseId }: { courseId: string }) {
           </li>
         ))}
       </ul>
-      <div ref={sentinelRef} aria-hidden="true" />
-      {isFetchNextPageError && (
-        <p role="alert" className="text-destructive">
-          Não deu para carregar mais avaliações.
-        </p>
-      )}
-      {hasNextPage && (
-        <div className="pt-2">
-          <Button variant="outline" disabled={isFetching} onClick={loadMore}>
-            {isFetchingNextPage
-              ? 'Carregando mais avaliações…'
-              : isFetchNextPageError
-                ? 'Tentar de novo'
-                : 'Carregar mais avaliações'}
-          </Button>
-        </div>
-      )}
+      <LoadMore
+        list={list}
+        labels={{
+          more: 'Carregar mais avaliações',
+          loading: 'Carregando mais avaliações…',
+          failed: 'Não deu para carregar mais avaliações.',
+        }}
+        className="items-start pt-2"
+      />
     </div>
   );
 }
