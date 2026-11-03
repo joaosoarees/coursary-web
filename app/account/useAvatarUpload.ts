@@ -54,25 +54,36 @@ export function useAvatarUpload() {
     };
   }, [preview]);
 
-  const waitForNewAvatar = async (previous: string | undefined) => {
+  const waitForAvatar = async (fileId: string) => {
     for (let attempt = 0; attempt < POLL_ATTEMPTS; attempt += 1) {
       await wait(POLL_MS);
 
       if (gone.current) {
-        return true;
+        return 'gone';
       }
 
-      const me = await AccountService.getMe().catch(() => undefined);
-      const current = me?.avatarUrl?.['256'];
+      const status = await AccountService.getAvatarUploadStatus(fileId).catch(
+        () => undefined,
+      );
 
-      if (me && current !== undefined && current !== previous) {
-        queryClient.setQueryData(meQuery.queryKey, me);
+      if (status === 'FAILED') {
+        return 'refused';
+      }
 
-        return true;
+      if (status === 'PROCESSED') {
+        const me = await AccountService.getMe().catch(() => undefined);
+
+        if (me) {
+          queryClient.setQueryData(meQuery.queryKey, me);
+        } else {
+          void queryClient.invalidateQueries({ queryKey: meQuery.queryKey });
+        }
+
+        return 'ready';
       }
     }
 
-    return false;
+    return 'waiting';
   };
 
   const upload = async (file: File) => {
@@ -83,10 +94,6 @@ export function useAvatarUpload() {
       return;
     }
 
-    const previous = await queryClient
-      .query({ ...meQuery, staleTime: 'static' })
-      .then((me) => me.avatarUrl?.['256'])
-      .catch(() => undefined);
     const local = URL.createObjectURL(file);
     let unconfirmed = false;
 
@@ -119,16 +126,18 @@ export function useAvatarUpload() {
     }
 
     setPhase({ step: 'processing', preview: local });
-    const changed = await waitForNewAvatar(previous);
+    const outcome = await waitForAvatar(post.fileId);
 
-    if (gone.current) {
+    if (outcome === 'gone') {
       return;
     }
 
     setPhase({ step: 'idle' });
 
-    if (changed) {
+    if (outcome === 'ready') {
       toast.success('Foto atualizada.');
+    } else if (outcome === 'refused') {
+      setProblem(REFUSED);
     } else {
       setProblem(unconfirmed ? UNCONFIRMED : NOT_READY);
     }
