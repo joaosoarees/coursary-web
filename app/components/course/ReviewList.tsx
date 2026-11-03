@@ -54,7 +54,7 @@ export function ReviewList({ courseId }: { courseId: string }) {
               <span
                 role="img"
                 aria-label={`${String(review.rating)} de 5`}
-                className="inline-flex gap-0.5"
+                className="inline-flex gap-0.5 text-star"
               >
                 {STARS.map((star) => (
                   <Star
@@ -86,6 +86,7 @@ export function ReviewList({ courseId }: { courseId: string }) {
           loading: 'Carregando mais avaliações…',
           failed: 'Não deu para carregar mais avaliações.',
         }}
+        auto={false}
         className="items-start pt-2"
       />
     </div>
