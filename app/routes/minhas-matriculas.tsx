@@ -1,7 +1,7 @@
 import { noop } from '@tanstack/react-query';
-import { MonitorPlay } from 'lucide-react';
 import { Link } from 'react-router';
 
+import { BoardIcon } from '~/components/BoardIcon';
 import { EnrollmentCard } from '~/components/course/EnrollmentCard';
 import { EmptyState } from '~/components/EmptyState';
 import { ErrorState } from '~/components/ErrorState';
@@ -32,22 +32,34 @@ export async function clientLoader() {
 }
 
 export default function MyEnrollmentsPage() {
+  const list = useMyEnrollments();
+  const enrollments =
+    list.data?.pages.flatMap((page) => page.items) ?? NO_ENROLLMENTS;
+  const none = list.isSuccess && enrollments.length === 0;
+
   return (
     <section className="flex flex-col gap-8">
       <PageHeader
         title="Minhas matrículas"
-        description="Os cursos em que você está matriculado, com o seu progresso."
+        description={
+          none
+            ? 'Os cursos em que você está matriculado.'
+            : 'Os cursos em que você está matriculado, com o seu progresso.'
+        }
       />
-      <EnrollmentList />
+      <EnrollmentList list={list} enrollments={enrollments} />
     </section>
   );
 }
 
-function EnrollmentList() {
-  const list = useMyEnrollments();
-  const { data, isLoading, isLoadingError, refetch } = list;
-  const enrollments =
-    data?.pages.flatMap((page) => page.items) ?? NO_ENROLLMENTS;
+function EnrollmentList({
+  list,
+  enrollments,
+}: {
+  list: ReturnType<typeof useMyEnrollments>;
+  enrollments: EnrollmentSummary[];
+}) {
+  const { isLoading, isLoadingError, refetch } = list;
 
   if (isLoading) {
     return (
@@ -55,7 +67,17 @@ function EnrollmentList() {
         <LoadingNote>Carregando suas matrículas…</LoadingNote>
         <div aria-hidden="true" className="flex flex-col gap-4">
           {Array.from({ length: 3 }, (_, index) => (
-            <Skeleton key={index} className="h-40 w-full" />
+            <div
+              key={index}
+              className="flex flex-col gap-5 rounded-md border p-4 md:flex-row"
+            >
+              <Skeleton className="aspect-video w-full md:w-55 md:shrink-0" />
+              <div className="flex flex-1 flex-col justify-center gap-3">
+                <Skeleton className="h-5 w-2/3" />
+                <Skeleton className="h-4 w-1/3" />
+                <Skeleton className="h-2 w-full max-w-90" />
+              </div>
+            </div>
           ))}
         </div>
       </>
@@ -75,7 +97,7 @@ function EnrollmentList() {
   if (enrollments.length === 0) {
     return (
       <EmptyState
-        icon={MonitorPlay}
+        icon={BoardIcon}
         title="Você ainda não se matriculou em nenhum curso"
         description="Os cursos em que você se matricular aparecem aqui, com o seu progresso."
         action={
