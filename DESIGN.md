@@ -20,6 +20,7 @@ colors:
   success-soft: "#e3f1e8"
   highlight: "#fcf3d4"
   highlight-border: "#b8952a"
+  star: "#8a6d12"
   link: "#2b6b52"
   border: "#cfd9d1"
   input: "#7d9186"
@@ -51,6 +52,7 @@ colors:
   success-soft-dark: "#1f4a35"
   highlight-dark: "#2c3418"
   highlight-border-dark: "#a08a2e"
+  star-dark: "#c9a443"
   link-dark: "#f2c94c"
   border-dark: "#2f4c3e"
   input-dark: "#5f7d6d"
@@ -275,6 +277,7 @@ Uma paleta de lousa: verdes profundos e frios como estrutura, giz claro como mar
 - **Tijolo** (#b3372a): ação destrutiva e erro no tema claro, com hover em **Tijolo Queimado** (#8f2a20). No escuro vira **Tijolo Claro** (#f08a7a), com hover **Tijolo Rosado** (#f5ada1) e texto em Lousa Noturna.
 - **Verde Aprovado** (#1d5c3a) sobre **Verde Aprovado Suave** (#e3f1e8): sucesso. No escuro, **Verde Broto** (#b8ecc9) sobre **Verde Mata** (#1f4a35).
 - **Creme de Giz** (#fcf3d4) com borda **Ocre de Giz** (#b8952a): o realce mantido, reservado ao aviso amarelo que fica até ser visto. No escuro, **Oliva Noturna** (#2c3418) com borda **Ocre Velho** (#a08a2e).
+- **Ocre de Estrela** (#8a6d12; no escuro, **Ocre Claro** #c9a443): as estrelas das notas e avaliações. É ocre e não Giz Amarelo, porque uma nota não está "ativa".
 
 ### Neutral
 - **Pó de Giz** (#f3f5f1): o chão do tema claro e o texto sobre o primário.
