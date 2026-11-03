@@ -5,6 +5,7 @@ import { createRoutesStub, useLocation } from 'react-router';
 
 import { AuthProvider } from '~/auth/AuthProvider';
 import { LocationState } from '~/auth/LocationState';
+import { queryClient } from '~/lib/queryClient';
 
 type Routes = Parameters<typeof createRoutesStub>[0];
 
@@ -15,7 +16,11 @@ export function renderRoutes(
   const Stub = createRoutesStub(routes);
 
   return render(
-    <QueryClientProvider client={new QueryClient()}>
+    <QueryClientProvider
+      client={
+        new QueryClient({ defaultOptions: queryClient.getDefaultOptions() })
+      }
+    >
       <AuthProvider>
         <Stub initialEntries={[initialEntry]} />
       </AuthProvider>
