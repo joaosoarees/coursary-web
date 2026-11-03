@@ -7,6 +7,7 @@ import { useAvatarUpload } from '~/account/useAvatarUpload';
 import { meQuery } from '~/queries/me';
 import { AccountService, type Profile } from '~/services/AccountService';
 import { S3Upload } from '~/services/S3Upload';
+import { apiError } from '~/test/renderRoutes';
 
 const before: Profile = {
   id: 'a1',
@@ -131,6 +132,45 @@ describe('useAvatarUpload', () => {
     expect(getMe).not.toHaveBeenCalled();
     expect(result.current.problem).toBe(
       'A foto foi recusada. Tente com outra imagem.',
+    );
+  });
+
+  it('should keep waiting through a failed status request', async () => {
+    vi.spyOn(S3Upload, 'post').mockResolvedValue();
+    vi.spyOn(AccountService, 'getAvatarUploadStatus')
+      .mockRejectedValueOnce(new AxiosError('Network Error', 'ERR_NETWORK'))
+      .mockResolvedValueOnce('PROCESSED');
+    vi.spyOn(AccountService, 'getMe').mockResolvedValue(after);
+    const { result } = renderUpload();
+
+    await act(async () => {
+      const done = result.current.upload(photo);
+      await vi.advanceTimersByTimeAsync(4_000);
+      await done;
+    });
+
+    expect(result.current.problem).toBeUndefined();
+    expect(queryClient.getQueryData(meQuery.queryKey)).toEqual(after);
+  });
+
+  it('should stop and show /me when the upload is no longer found', async () => {
+    vi.spyOn(S3Upload, 'post').mockResolvedValue();
+    const status = vi
+      .spyOn(AccountService, 'getAvatarUploadStatus')
+      .mockRejectedValue(apiError(404, 'FILE_NOT_FOUND'));
+    vi.spyOn(AccountService, 'getMe').mockResolvedValue(after);
+    const { result } = renderUpload();
+
+    await act(async () => {
+      const done = result.current.upload(photo);
+      await vi.advanceTimersByTimeAsync(2_000);
+      await done;
+    });
+
+    expect(status).toHaveBeenCalledOnce();
+    expect(queryClient.getQueryData(meQuery.queryKey)).toEqual(after);
+    expect(result.current.problem).toBe(
+      'Não deu para confirmar o envio. Se a foto não aparecer em instantes, tente de novo.',
     );
   });
 
