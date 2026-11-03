@@ -7,6 +7,7 @@ import { useAvatarUpload } from '~/account/useAvatarUpload';
 import { meQuery } from '~/queries/me';
 import { AccountService, type Profile } from '~/services/AccountService';
 import { S3Upload } from '~/services/S3Upload';
+import { apiError } from '~/test/renderRoutes';
 
 const before: Profile = {
   id: 'a1',
@@ -63,12 +64,13 @@ afterEach(() => {
 });
 
 describe('useAvatarUpload', () => {
-  it('should show the local photo, then the processed one when /me has it', async () => {
+  it('should show the local photo, then the processed one once the upload is ready', async () => {
     vi.spyOn(S3Upload, 'post').mockResolvedValue();
-    const getMe = vi
-      .spyOn(AccountService, 'getMe')
-      .mockResolvedValueOnce(before)
-      .mockResolvedValueOnce(after);
+    const status = vi
+      .spyOn(AccountService, 'getAvatarUploadStatus')
+      .mockResolvedValueOnce('PENDING')
+      .mockResolvedValueOnce('PROCESSED');
+    const getMe = vi.spyOn(AccountService, 'getMe').mockResolvedValue(after);
     const { result } = renderUpload();
 
     let done: Promise<void> = Promise.resolve();
@@ -91,12 +93,92 @@ describe('useAvatarUpload', () => {
     expect(result.current.phase).toEqual({ step: 'idle' });
     expect(result.current.problem).toBeUndefined();
     expect(queryClient.getQueryData(meQuery.queryKey)).toEqual(after);
-    expect(getMe).toHaveBeenCalledTimes(2);
+    expect(status).toHaveBeenCalledWith('f1');
+    expect(getMe).toHaveBeenCalledOnce();
+  });
+
+  it('should take the same photo sent twice as updated', async () => {
+    vi.spyOn(S3Upload, 'post').mockResolvedValue();
+    vi.spyOn(AccountService, 'getAvatarUploadStatus').mockResolvedValue(
+      'PROCESSED',
+    );
+    vi.spyOn(AccountService, 'getMe').mockResolvedValue(before);
+    const { result } = renderUpload();
+
+    await act(async () => {
+      const done = result.current.upload(photo);
+      await vi.advanceTimersByTimeAsync(2_000);
+      await done;
+    });
+
+    expect(result.current.problem).toBeUndefined();
+  });
+
+  it('should stop at once and say the photo was refused', async () => {
+    vi.spyOn(S3Upload, 'post').mockResolvedValue();
+    const status = vi
+      .spyOn(AccountService, 'getAvatarUploadStatus')
+      .mockResolvedValue('FAILED');
+    const getMe = vi.spyOn(AccountService, 'getMe');
+    const { result } = renderUpload();
+
+    await act(async () => {
+      const done = result.current.upload(photo);
+      await vi.advanceTimersByTimeAsync(2_000);
+      await done;
+    });
+
+    expect(status).toHaveBeenCalledOnce();
+    expect(getMe).not.toHaveBeenCalled();
+    expect(result.current.problem).toBe(
+      'A foto foi recusada. Tente com outra imagem.',
+    );
+  });
+
+  it('should keep waiting through a failed status request', async () => {
+    vi.spyOn(S3Upload, 'post').mockResolvedValue();
+    vi.spyOn(AccountService, 'getAvatarUploadStatus')
+      .mockRejectedValueOnce(new AxiosError('Network Error', 'ERR_NETWORK'))
+      .mockResolvedValueOnce('PROCESSED');
+    vi.spyOn(AccountService, 'getMe').mockResolvedValue(after);
+    const { result } = renderUpload();
+
+    await act(async () => {
+      const done = result.current.upload(photo);
+      await vi.advanceTimersByTimeAsync(4_000);
+      await done;
+    });
+
+    expect(result.current.problem).toBeUndefined();
+    expect(queryClient.getQueryData(meQuery.queryKey)).toEqual(after);
+  });
+
+  it('should stop and show /me when the upload is no longer found', async () => {
+    vi.spyOn(S3Upload, 'post').mockResolvedValue();
+    const status = vi
+      .spyOn(AccountService, 'getAvatarUploadStatus')
+      .mockRejectedValue(apiError(404, 'FILE_NOT_FOUND'));
+    vi.spyOn(AccountService, 'getMe').mockResolvedValue(after);
+    const { result } = renderUpload();
+
+    await act(async () => {
+      const done = result.current.upload(photo);
+      await vi.advanceTimersByTimeAsync(2_000);
+      await done;
+    });
+
+    expect(status).toHaveBeenCalledOnce();
+    expect(queryClient.getQueryData(meQuery.queryKey)).toEqual(after);
+    expect(result.current.problem).toBe(
+      'Não deu para confirmar o envio. Se a foto não aparecer em instantes, tente de novo.',
+    );
   });
 
   it('should give up after 20 seconds and say the photo is not ready', async () => {
     vi.spyOn(S3Upload, 'post').mockResolvedValue();
-    const getMe = vi.spyOn(AccountService, 'getMe').mockResolvedValue(before);
+    const status = vi
+      .spyOn(AccountService, 'getAvatarUploadStatus')
+      .mockResolvedValue('PENDING');
     const { result } = renderUpload();
 
     await act(async () => {
@@ -105,7 +187,7 @@ describe('useAvatarUpload', () => {
       await done;
     });
 
-    expect(getMe).toHaveBeenCalledTimes(10);
+    expect(status).toHaveBeenCalledTimes(10);
     expect(result.current.problem).toBe(
       'A foto ainda não ficou pronta. Se ela não aparecer, tente com outra imagem.',
     );
@@ -115,7 +197,9 @@ describe('useAvatarUpload', () => {
     vi.spyOn(S3Upload, 'post').mockRejectedValue(
       new AxiosError('Network Error', 'ERR_NETWORK'),
     );
-    vi.spyOn(AccountService, 'getMe').mockResolvedValue(before);
+    vi.spyOn(AccountService, 'getAvatarUploadStatus').mockResolvedValue(
+      'PENDING',
+    );
     const { result } = renderUpload();
 
     await act(async () => {
@@ -131,6 +215,9 @@ describe('useAvatarUpload', () => {
 
   it('should ask for the type the bytes have, not the one the name says', async () => {
     vi.spyOn(S3Upload, 'post').mockResolvedValue();
+    vi.spyOn(AccountService, 'getAvatarUploadStatus').mockResolvedValue(
+      'PROCESSED',
+    );
     vi.spyOn(AccountService, 'getMe').mockResolvedValue(after);
     const request = vi.spyOn(AccountService, 'requestAvatarUpload');
     const { result } = renderUpload();
