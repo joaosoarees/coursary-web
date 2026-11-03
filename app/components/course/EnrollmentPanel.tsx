@@ -105,6 +105,10 @@ function Enrolled({ course }: { course: CoursePage }) {
       <Dialog
         open={confirming}
         onOpenChange={(open) => {
+          if (cancel.isPending) {
+            return;
+          }
+
           setConfirming(open);
           cancel.reset();
         }}
