@@ -68,3 +68,26 @@ describe('EnrollmentService enroll and cancel', () => {
     });
   });
 });
+
+describe('EnrollmentService.listMine', () => {
+  it('should ask for a page of the caller enrollments by cursor', async () => {
+    const enrollment = {
+      courseId: 'c1',
+      title: 'Python para análise de dados',
+      instructorName: 'Juliana Prado',
+      lessonCount: 42,
+      completedLessons: 10,
+      enrolledAt: '2026-10-01T00:00:00.000Z',
+      courseStatus: 'ARCHIVED',
+    };
+    answer({ items: [enrollment], nextCursor: 'next' });
+
+    await expect(
+      EnrollmentService.listMine({ cursor: 'abc', limit: 12 }),
+    ).resolves.toEqual({ items: [enrollment], nextCursor: 'next' });
+    expect(adapter.mock.calls[0]?.[0]).toMatchObject({
+      url: '/me/enrollments',
+      params: { cursor: 'abc', limit: 12 },
+    });
+  });
+});
