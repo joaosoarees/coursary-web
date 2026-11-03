@@ -5,17 +5,18 @@ import { useLocation } from 'react-router';
 // screen reader then says nothing and the next Tab starts at the top of the document.
 export function useFocusOnNavigation<T extends HTMLElement>() {
   const ref = useRef<T>(null);
-  const { pathname } = useLocation();
-  const lastPathname = useRef(pathname);
+  const { pathname, search } = useLocation();
+  const address = pathname + search;
+  const lastAddress = useRef(address);
 
   useEffect(() => {
-    if (lastPathname.current === pathname) {
+    if (lastAddress.current === address) {
       return;
     }
 
-    lastPathname.current = pathname;
+    lastAddress.current = address;
     ref.current?.focus({ preventScroll: true });
-  }, [pathname]);
+  }, [address]);
 
   return ref;
 }
