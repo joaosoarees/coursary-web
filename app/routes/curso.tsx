@@ -83,7 +83,7 @@ function CourseDetails({ course }: { course: CoursePage }) {
               {course.title}
             </h1>
             <p className="text-muted-foreground">Com {course.instructorName}</p>
-            <p className="flex flex-wrap gap-x-4.5 gap-y-1.5 text-[0.9375rem] text-muted-foreground">
+            <p className="flex flex-wrap gap-x-4.5 gap-y-1.5 text-sm text-muted-foreground">
               <CourseRating
                 average={course.ratingAverage}
                 count={course.ratingCount}
@@ -124,7 +124,7 @@ function Section({
 }) {
   return (
     <section className="flex flex-col gap-3">
-      <h2 className="font-display text-[1.375rem] font-bold">{title}</h2>
+      <h2 className="font-display text-xl font-bold">{title}</h2>
       {children}
     </section>
   );
