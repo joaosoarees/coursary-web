@@ -165,7 +165,7 @@
   body {
     @apply bg-background text-foreground;
     caret-color: var(--ring);
-    overflow-wrap: break-word;
+    overflow-wrap: anywhere;
     font-variant-numeric: tabular-nums;
   }
 
