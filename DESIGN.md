@@ -32,6 +32,7 @@ colors:
   board: "#1f3a2e"
   chalk: "#eef3ee"
   chalk-yellow: "#f2c94c"
+  chalk-yellow-foreground: "#112019"
   chalk-blue: "#9fd0ee"
   chalk-pink: "#f4a9b8"
   background-dark: "#112019"
@@ -267,7 +268,7 @@ Uma paleta de lousa: verdes profundos e frios como estrutura, giz claro como mar
 ### Primary
 - **Verde Lousa** (#1f3a2e): a lousa. Fundo do trilho de navegação nos dois temas, superfície das placas de giz (token `board`) e cor primária no tema claro (botão principal, selo padrão). No tema escuro, o trilho fica neste tom, mais claro que o chão, para continuar a ser lido como a lousa.
 - **Verde Lousa Claro** (#2f5746): o hover do primário e dos itens do trilho no tema claro.
-- **Giz Amarelo** (#f2c94c): o giz que marca. Traço sob o item ativo do trilho, ícone do tema escolhido, fundo do link "Pular para o conteúdo" e da seleção de texto. No tema escuro assume primário, link e anel de foco; o hover dele é o **Giz Amarelo Claro** (#f7dc85).
+- **Giz Amarelo** (#f2c94c): o giz que marca. Traço sob o item ativo do trilho, ícone do tema escolhido, fundo do link "Pular para o conteúdo" e da seleção de texto, com o texto em Lousa Noturna nos dois temas. No tema escuro assume primário, link e anel de foco; o hover dele é o **Giz Amarelo Claro** (#f7dc85).
 
 ### Secondary
 - **Verde Folha** (#2b6b52): link e anel de foco no tema claro; também o cursor de texto (caret), que segue o anel nos dois temas.
