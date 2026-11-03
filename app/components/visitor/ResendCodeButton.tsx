@@ -12,7 +12,7 @@ export function ResendCodeButton({
 }) {
   if (remaining > 0) {
     return (
-      <span className="inline-flex min-h-10 items-center text-[0.9375rem] text-muted-foreground tabular-nums">
+      <span className="inline-flex min-h-10 items-center text-sm text-muted-foreground tabular-nums">
         Reenviar em {formatWait(remaining)}
       </span>
     );

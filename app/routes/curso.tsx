@@ -8,6 +8,7 @@ import { CourseRating } from '~/components/course/CourseRating';
 import { EnrollmentPanel } from '~/components/course/EnrollmentPanel';
 import { ReviewList } from '~/components/course/ReviewList';
 import { ErrorState } from '~/components/ErrorState';
+import { LoadingNote } from '~/components/LoadingNote';
 import { Skeleton } from '~/components/ui/skeleton';
 import { queryClient } from '~/lib/queryClient';
 import {
@@ -132,16 +133,19 @@ function Section({
 
 function CourseSkeleton() {
   return (
-    <div
-      aria-hidden="true"
-      className="grid items-start gap-10 pt-18 lg:grid-cols-[minmax(0,1fr)_21.25rem]"
-    >
-      <div className="flex flex-col gap-4">
-        <Skeleton className="h-10 w-3/4" />
-        <Skeleton className="h-5 w-1/3" />
-        <Skeleton className="h-32 w-full" />
+    <>
+      <LoadingNote>Carregando o curso…</LoadingNote>
+      <div
+        aria-hidden="true"
+        className="grid items-start gap-10 pt-18 lg:grid-cols-[minmax(0,1fr)_21.25rem]"
+      >
+        <div className="flex flex-col gap-4">
+          <Skeleton className="h-10 w-3/4" />
+          <Skeleton className="h-5 w-1/3" />
+          <Skeleton className="h-32 w-full" />
+        </div>
+        <Skeleton className="aspect-video w-full" />
       </div>
-      <Skeleton className="aspect-video w-full" />
-    </div>
+    </>
   );
 }

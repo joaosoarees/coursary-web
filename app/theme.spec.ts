@@ -69,6 +69,7 @@ const text: [string, string][] = [
   ['chalk', 'board'],
   ['shell-muted', 'board'],
   ['chalk-yellow', 'board'],
+  ['chalk-yellow-foreground', 'chalk-yellow'],
   ['chalk-blue', 'board'],
   ['chalk-pink', 'board'],
 ];

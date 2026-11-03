@@ -1,6 +1,7 @@
 import { AvatarCard } from '~/account/AvatarCard';
 import { ProfileForm } from '~/account/ProfileForm';
 import { ErrorState } from '~/components/ErrorState';
+import { LoadingNote } from '~/components/LoadingNote';
 import { PageHeader } from '~/components/PageHeader';
 import { Skeleton } from '~/components/ui/skeleton';
 import { useMe } from '~/queries/me';
@@ -19,13 +20,16 @@ export default function ProfilePage() {
         description="Sua foto e seus dados na Coursary."
       />
       {me.isPending ? (
-        <div
-          className="grid gap-6 lg:grid-cols-[20rem_minmax(0,32rem)]"
-          aria-hidden="true"
-        >
-          <Skeleton className="h-96" />
-          <Skeleton className="h-80" />
-        </div>
+        <>
+          <LoadingNote>Carregando o perfil…</LoadingNote>
+          <div
+            className="grid gap-6 lg:grid-cols-[20rem_minmax(0,32rem)]"
+            aria-hidden="true"
+          >
+            <Skeleton className="h-96" />
+            <Skeleton className="h-80" />
+          </div>
+        </>
       ) : me.isError ? (
         <ErrorState
           variant="block"

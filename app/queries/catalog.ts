@@ -19,6 +19,7 @@ export const catalogQuery = infiniteQueryOptions({
     ),
   initialPageParam: undefined as string | undefined,
   getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+  staleTime: 30_000,
 });
 
 export const SEARCH_PAGE_SIZE = 12;

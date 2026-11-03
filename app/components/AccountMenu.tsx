@@ -62,7 +62,7 @@ export function AccountMenu({
             {me.data?.avatarUrl?.['64'] && (
               <AvatarImage src={me.data.avatarUrl['64']} alt="" />
             )}
-            <AvatarFallback className="bg-chalk-yellow font-bold text-black">
+            <AvatarFallback className="bg-chalk-yellow font-bold text-chalk-yellow-foreground">
               {me.data ? initialsOf(me.data.name) : '?'}
             </AvatarFallback>
           </Avatar>

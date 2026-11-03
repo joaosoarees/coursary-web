@@ -32,6 +32,7 @@ colors:
   board: "#1f3a2e"
   chalk: "#eef3ee"
   chalk-yellow: "#f2c94c"
+  chalk-yellow-foreground: "#112019"
   chalk-blue: "#9fd0ee"
   chalk-pink: "#f4a9b8"
   background-dark: "#112019"
@@ -250,7 +251,7 @@ A Coursary toma emprestada a lousa verde da sala de aula brasileira e a usa como
 
 O tom é sereno, legível e deliberado. A densidade é de ferramenta: títulos firmes em Bricolage Grotesque, todo o resto em Atkinson Hyperlegible Next, números com largura fixa para que colunas e contadores se alinhem. Cada controle se anuncia com clareza (fundo ou borda no hover, contorno de foco de 2 px, alvo de pelo menos 40 px) e nada se ergue da página sem motivo. O sistema recusa o padrão da categoria: página branca, botão de marca roxo e cards de curso todos iguais.
 
-O que já está construído é o mundo e a sua gramática: tokens nos dois temas, o trilho com o traço de giz, os componentes e os estados. As telas próprias do mundo ainda não existem e ficam aqui só como direção, **ainda não construídas**: capas de curso como placas de giz (um bloco cor de lousa com o título escrito em display numa única cor de giz: branco, amarelo, azul ou rosa), progresso desenhado como segmentos iguais de módulo sobre uma linha de base, com o atual em Giz Amarelo, e um aviso amarelo que fica marcado até ser visto.
+O que já está construído é o mundo e a sua gramática: tokens nos dois temas, o trilho com o traço de giz, os componentes e os estados. As telas próprias do mundo ainda não existem e ficam aqui só como direção, **ainda não construídas**: capas de curso como placas de giz (um bloco cor de lousa com o título escrito em display numa única cor de giz: branco, azul ou rosa; o amarelo fica fora, porque marca o que está ativo), progresso desenhado como segmentos iguais de módulo sobre uma linha de base, com o atual em Giz Amarelo, e um aviso amarelo que fica marcado até ser visto.
 
 **Key Characteristics:**
 - A lousa verde como moldura (o trilho) e o giz como única marca sobre ela.
@@ -267,7 +268,7 @@ Uma paleta de lousa: verdes profundos e frios como estrutura, giz claro como mar
 ### Primary
 - **Verde Lousa** (#1f3a2e): a lousa. Fundo do trilho de navegação nos dois temas, superfície das placas de giz (token `board`) e cor primária no tema claro (botão principal, selo padrão). No tema escuro, o trilho fica neste tom, mais claro que o chão, para continuar a ser lido como a lousa.
 - **Verde Lousa Claro** (#2f5746): o hover do primário e dos itens do trilho no tema claro.
-- **Giz Amarelo** (#f2c94c): o giz que marca. Traço sob o item ativo do trilho, ícone do tema escolhido, fundo do link "Pular para o conteúdo" e da seleção de texto. No tema escuro assume primário, link e anel de foco; o hover dele é o **Giz Amarelo Claro** (#f7dc85).
+- **Giz Amarelo** (#f2c94c): o giz que marca. Traço sob o item ativo do trilho, ícone do tema escolhido, fundo do link "Pular para o conteúdo" e da seleção de texto, com o texto em Lousa Noturna nos dois temas. No tema escuro assume primário, link e anel de foco; o hover dele é o **Giz Amarelo Claro** (#f7dc85).
 
 ### Secondary
 - **Verde Folha** (#2b6b52): link e anel de foco no tema claro; também o cursor de texto (caret), que segue o anel nos dois temas.
