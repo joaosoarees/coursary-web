@@ -72,7 +72,7 @@ function EnrollmentAction({ course }: { course: CoursePage }) {
   return (
     <div className="flex flex-col gap-2.5">
       <Button
-        className="h-12 text-[1.0625rem]"
+        className="h-12"
         disabled={enroll.isPending || ownCourse}
         onClick={() => {
           enroll.mutate(course.id);
@@ -80,10 +80,16 @@ function EnrollmentAction({ course }: { course: CoursePage }) {
       >
         {enroll.isPending ? 'Matriculando…' : 'Matricular-me'}
       </Button>
-      {enroll.error && (
-        <FormAlert>
-          {ApiFailure.message(enroll.error, ENROLL_FAILURES)}
-        </FormAlert>
+      {ownCourse ? (
+        <p role="alert" className="text-sm text-muted-foreground">
+          {ENROLL_FAILURES.OWN_COURSE}
+        </p>
+      ) : (
+        enroll.error && (
+          <FormAlert>
+            {ApiFailure.message(enroll.error, ENROLL_FAILURES)}
+          </FormAlert>
+        )
       )}
     </div>
   );
@@ -122,10 +128,10 @@ function Enrolled({ course }: { course: CoursePage }) {
         >
           Cancelar matrícula
         </Button>
-        <DialogContent showCloseButton={false}>
-          <DialogHeader>
+        <DialogContent showCloseButton={false} className="sm:max-w-[30rem]">
+          <DialogHeader className="gap-4">
             <DialogTitle>Cancelar a matrícula?</DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-base">
               Você deixa de ver as aulas de “{course.title}”. Seu progresso fica
               guardado se você se matricular de novo.
             </DialogDescription>
