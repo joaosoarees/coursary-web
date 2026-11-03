@@ -65,10 +65,7 @@ describe('my enrollments', () => {
     expect(
       await screen.findByRole('link', { name: /Python para análise de dados/ }),
     ).toHaveAttribute('href', '/cursos/c1');
-    expect(screen.getByText('10 de 42 aulas')).toBeVisible();
-    expect(
-      screen.getByRole('img', { name: '10 de 42 aulas concluídas' }),
-    ).toBeVisible();
+    expect(screen.getByText(/10 de 42 aulas/)).toBeVisible();
     expect(screen.getByText('Concluído')).toBeVisible();
     expect(screen.getAllByText('Arquivado')).toHaveLength(1);
   });
@@ -80,9 +77,15 @@ describe('my enrollments', () => {
     });
     renderAt();
 
-    fireEvent.click(
-      await screen.findByRole('link', { name: 'Explorar o catálogo' }),
-    );
+    expect(
+      await screen.findByRole('heading', {
+        name: 'Você ainda não se matriculou em nenhum curso',
+      }),
+    ).toBeVisible();
+    expect(
+      screen.getByText('Os cursos em que você está matriculado.'),
+    ).toBeVisible();
+    fireEvent.click(screen.getByRole('link', { name: 'Explorar o catálogo' }));
 
     expect(
       await screen.findByRole('heading', { name: 'Catálogo' }),

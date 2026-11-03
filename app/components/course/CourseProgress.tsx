@@ -1,7 +1,26 @@
+import { CircleCheck } from 'lucide-react';
+
 import { ChalkStroke } from '~/components/ChalkStroke';
 import { cn } from '~/lib/utils';
 
 const SEGMENTS = 6;
+
+// A started course always shows a segment and an unfinished one always leaves one open, so the
+// strokes never contradict the count beside them.
+const segmentsDone = (completed: number, total: number) => {
+  if (total <= 0 || completed <= 0) {
+    return 0;
+  }
+
+  if (completed >= total) {
+    return SEGMENTS;
+  }
+
+  return Math.min(
+    SEGMENTS - 1,
+    Math.max(1, Math.round((completed / total) * SEGMENTS)),
+  );
+};
 
 export function CourseProgress({
   completed,
@@ -10,29 +29,37 @@ export function CourseProgress({
   completed: number;
   total: number;
 }) {
-  const done = total > 0 ? Math.round((completed / total) * SEGMENTS) : 0;
-  const finished = total > 0 && completed >= total;
+  const done = segmentsDone(completed, total);
+  const finished = done === SEGMENTS;
 
   return (
     <div className="flex max-w-90 flex-col gap-1.5">
-      <div
-        role="img"
-        aria-label={`${String(completed)} de ${String(total)} aulas concluídas`}
-        className="grid grid-cols-6 gap-1.5"
-      >
+      <div aria-hidden="true" className="grid grid-cols-6 gap-1.5">
         {Array.from({ length: SEGMENTS }, (_, index) => (
           <ChalkStroke
             key={index}
             dashed={index >= done}
-            className={cn(index < done ? 'text-foreground' : 'text-border')}
+            className={cn(
+              index >= done
+                ? 'text-input'
+                : finished
+                  ? 'text-success'
+                  : 'text-foreground',
+            )}
           />
         ))}
       </div>
-      <span className="text-sm text-muted-foreground">
-        {finished
-          ? 'Concluído'
-          : `${String(completed)} de ${String(total)} aulas`}
-      </span>
+      {finished ? (
+        <span className="inline-flex items-center gap-1.5 text-sm font-bold text-success">
+          <CircleCheck aria-hidden="true" className="size-4" />
+          Concluído
+        </span>
+      ) : (
+        <span className="text-sm text-muted-foreground">
+          {completed} de {total} aulas
+          <span className="sr-only"> concluídas</span>
+        </span>
+      )}
     </div>
   );
 }
