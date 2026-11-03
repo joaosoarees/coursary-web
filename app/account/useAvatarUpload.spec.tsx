@@ -25,7 +25,11 @@ const after: Profile = {
     '256': 'https://cdn.test/new-256.webp',
   },
 };
-const photo = new File(['png'], 'foto.png', { type: 'image/png' });
+const PNG = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+const JPEG = [0xff, 0xd8, 0xff, 0xe0];
+const photo = new File([new Uint8Array(PNG)], 'foto.png', {
+  type: 'image/png',
+});
 
 let queryClient: QueryClient;
 
@@ -123,6 +127,23 @@ describe('useAvatarUpload', () => {
     expect(result.current.problem).toBe(
       'Não deu para confirmar o envio. Se a foto não aparecer em instantes, tente de novo.',
     );
+  });
+
+  it('should ask for the type the bytes have, not the one the name says', async () => {
+    vi.spyOn(S3Upload, 'post').mockResolvedValue();
+    vi.spyOn(AccountService, 'getMe').mockResolvedValue(after);
+    const request = vi.spyOn(AccountService, 'requestAvatarUpload');
+    const { result } = renderUpload();
+
+    await act(async () => {
+      const done = result.current.upload(
+        new File([new Uint8Array(JPEG)], 'foto.png', { type: 'image/png' }),
+      );
+      await vi.advanceTimersByTimeAsync(2_000);
+      await done;
+    });
+
+    expect(request).toHaveBeenCalledWith('image/jpeg');
   });
 
   it('should refuse a file before asking the API', async () => {
