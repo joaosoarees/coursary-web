@@ -3,7 +3,7 @@ import { isAxiosError } from 'axios';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
-import { avatarProblem } from '~/account/avatarRules';
+import { checkAvatar } from '~/account/avatarRules';
 import { TOO_MANY_REQUESTS } from '~/auth/authMessages';
 import { meQuery } from '~/queries/me';
 import { AccountService } from '~/services/AccountService';
@@ -76,10 +76,10 @@ export function useAvatarUpload() {
   };
 
   const upload = async (file: File) => {
-    const invalid = avatarProblem(file);
+    const checked = await checkAvatar(file);
 
-    if (invalid) {
-      setProblem(invalid);
+    if ('problem' in checked) {
+      setProblem(checked.problem);
       return;
     }
 
@@ -96,7 +96,7 @@ export function useAvatarUpload() {
     let post;
 
     try {
-      post = await AccountService.requestAvatarUpload(file.type);
+      post = await AccountService.requestAvatarUpload(checked.type);
     } catch (error) {
       setPhase({ step: 'idle' });
       setProblem(ApiFailure.message(error, { TOO_MANY_REQUESTS }));
