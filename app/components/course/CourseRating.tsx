@@ -15,7 +15,7 @@ export function CourseRating({
 
   return (
     <span className="inline-flex items-center gap-1">
-      <Star aria-hidden="true" className="size-4 fill-current" />
+      <Star aria-hidden="true" className="size-4 fill-current text-star" />
       <span>
         <span className="sr-only">Nota </span>
         {CourseFormat.rating(average)} ({count})
