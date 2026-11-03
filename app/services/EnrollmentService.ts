@@ -17,7 +17,7 @@ const enrollmentSummarySchema = z.object({
   lessonCount: z.number(),
   completedLessons: z.number(),
   enrolledAt: z.string(),
-  courseStatus: z.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']),
+  courseStatus: z.string(),
   coverUrl: z.record(z.string(), z.string()).optional(),
 });
 
