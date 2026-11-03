@@ -169,7 +169,7 @@ function SearchResults({ query, page }: { query: string; page: number }) {
 
   const heading = (
     <div className="flex flex-wrap items-baseline justify-between gap-3">
-      <h2 className="font-display text-2xl font-bold tracking-tight">
+      <h2 className="font-display text-xl font-bold tracking-tight">
         Resultados para “{query}”
       </h2>
       <Link
