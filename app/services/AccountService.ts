@@ -20,6 +20,8 @@ const avatarUploadSchema = z.object({
 
 export type AvatarUpload = z.infer<typeof avatarUploadSchema>;
 
+const avatarUploadStatusSchema = z.object({ status: z.string() });
+
 export class AccountService {
   static async getMe(signal?: AbortSignal): Promise<Profile> {
     const { data } = await httpClient.get<unknown>('/me', { signal });
@@ -39,5 +41,13 @@ export class AccountService {
     });
 
     return avatarUploadSchema.parse(data);
+  }
+
+  static async getAvatarUploadStatus(fileId: string): Promise<string> {
+    const { data } = await httpClient.get<unknown>(
+      `/me/avatar/${encodeURIComponent(fileId)}`,
+    );
+
+    return avatarUploadStatusSchema.parse(data).status;
   }
 }

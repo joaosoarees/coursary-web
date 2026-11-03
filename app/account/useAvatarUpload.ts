@@ -54,25 +54,50 @@ export function useAvatarUpload() {
     };
   }, [preview]);
 
-  const waitForNewAvatar = async (previous: string | undefined) => {
+  const refreshMe = async () => {
+    const me = await AccountService.getMe().catch(() => undefined);
+
+    if (me) {
+      queryClient.setQueryData(meQuery.queryKey, me);
+    } else {
+      void queryClient.invalidateQueries({ queryKey: meQuery.queryKey });
+    }
+  };
+
+  const waitForAvatar = async (fileId: string) => {
     for (let attempt = 0; attempt < POLL_ATTEMPTS; attempt += 1) {
       await wait(POLL_MS);
 
       if (gone.current) {
-        return true;
+        return 'gone';
       }
 
-      const me = await AccountService.getMe().catch(() => undefined);
-      const current = me?.avatarUrl?.['256'];
+      let status: string | undefined;
 
-      if (me && current !== undefined && current !== previous) {
-        queryClient.setQueryData(meQuery.queryKey, me);
+      try {
+        status = await AccountService.getAvatarUploadStatus(fileId);
+      } catch (error) {
+        // The record can be gone (a newer upload replaced it) or the route missing: the page
+        // cannot tell what happened, so it shows whatever /me has now and stops waiting.
+        if (isAxiosError(error) && error.response?.status === 404) {
+          await refreshMe();
 
-        return true;
+          return 'unknown';
+        }
+      }
+
+      if (status === 'FAILED') {
+        return 'refused';
+      }
+
+      if (status === 'PROCESSED') {
+        await refreshMe();
+
+        return 'ready';
       }
     }
 
-    return false;
+    return 'waiting';
   };
 
   const upload = async (file: File) => {
@@ -83,10 +108,6 @@ export function useAvatarUpload() {
       return;
     }
 
-    const previous = await queryClient
-      .query({ ...meQuery, staleTime: 'static' })
-      .then((me) => me.avatarUrl?.['256'])
-      .catch(() => undefined);
     const local = URL.createObjectURL(file);
     let unconfirmed = false;
 
@@ -119,18 +140,22 @@ export function useAvatarUpload() {
     }
 
     setPhase({ step: 'processing', preview: local });
-    const changed = await waitForNewAvatar(previous);
+    const outcome = await waitForAvatar(post.fileId);
 
-    if (gone.current) {
+    if (outcome === 'gone') {
       return;
     }
 
     setPhase({ step: 'idle' });
 
-    if (changed) {
+    if (outcome === 'ready') {
       toast.success('Foto atualizada.');
+    } else if (outcome === 'refused') {
+      setProblem(REFUSED);
     } else {
-      setProblem(unconfirmed ? UNCONFIRMED : NOT_READY);
+      setProblem(
+        unconfirmed || outcome === 'unknown' ? UNCONFIRMED : NOT_READY,
+      );
     }
   };
 
