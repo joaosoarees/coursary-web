@@ -46,4 +46,12 @@ describe('useFocusOnNavigation', () => {
 
     expect(screen.getByRole('main')).toHaveFocus();
   });
+
+  it('should move focus when only the search changes', async () => {
+    const router = renderAt('/cursos?busca=dados');
+
+    await act(() => router.navigate('/cursos?busca=dados&pagina=2'));
+
+    expect(screen.getByRole('main')).toHaveFocus();
+  });
 });
