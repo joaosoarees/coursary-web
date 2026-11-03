@@ -16,6 +16,7 @@ export default [
   layout('routes/layout.tsx', [
     index('routes/home.tsx'),
     route('cursos', 'routes/cursos.tsx'),
+    route('cursos/:id', 'routes/curso.tsx'),
     route('perfil', 'routes/perfil.tsx'),
     ...(import.meta.env.DEV ? [route('design', 'routes/design.tsx')] : []),
     route('*', 'routes/not-found.tsx'),

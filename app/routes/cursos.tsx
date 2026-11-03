@@ -12,10 +12,10 @@ import { Form, Link, useSearchParams } from 'react-router';
 import { CourseGrid, CourseGridSkeleton } from '~/components/course/CourseGrid';
 import { EmptyState } from '~/components/EmptyState';
 import { ErrorState } from '~/components/ErrorState';
+import { LoadMore } from '~/components/LoadMore';
 import { PageHeader } from '~/components/PageHeader';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
-import { useLoadMoreOnIntersect } from '~/hooks/useLoadMoreOnIntersect';
 import { queryClient } from '~/lib/queryClient';
 import { cn } from '~/lib/utils';
 import {
@@ -106,30 +106,9 @@ function SearchForm({ query }: { query: string }) {
 }
 
 function CatalogList() {
-  const {
-    data,
-    isLoading,
-    isLoadingError,
-    isFetching,
-    isFetchingNextPage,
-    isFetchNextPageError,
-    hasNextPage,
-    fetchNextPage,
-    refetch,
-  } = useCatalog();
+  const list = useCatalog();
+  const { data, isLoading, isLoadingError, refetch } = list;
   const courses = data?.pages.flatMap((page) => page.items) ?? NO_COURSES;
-  const loadMore = () => {
-    void fetchNextPage({ cancelRefetch: false });
-  };
-  const sentinelRef = useLoadMoreOnIntersect({
-    loadMore,
-    hasMore:
-      hasNextPage &&
-      !(isFetching && !isFetchingNextPage) &&
-      !isFetchNextPageError,
-    isLoadingMore: isFetchingNextPage,
-  });
-
   if (isLoading) {
     return <CourseGridSkeleton />;
   }
@@ -157,26 +136,19 @@ function CatalogList() {
   return (
     <div className="flex flex-col gap-7">
       <CourseGrid courses={courses} />
-      <div ref={sentinelRef} aria-hidden="true" />
-      <div className="flex flex-col items-center gap-2.5">
-        {isFetchNextPageError && (
-          <p role="alert" className="text-destructive">
-            Não deu para carregar mais cursos.
-          </p>
-        )}
-        {hasNextPage && (
-          <Button variant="outline" disabled={isFetching} onClick={loadMore}>
-            {isFetchingNextPage
-              ? 'Carregando mais cursos…'
-              : isFetchNextPageError
-                ? 'Tentar de novo'
-                : 'Carregar mais cursos'}
-          </Button>
-        )}
+      <LoadMore
+        list={list}
+        labels={{
+          more: 'Carregar mais cursos',
+          loading: 'Carregando mais cursos…',
+          failed: 'Não deu para carregar mais cursos.',
+        }}
+        className="items-center"
+      >
         <p role="status" className="text-sm text-muted-foreground">
           Mostrando {courses.length} {courses.length === 1 ? 'curso' : 'cursos'}
         </p>
-      </div>
+      </LoadMore>
     </div>
   );
 }
