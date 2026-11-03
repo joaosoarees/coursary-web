@@ -41,15 +41,3 @@ export const checkAvatar = async (
 
   return type ? { type } : { problem: 'Escolha uma imagem JPEG, PNG ou WebP.' };
 };
-
-export const avatarProblem = (file: File): string | undefined => {
-  if (!AVATAR_TYPES.includes(file.type)) {
-    return 'Escolha uma imagem JPEG, PNG ou WebP.';
-  }
-
-  if (file.size > AVATAR_MAX_BYTES) {
-    return 'Escolha uma imagem de até 5 MB.';
-  }
-
-  return undefined;
-};
