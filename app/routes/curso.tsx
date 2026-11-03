@@ -1,9 +1,10 @@
 import { noop } from '@tanstack/react-query';
-import { ChevronLeft, Star } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
 import { Link } from 'react-router';
 
 import { CourseFormat } from '~/components/course/CourseFormat';
 import { CourseOutline } from '~/components/course/CourseOutline';
+import { CourseRating } from '~/components/course/CourseRating';
 import { EnrollmentPanel } from '~/components/course/EnrollmentPanel';
 import { ReviewList } from '~/components/course/ReviewList';
 import { ErrorState } from '~/components/ErrorState';
@@ -33,11 +34,9 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
     return null;
   }
 
-  const [course] = await Promise.all([
-    queryClient.query(courseQuery(params.id)).catch(noop),
-    queryClient.query(enrollmentQuery(params.id)).catch(noop),
-    queryClient.infiniteQuery(reviewsQuery(params.id)).catch(noop),
-  ]);
+  void queryClient.query(enrollmentQuery(params.id)).catch(noop);
+  void queryClient.infiniteQuery(reviewsQuery(params.id)).catch(noop);
+  const course = await queryClient.query(courseQuery(params.id)).catch(noop);
 
   return { title: course?.title };
 }
@@ -85,18 +84,10 @@ function CourseDetails({ course }: { course: CoursePage }) {
             </h1>
             <p className="text-muted-foreground">Com {course.instructorName}</p>
             <p className="flex flex-wrap gap-x-4.5 gap-y-1.5 text-[0.9375rem] text-muted-foreground">
-              {course.ratingAverage === null ? (
-                <span>Sem avaliações</span>
-              ) : (
-                <span className="inline-flex items-center gap-1">
-                  <Star aria-hidden="true" className="size-4 fill-current" />
-                  <span>
-                    <span className="sr-only">Nota </span>
-                    {CourseFormat.rating(course.ratingAverage)} (
-                    {course.ratingCount})
-                  </span>
-                </span>
-              )}
+              <CourseRating
+                average={course.ratingAverage}
+                count={course.ratingCount}
+              />
               <span>
                 {CourseFormat.count(course.lessonCount, 'aula', 'aulas')} em{' '}
                 {CourseFormat.count(course.modules.length, 'módulo', 'módulos')}
