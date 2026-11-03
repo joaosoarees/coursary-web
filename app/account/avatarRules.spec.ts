@@ -38,4 +38,17 @@ describe('checkAvatar', () => {
       checkAvatar(fileOf(PNG, AVATAR_MAX_BYTES + 1)),
     ).resolves.toEqual({ problem: 'Escolha uma imagem de até 5 MB.' });
   });
+
+  it('should say so when the file can no longer be read', async () => {
+    const gone = fileOf(PNG);
+    gone.slice = () =>
+      ({
+        arrayBuffer: () =>
+          Promise.reject(new DOMException('', 'NotReadableError')),
+      }) as unknown as Blob;
+
+    await expect(checkAvatar(gone)).resolves.toEqual({
+      problem: 'Não deu para ler a imagem. Escolha de novo.',
+    });
+  });
 });
