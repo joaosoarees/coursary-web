@@ -36,7 +36,14 @@ export const checkAvatar = async (
     return { problem: 'Escolha uma imagem de até 5 MB.' };
   }
 
-  const head = new Uint8Array(await file.slice(0, 12).arrayBuffer());
+  let head: Uint8Array;
+
+  try {
+    head = new Uint8Array(await file.slice(0, 12).arrayBuffer());
+  } catch {
+    return { problem: 'Não deu para ler a imagem. Escolha de novo.' };
+  }
+
   const type = typeOfBytes(head);
 
   return type ? { type } : { problem: 'Escolha uma imagem JPEG, PNG ou WebP.' };
