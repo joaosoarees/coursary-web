@@ -151,6 +151,26 @@ describe('the course page', () => {
     expect(screen.queryByRole('dialog')).toBeNull();
   });
 
+  it('should keep the confirmation open while the cancel is sent', async () => {
+    vi.spyOn(EnrollmentService, 'progress').mockResolvedValue(progress);
+    vi.spyOn(EnrollmentService, 'cancel').mockReturnValue(
+      new Promise(() => undefined),
+    );
+    renderCourse();
+
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Cancelar matrícula' }),
+    );
+    const dialog = screen.getByRole('dialog');
+    fireEvent.click(
+      within(dialog).getByRole('button', { name: 'Cancelar matrícula' }),
+    );
+    await screen.findByRole('button', { name: 'Cancelando…' });
+    fireEvent.keyDown(dialog, { key: 'Escape' });
+
+    expect(screen.getByRole('dialog')).toBeVisible();
+  });
+
   it('should tell instructors that the course is theirs', async () => {
     vi.spyOn(EnrollmentService, 'progress').mockResolvedValue(null);
     vi.spyOn(EnrollmentService, 'enroll').mockRejectedValue(
