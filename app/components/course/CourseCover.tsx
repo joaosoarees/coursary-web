@@ -45,7 +45,7 @@ export function CourseCover({
             : '(min-width: 768px) 320px, 100vw'
         }
         alt=""
-        loading="lazy"
+        loading={large ? 'eager' : 'lazy'}
         className={cn(
           'aspect-video w-full rounded-md bg-muted object-cover',
           className,
