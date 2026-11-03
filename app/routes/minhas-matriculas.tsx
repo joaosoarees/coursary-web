@@ -2,14 +2,16 @@ import { noop } from '@tanstack/react-query';
 import { Link } from 'react-router';
 
 import { BoardIcon } from '~/components/BoardIcon';
-import { EnrollmentCard } from '~/components/course/EnrollmentCard';
+import {
+  EnrollmentCard,
+  EnrollmentCardSkeleton,
+} from '~/components/course/EnrollmentCard';
 import { EmptyState } from '~/components/EmptyState';
 import { ErrorState } from '~/components/ErrorState';
 import { LoadingNote } from '~/components/LoadingNote';
 import { LoadMore } from '~/components/LoadMore';
 import { PageHeader } from '~/components/PageHeader';
 import { Button } from '~/components/ui/button';
-import { Skeleton } from '~/components/ui/skeleton';
 import { queryClient } from '~/lib/queryClient';
 import { myEnrollmentsQuery, useMyEnrollments } from '~/queries/enrollments';
 import type { EnrollmentSummary } from '~/services/EnrollmentService';
@@ -23,9 +25,9 @@ export const meta: Route.MetaFunction = () => [
 
 const NO_ENROLLMENTS: EnrollmentSummary[] = [];
 
-export async function clientLoader() {
+export function clientLoader() {
   if (isSignedIn()) {
-    await queryClient.infiniteQuery(myEnrollmentsQuery).catch(noop);
+    void queryClient.infiniteQuery(myEnrollmentsQuery).catch(noop);
   }
 
   return null;
@@ -67,17 +69,7 @@ function EnrollmentList({
         <LoadingNote>Carregando suas matrículas…</LoadingNote>
         <div aria-hidden="true" className="flex flex-col gap-4">
           {Array.from({ length: 3 }, (_, index) => (
-            <div
-              key={index}
-              className="flex flex-col gap-5 rounded-md border p-4 md:flex-row"
-            >
-              <Skeleton className="aspect-video w-full md:w-55 md:shrink-0" />
-              <div className="flex flex-1 flex-col justify-center gap-3">
-                <Skeleton className="h-5 w-2/3" />
-                <Skeleton className="h-4 w-1/3" />
-                <Skeleton className="h-2 w-full max-w-90" />
-              </div>
-            </div>
+            <EnrollmentCardSkeleton key={index} />
           ))}
         </div>
       </>
