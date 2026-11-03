@@ -99,3 +99,15 @@ describe('AccountService.requestAvatarUpload', () => {
     ).rejects.toThrow();
   });
 });
+
+describe('AccountService.getAvatarUploadStatus', () => {
+  it('should read the status of the upload by its file id', async () => {
+    answer({ status: 'PROCESSED' });
+
+    await expect(AccountService.getAvatarUploadStatus('file-1')).resolves.toBe(
+      'PROCESSED',
+    );
+    const [config] = adapter.mock.calls[0] ?? [];
+    expect(config).toMatchObject({ method: 'get', url: '/me/avatar/file-1' });
+  });
+});
