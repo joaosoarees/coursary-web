@@ -1,12 +1,7 @@
 import { ChalkStroke } from '~/components/ChalkStroke';
 import { cn } from '~/lib/utils';
 
-const CHALKS = [
-  'text-chalk',
-  'text-chalk-yellow',
-  'text-chalk-blue',
-  'text-chalk-pink',
-] as const;
+const CHALKS = ['text-chalk', 'text-chalk-blue', 'text-chalk-pink'] as const;
 
 const chalkOf = (courseId: string) => {
   let sum = 0;
