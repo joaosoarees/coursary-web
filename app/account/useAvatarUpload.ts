@@ -54,6 +54,16 @@ export function useAvatarUpload() {
     };
   }, [preview]);
 
+  const refreshMe = async () => {
+    const me = await AccountService.getMe().catch(() => undefined);
+
+    if (me) {
+      queryClient.setQueryData(meQuery.queryKey, me);
+    } else {
+      void queryClient.invalidateQueries({ queryKey: meQuery.queryKey });
+    }
+  };
+
   const waitForAvatar = async (fileId: string) => {
     for (let attempt = 0; attempt < POLL_ATTEMPTS; attempt += 1) {
       await wait(POLL_MS);
@@ -62,22 +72,26 @@ export function useAvatarUpload() {
         return 'gone';
       }
 
-      const status = await AccountService.getAvatarUploadStatus(fileId).catch(
-        () => undefined,
-      );
+      let status: string | undefined;
+
+      try {
+        status = await AccountService.getAvatarUploadStatus(fileId);
+      } catch (error) {
+        // The record can be gone (a newer upload replaced it) or the route missing: the page
+        // cannot tell what happened, so it shows whatever /me has now and stops waiting.
+        if (isAxiosError(error) && error.response?.status === 404) {
+          await refreshMe();
+
+          return 'unknown';
+        }
+      }
 
       if (status === 'FAILED') {
         return 'refused';
       }
 
       if (status === 'PROCESSED') {
-        const me = await AccountService.getMe().catch(() => undefined);
-
-        if (me) {
-          queryClient.setQueryData(meQuery.queryKey, me);
-        } else {
-          void queryClient.invalidateQueries({ queryKey: meQuery.queryKey });
-        }
+        await refreshMe();
 
         return 'ready';
       }
@@ -139,7 +153,9 @@ export function useAvatarUpload() {
     } else if (outcome === 'refused') {
       setProblem(REFUSED);
     } else {
-      setProblem(unconfirmed ? UNCONFIRMED : NOT_READY);
+      setProblem(
+        unconfirmed || outcome === 'unknown' ? UNCONFIRMED : NOT_READY,
+      );
     }
   };
 
