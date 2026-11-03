@@ -73,12 +73,15 @@ const text: [string, string][] = [
   ['chalk-pink', 'board'],
 ];
 
-// Borders a control is found by and the focus ring: WCAG asks 3:1 of non-text contrast.
+// Borders a control is found by, the focus ring and the rating stars: WCAG asks 3:1 of non-text
+// contrast.
 const nonText: [string, string][] = [
   ['input', 'background'],
   ['input', 'card'],
   ['ring', 'background'],
   ['ring', 'card'],
+  ['star', 'background'],
+  ['star', 'card'],
 ];
 
 // DESIGN.md repeats the tokens for agents that read it instead of app.css.

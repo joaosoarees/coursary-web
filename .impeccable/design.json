@@ -293,6 +293,13 @@
           "#f8efd0"
         ]
       },
+      "star": {
+        "role": "tertiary",
+        "displayName": "Ocre de Estrela",
+        "canonical": "#8a6d12",
+        "theme": "light",
+        "cssVar": "--star"
+      },
       "highlight-border": {
         "role": "tertiary",
         "displayName": "Ocre de Giz",
@@ -819,6 +826,13 @@
           "#c3cfad",
           "#e9f4d2"
         ]
+      },
+      "star-dark": {
+        "role": "tertiary",
+        "displayName": "Ocre Claro",
+        "canonical": "#c9a443",
+        "theme": "dark",
+        "cssVar": "--star"
       },
       "highlight-border-dark": {
         "role": "tertiary",

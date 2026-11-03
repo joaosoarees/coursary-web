@@ -41,11 +41,11 @@ export function CourseCover({
         srcSet={small && big ? `${small} 480w, ${big} 1280w` : undefined}
         sizes={
           large
-            ? '(min-width: 768px) 340px, 100vw'
+            ? '(min-width: 1024px) 340px, 100vw'
             : '(min-width: 768px) 320px, 100vw'
         }
         alt=""
-        loading="lazy"
+        loading={large ? 'eager' : 'lazy'}
         className={cn(
           'aspect-video w-full rounded-md bg-muted object-cover',
           className,
