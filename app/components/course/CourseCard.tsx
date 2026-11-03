@@ -2,15 +2,8 @@ import { Star } from 'lucide-react';
 import { Link } from 'react-router';
 
 import { CourseCover } from '~/components/course/CourseCover';
+import { CourseFormat } from '~/components/course/CourseFormat';
 import type { CatalogItem } from '~/services/CatalogService';
-
-const RATING = new Intl.NumberFormat('pt-BR', {
-  minimumFractionDigits: 1,
-  maximumFractionDigits: 1,
-});
-
-const countOf = (count: number, one: string, many: string) =>
-  `${String(count)} ${count === 1 ? one : many}`;
 
 export function CourseCard({ course }: { course: CatalogItem }) {
   return (
@@ -37,12 +30,15 @@ export function CourseCard({ course }: { course: CatalogItem }) {
               <Star aria-hidden="true" className="size-4 fill-current" />
               <span>
                 <span className="sr-only">Nota </span>
-                {RATING.format(course.ratingAverage)} ({course.ratingCount})
+                {CourseFormat.rating(course.ratingAverage)} (
+                {course.ratingCount})
               </span>
             </span>
           )}
-          <span>{countOf(course.lessonCount, 'aula', 'aulas')}</span>
-          <span>{countOf(course.enrollmentCount, 'aluno', 'alunos')}</span>
+          <span>{CourseFormat.count(course.lessonCount, 'aula', 'aulas')}</span>
+          <span>
+            {CourseFormat.count(course.enrollmentCount, 'aluno', 'alunos')}
+          </span>
         </span>
       </span>
     </Link>
