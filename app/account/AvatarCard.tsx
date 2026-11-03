@@ -31,7 +31,7 @@ export function AvatarCard({ profile }: { profile: Profile }) {
       <div className="relative">
         <Avatar className="size-40">
           {shown && <AvatarImage src={shown} alt="" className="object-cover" />}
-          <AvatarFallback className="bg-chalk-yellow text-5xl font-bold text-black">
+          <AvatarFallback className="bg-chalk-yellow text-5xl font-bold text-chalk-yellow-foreground">
             {initialsOf(profile.name)}
           </AvatarFallback>
         </Avatar>
