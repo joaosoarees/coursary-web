@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, fireEvent, render, screen } from '@testing-library/react';
-import { createRoutesStub } from 'react-router';
+import { createRoutesStub, Link, Outlet } from 'react-router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AuthProvider } from '~/auth/AuthProvider';
@@ -20,6 +20,32 @@ const renderShell = () => {
           <h1>Catálogo</h1>
         </AppShell>
       ),
+    },
+  ]);
+
+  return render(
+    <QueryClientProvider client={new QueryClient()}>
+      <ThemeProvider>
+        <AuthProvider>
+          <Stub initialEntries={['/cursos']} />
+        </AuthProvider>
+      </ThemeProvider>
+    </QueryClientProvider>,
+  );
+};
+
+const renderShellAround = () => {
+  const Stub = createRoutesStub([
+    {
+      Component: () => (
+        <AppShell>
+          <Outlet />
+        </AppShell>
+      ),
+      children: [
+        { path: '/cursos', Component: () => <Link to="/perfil">Perfil</Link> },
+        { path: '/perfil', Component: () => <h1>Perfil</h1> },
+      ],
     },
   ]);
 
@@ -59,6 +85,17 @@ const sidebarState = () =>
   document.querySelector('[data-slot=sidebar]')?.getAttribute('data-state');
 
 describe('the app shell', () => {
+  it('should move focus to the content after a navigation', async () => {
+    renderShellAround();
+
+    fireEvent.click(screen.getByRole('link', { name: 'Perfil' }));
+
+    expect(
+      await screen.findByRole('heading', { name: 'Perfil' }),
+    ).toBeVisible();
+    expect(screen.getByRole('main')).toHaveFocus();
+  });
+
   it('should collapse the sidebar and remember it', async () => {
     const { unmount } = renderShell();
     await screen.findByRole('heading', { name: 'Catálogo' });

@@ -487,6 +487,13 @@
           "#ebf0eb"
         ]
       },
+      "chalk-yellow-foreground": {
+        "role": "neutral",
+        "displayName": "Lousa Noturna sobre Giz Amarelo",
+        "canonical": "#112019",
+        "theme": "light",
+        "cssVar": "--chalk-yellow-foreground"
+      },
       "chalk-yellow": {
         "role": "primary",
         "displayName": "Giz Amarelo",

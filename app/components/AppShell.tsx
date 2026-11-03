@@ -2,13 +2,16 @@ import { AccountMenu } from '~/components/AccountMenu';
 import { AppSidebar } from '~/components/AppSidebar';
 import { SidebarProvider, SidebarTrigger } from '~/components/ui/sidebar';
 import { Wordmark } from '~/components/Wordmark';
+import { useFocusOnNavigation } from '~/hooks/useFocusOnNavigation';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
+  const main = useFocusOnNavigation<HTMLElement>();
+
   return (
     <SidebarProvider>
       <a
         href="#conteudo"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-chalk-yellow focus:px-4 focus:py-2 focus:font-bold focus:text-black"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-chalk-yellow focus:px-4 focus:py-2 focus:font-bold focus:text-chalk-yellow-foreground"
       >
         Pular para o conteúdo
       </a>
@@ -24,6 +27,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
         </header>
         <main
+          ref={main}
           id="conteudo"
           tabIndex={-1}
           className="w-full flex-1 px-5 py-8 outline-none md:px-14 md:py-10"

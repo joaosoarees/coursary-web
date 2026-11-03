@@ -2,6 +2,7 @@ import { Star } from 'lucide-react';
 
 import { CourseFormat } from '~/components/course/CourseFormat';
 import { ErrorState } from '~/components/ErrorState';
+import { LoadingNote } from '~/components/LoadingNote';
 import { LoadMore } from '~/components/LoadMore';
 import { Skeleton } from '~/components/ui/skeleton';
 import { cn } from '~/lib/utils';
@@ -18,9 +19,10 @@ export function ReviewList({ courseId }: { courseId: string }) {
 
   if (isLoading) {
     return (
-      <div aria-hidden="true" className="flex flex-col gap-3 py-4">
-        <Skeleton className="h-5 w-1/3" />
-        <Skeleton className="h-4 w-4/5" />
+      <div className="flex flex-col gap-3 py-4">
+        <LoadingNote>Carregando avaliações…</LoadingNote>
+        <Skeleton aria-hidden="true" className="h-5 w-1/3" />
+        <Skeleton aria-hidden="true" className="h-4 w-4/5" />
       </div>
     );
   }

@@ -15,6 +15,11 @@ const useRefreshAfter = () => {
         queryKey: courseQuery(courseId).queryKey,
         exact: true,
       }),
+      // The catalog and the search show the student count too; they refetch when next shown.
+      queryClient.invalidateQueries({
+        queryKey: ['courses'],
+        refetchType: 'none',
+      }),
     ]);
 };
 

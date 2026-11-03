@@ -1,13 +1,16 @@
 import { ChalkStroke } from '~/components/ChalkStroke';
 import { Wordmark } from '~/components/Wordmark';
+import { useFocusOnNavigation } from '~/hooks/useFocusOnNavigation';
 import { ThemeSwitcher } from '~/theme/ThemeSwitcher';
 
 export function VisitorShell({ children }: { children: React.ReactNode }) {
+  const main = useFocusOnNavigation<HTMLElement>();
+
   return (
     <div className="flex min-h-screen flex-col md:flex-row">
       <a
         href="#conteudo"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-chalk-yellow focus:px-4 focus:py-2 focus:font-bold focus:text-black"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-chalk-yellow focus:px-4 focus:py-2 focus:font-bold focus:text-chalk-yellow-foreground"
       >
         Pular para o conteúdo
       </a>
@@ -31,6 +34,7 @@ export function VisitorShell({ children }: { children: React.ReactNode }) {
         </div>
       </header>
       <main
+        ref={main}
         id="conteudo"
         tabIndex={-1}
         className="flex flex-1 items-center justify-center px-5 py-8 outline-none md:px-10 md:py-12"
