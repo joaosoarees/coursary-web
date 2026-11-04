@@ -30,11 +30,18 @@ const renderVideo = (url = 'https://files.test/a.mp4', expiresIn = 7200) => {
 };
 
 // jsdom keeps no playback position, so the test plays the browser's part.
-const setTime = (player: HTMLVideoElement, seconds: number) => {
+const setPlayback = (
+  player: HTMLVideoElement,
+  { seconds, paused }: { seconds: number; paused: boolean },
+) => {
   Object.defineProperty(player, 'currentTime', {
     configurable: true,
     writable: true,
     value: seconds,
+  });
+  Object.defineProperty(player, 'paused', {
+    configurable: true,
+    value: paused,
   });
 };
 
@@ -67,9 +74,10 @@ describe('LessonVideo', () => {
       .spyOn(HTMLMediaElement.prototype, 'play')
       .mockResolvedValue(undefined);
     const { player, view, onExpired } = renderVideo();
-    setTime(player, 252);
-    fireEvent.play(player);
-    fireEvent.timeUpdate(player);
+    setPlayback(player, { seconds: 252, paused: false });
+
+    fireEvent.error(player);
+    expect(onExpired).toHaveBeenCalledTimes(1);
 
     view.rerender(
       <LessonVideo
@@ -78,7 +86,8 @@ describe('LessonVideo', () => {
         onExpired={onExpired}
       />,
     );
-    setTime(player, 0);
+    // Swapping the source resets the time and pauses before the new one loads.
+    setPlayback(player, { seconds: 0, paused: true });
     fireEvent.loadedMetadata(player);
 
     expect(player).toHaveAttribute('src', 'https://files.test/b.mp4');
@@ -90,15 +99,25 @@ describe('LessonVideo', () => {
     const play = vi
       .spyOn(HTMLMediaElement.prototype, 'play')
       .mockResolvedValue(undefined);
-    const { player } = renderVideo();
-    setTime(player, 90);
-    fireEvent.play(player);
-    fireEvent.timeUpdate(player);
-    fireEvent.pause(player);
+    const { player } = renderVideo('https://files.test/a.mp4', 600);
+    setPlayback(player, { seconds: 90, paused: true });
 
+    act(() => {
+      vi.advanceTimersByTime(540_000);
+    });
+    setPlayback(player, { seconds: 0, paused: true });
     fireEvent.loadedMetadata(player);
 
     expect(player.currentTime).toBe(90);
     expect(play).not.toHaveBeenCalled();
+  });
+
+  it('should start from the beginning on the first load', () => {
+    const { player } = renderVideo();
+    setPlayback(player, { seconds: 0, paused: true });
+
+    fireEvent.loadedMetadata(player);
+
+    expect(player.currentTime).toBe(0);
   });
 });
