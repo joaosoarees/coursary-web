@@ -74,7 +74,9 @@ describe('LessonOutline', () => {
     renderOutline();
 
     expect(screen.getAllByText('1 de 3 aulas')[0]).toBeInTheDocument();
-    expect(screen.getByText('1 de 2')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 3, name: /Primeiros passos/ }),
+    ).toHaveTextContent('1 de 2 concluídas');
     expect(screen.getByText('0 de 1')).toBeInTheDocument();
   });
 
@@ -82,6 +84,9 @@ describe('LessonOutline', () => {
     renderOutline();
     const toggle = screen.getByRole('button', { name: /Conteúdo do curso/ });
 
+    expect(
+      screen.getAllByRole('heading', { level: 2, name: 'Conteúdo do curso' }),
+    ).not.toHaveLength(0);
     expect(toggle).toHaveAttribute('aria-expanded', 'false');
     fireEvent.click(toggle);
     expect(toggle).toHaveAttribute('aria-expanded', 'true');
