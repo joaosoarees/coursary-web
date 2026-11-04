@@ -78,7 +78,12 @@ describe('the lesson page', () => {
       await screen.findByRole('heading', { level: 1, name: 'Filtrando' }),
     ).toBeVisible();
     expect(
-      screen.getByText('Módulo 2 · Pandas na prática · Aula 2 de 3 · 16 min'),
+      screen.getByText((_, element) =>
+        element?.tagName === 'P'
+          ? element.textContent ===
+            'Módulo 2 · Pandas na prática · Aula 2 de 3 · 16 min'
+          : false,
+      ),
     ).toBeVisible();
     expect(screen.getByLabelText('Vídeo da aula Filtrando')).toHaveAttribute(
       'src',
@@ -128,6 +133,9 @@ describe('the lesson page', () => {
     await waitFor(() => {
       expect(screen.getByRole('status')).toHaveTextContent(/^Concluída$/);
     });
+    expect(
+      screen.getByRole('link', { name: 'Próxima aula: Juntando' }),
+    ).toHaveFocus();
     expect(completeLesson).toHaveBeenCalledWith({
       courseId: 'c1',
       lessonId: 'l2',

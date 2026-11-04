@@ -1,6 +1,6 @@
 import { noop } from '@tanstack/react-query';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { Link, Navigate } from 'react-router';
 import { toast } from 'sonner';
 
@@ -168,6 +168,7 @@ function LessonView({
     void onVideoExpired();
   }, [onVideoExpired]);
   const hasVideo = content.video !== undefined;
+  const nextLink = useRef<HTMLAnchorElement>(null);
 
   // A lesson without a video is still the last one opened.
   useEffect(() => {
@@ -186,6 +187,10 @@ function LessonView({
     }
 
     complete.mutate(lesson.id, {
+      // The box the student just ticked goes away: hand the focus to the next step.
+      onSuccess: () => {
+        nextLink.current?.focus();
+      },
       onError: () => {
         toast.error('Não deu para marcar a aula. Tente de novo.');
       },
@@ -200,6 +205,7 @@ function LessonView({
       done={done}
       pending={complete.isPending}
       onComplete={completeLesson}
+      nextLink={nextLink}
     />
   );
 
@@ -211,8 +217,17 @@ function LessonView({
             {lesson.title}
           </h1>
           <p className="text-muted-foreground">
-            Módulo {lesson.moduleIndex + 1} · {lesson.moduleTitle} · Aula{' '}
-            {index + 1} de {lessons.length} · {lesson.durationMinutes} min
+            <span className="whitespace-nowrap">
+              Módulo {lesson.moduleIndex + 1} · {lesson.moduleTitle}
+            </span>{' '}
+            ·{' '}
+            <span className="whitespace-nowrap">
+              Aula {index + 1} de {lessons.length}
+            </span>{' '}
+            ·{' '}
+            <span className="whitespace-nowrap">
+              {lesson.durationMinutes} min
+            </span>
           </p>
         </header>
         {content.video && (
@@ -269,6 +284,7 @@ function LessonStrip({
   done,
   pending,
   onComplete,
+  nextLink,
 }: {
   courseId: string;
   previous: OutlineLesson | undefined;
@@ -276,6 +292,7 @@ function LessonStrip({
   done: boolean;
   pending: boolean;
   onComplete: () => void;
+  nextLink: React.Ref<HTMLAnchorElement>;
 }) {
   const lessonPath = (id: string) => `/cursos/${courseId}/aulas/${id}`;
 
@@ -285,7 +302,7 @@ function LessonStrip({
       {(previous ?? next) && (
         <nav
           aria-label="Aulas"
-          className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-center sm:gap-2"
+          className="grid grid-cols-[auto_minmax(0,1fr)] gap-3 sm:flex sm:flex-wrap sm:items-center sm:gap-2"
         >
           {previous && (
             <Button variant="ghost" asChild>
@@ -305,6 +322,7 @@ function LessonStrip({
               asChild
             >
               <Link
+                ref={nextLink}
                 to={lessonPath(next.id)}
                 aria-label={`Próxima aula: ${next.title}`}
               >
@@ -312,7 +330,9 @@ function LessonStrip({
                   <span className="text-xs font-normal opacity-80">
                     Próxima aula
                   </span>
-                  <span className="truncate">{next.title}</span>
+                  <span className="line-clamp-2 sm:line-clamp-1">
+                    {next.title}
+                  </span>
                 </span>
                 <ChevronRight aria-hidden="true" />
               </Link>
