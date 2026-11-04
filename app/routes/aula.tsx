@@ -1,4 +1,4 @@
-import { noop } from '@tanstack/react-query';
+import { noop, useQueryClient } from '@tanstack/react-query';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, Navigate } from 'react-router';
@@ -17,7 +17,11 @@ import { Button } from '~/components/ui/button';
 import { Skeleton } from '~/components/ui/skeleton';
 import { queryClient } from '~/lib/queryClient';
 import { useCompleteLesson, useSavePosition } from '~/mutations/progress';
-import { enrollmentQuery, useEnrollment, useMyReview } from '~/queries/course';
+import {
+  enrollmentQuery,
+  myReviewQuery,
+  useEnrollment,
+} from '~/queries/course';
 import {
   lessonQuery,
   outlineQuery,
@@ -171,7 +175,7 @@ function LessonView({
   }, [onVideoExpired]);
   const hasVideo = content.video !== undefined;
   const nextLink = useRef<HTMLAnchorElement>(null);
-  const myReview = useMyReview(outline.courseId);
+  const client = useQueryClient();
   const [suggestReview, setSuggestReview] = useState(false);
 
   // A lesson without a video is still the last one opened.
@@ -196,7 +200,11 @@ function LessonView({
         nextLink.current?.focus();
 
         // The last lesson closes the course: the review is suggested then, once, if there is none.
-        if (completedLessons >= lessons.length && myReview.data === null) {
+        const review = client.getQueryData(
+          myReviewQuery(outline.courseId).queryKey,
+        );
+
+        if (completedLessons >= lessons.length && review === null) {
           setSuggestReview(true);
         }
       },
