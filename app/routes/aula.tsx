@@ -176,6 +176,7 @@ function LessonView({
   }, [onVideoExpired]);
   const hasVideo = content.video !== undefined;
   const nextLink = useRef<HTMLAnchorElement>(null);
+  const reviewButton = useRef<HTMLButtonElement>(null);
   const client = useQueryClient();
   const [suggestReview, setSuggestReview] = useState(false);
 
@@ -293,6 +294,7 @@ function LessonView({
         completedLessonIds={progress.completedLessonIds}
         footer={
           <ReviewButton
+            ref={reviewButton}
             courseId={outline.courseId}
             courseTitle={outline.title}
           />
@@ -305,6 +307,11 @@ function LessonView({
         finished
         open={suggestReview}
         onOpenChange={setSuggestReview}
+        // The box that opened it went away with the last lesson: land on the review button.
+        onCloseAutoFocus={(event) => {
+          event.preventDefault();
+          reviewButton.current?.focus();
+        }}
       />
     </article>
   );
