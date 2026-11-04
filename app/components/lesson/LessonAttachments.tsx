@@ -48,6 +48,10 @@ function AttachmentRow({
 
   // The signed address lasts five minutes, so it is asked for only when the reader clicks.
   async function download() {
+    if (pending) {
+      return;
+    }
+
     setPending(true);
 
     try {
@@ -65,10 +69,10 @@ function AttachmentRow({
   }
 
   return (
-    <li className="flex items-center gap-3.5 py-2.5 pr-2.5 pl-4">
+    <li className="flex items-center gap-3 py-2.5 pr-1.5 pl-3.5 sm:gap-3.5 sm:pr-2.5 sm:pl-4">
       <File
         aria-hidden="true"
-        className="size-5 shrink-0 text-muted-foreground"
+        className="hidden size-5 shrink-0 text-muted-foreground sm:block"
       />
       <span className="flex min-w-0 flex-1 flex-col leading-snug">
         <span className="font-bold">{attachment.name}</span>
@@ -80,13 +84,15 @@ function AttachmentRow({
       <Button
         variant="ghost"
         size="sm"
-        className="text-link"
-        disabled={pending}
+        className="text-link not-disabled:hover:text-link aria-disabled:cursor-progress"
+        // Disabling the button would drop a keyboard user's focus while the file is asked for.
+        aria-disabled={pending}
+        aria-busy={pending}
         aria-label={`Baixar ${attachment.name}`}
         onClick={() => void download()}
       >
         <Download aria-hidden="true" />
-        Baixar
+        {pending ? 'Baixando…' : 'Baixar'}
       </Button>
     </li>
   );
