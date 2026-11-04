@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Link } from 'react-router';
 
 import { CourseCover } from '~/components/course/CourseCover';
+import { ReviewButton } from '~/components/course/ReviewButton';
 import { ErrorState } from '~/components/ErrorState';
 import { Resume } from '~/components/lesson/Resume';
 import { Button } from '~/components/ui/button';
@@ -153,6 +154,7 @@ function Enrolled({
           )}
         </div>
       )}
+      <ReviewButton courseId={course.id} courseTitle={course.title} />
       <Dialog
         open={confirming}
         onOpenChange={(open) => {
