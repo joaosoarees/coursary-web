@@ -20,6 +20,7 @@ import { ApiFailure } from '~/services/ApiFailure';
 import type { MyReview } from '~/services/ReviewService';
 
 const MAX_COMMENT = 2000;
+const WARN_AT = 1800;
 const STARS = [1, 2, 3, 4, 5];
 
 export function ReviewDialog({
@@ -29,6 +30,7 @@ export function ReviewDialog({
   finished = false,
   open,
   onOpenChange,
+  onCloseAutoFocus,
 }: {
   courseId: string;
   courseTitle: string;
@@ -36,6 +38,7 @@ export function ReviewDialog({
   finished?: boolean;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onCloseAutoFocus?: (event: Event) => void;
 }) {
   // A new form on each opening starts from the saved review; it stays mounted while the dialog
   // fades out, so the card does not empty mid-animation.
@@ -52,7 +55,10 @@ export function ReviewDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[32rem]">
+      <DialogContent
+        className="sm:max-w-[32rem]"
+        onCloseAutoFocus={onCloseAutoFocus}
+      >
         {(open || openings > 0) && (
           <ReviewForm
             key={openings}
@@ -109,7 +115,7 @@ function ReviewForm({
         );
       }}
     >
-      <DialogHeader className="gap-2">
+      <DialogHeader className="gap-2 text-left">
         <DialogTitle>{title}</DialogTitle>
         <DialogDescription className="text-base">
           {finished ? 'Quer avaliar ' : 'Sua nota para '}
@@ -120,11 +126,11 @@ function ReviewForm({
       </DialogHeader>
       <fieldset className="flex flex-col gap-2">
         <legend className="mb-2 font-bold">Nota</legend>
-        <div className="flex items-center gap-0.5">
+        <div className="flex flex-wrap items-center gap-0.5">
           {STARS.map((value) => (
             <label
               key={value}
-              className="grid size-11 cursor-pointer place-items-center rounded-md hover:bg-accent has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-ring"
+              className="grid size-11 cursor-pointer place-items-center rounded-md hover:bg-accent has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-ring"
             >
               <input
                 type="radio"
@@ -143,14 +149,15 @@ function ReviewForm({
                 aria-hidden="true"
                 className={cn(
                   'size-7',
-                  value <= rating
-                    ? 'fill-current text-star'
-                    : 'text-muted-foreground',
+                  value <= rating ? 'fill-current text-star' : 'text-input',
                 )}
               />
             </label>
           ))}
-          <span className="ml-2.5 text-muted-foreground" aria-hidden="true">
+          <span
+            className="ml-2.5 whitespace-nowrap text-muted-foreground"
+            aria-hidden="true"
+          >
             {rating > 0 ? `${String(rating)} de 5` : 'Escolha de 1 a 5'}
           </span>
         </div>
@@ -162,6 +169,7 @@ function ReviewForm({
         </Label>
         <Textarea
           id={commentId}
+          className="min-h-28 md:text-base"
           aria-describedby={`${commentId}-count`}
           rows={4}
           maxLength={MAX_COMMENT}
@@ -175,6 +183,11 @@ function ReviewForm({
           className="self-end text-sm text-muted-foreground"
         >
           {comment.length} de {MAX_COMMENT}
+        </span>
+        <span aria-live="polite" className="sr-only">
+          {comment.length >= WARN_AT
+            ? `Restam ${String(MAX_COMMENT - comment.length)} caracteres`
+            : ''}
         </span>
       </div>
       {save.error && <FormAlert>{ApiFailure.message(save.error)}</FormAlert>}
