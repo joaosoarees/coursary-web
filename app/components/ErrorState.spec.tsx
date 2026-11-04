@@ -26,6 +26,21 @@ describe('ErrorState', () => {
     expect(onRetry).toHaveBeenCalledOnce();
   });
 
+  it('should lead back to the place the page names', () => {
+    render(
+      <MemoryRouter>
+        <ErrorState back={{ to: '/cursos/c1', label: 'Voltar ao curso' }} />
+      </MemoryRouter>,
+    );
+
+    expect(
+      screen.getByRole('link', { name: 'Voltar ao curso' }),
+    ).toHaveAttribute('href', '/cursos/c1');
+    expect(
+      screen.queryByRole('link', { name: 'Ir para o início' }),
+    ).not.toBeInTheDocument();
+  });
+
   it('should stay inside its block, without a page heading or the way home', () => {
     render(
       <MemoryRouter>

@@ -1,5 +1,5 @@
 import { GraduationCap, Library } from 'lucide-react';
-import { NavLink } from 'react-router';
+import { Link, useLocation } from 'react-router';
 
 import { AccountMenu } from '~/components/AccountMenu';
 import { ChalkStroke } from '~/components/ChalkStroke';
@@ -17,9 +17,34 @@ import {
 import { Wordmark } from '~/components/Wordmark';
 import { ThemeCycleButton, ThemeSwitcher } from '~/theme/ThemeSwitcher';
 
+const within = (pathname: string, base: string) =>
+  pathname === base || pathname.startsWith(`${base}/`);
+
+// A lesson lives under its course's address, but a student reaches it from their enrollments.
+const isLesson = (pathname: string) =>
+  /^\/cursos\/[^/]+\/aulas\//.test(pathname);
+
 const NAV = [
-  { to: '/cursos', label: 'Catálogo', Icon: Library },
-  { to: '/minhas-matriculas', label: 'Minhas matrículas', Icon: GraduationCap },
+  {
+    to: '/cursos',
+    label: 'Catálogo',
+    Icon: Library,
+    current: (pathname: string) =>
+      within(pathname, '/cursos') && !isLesson(pathname) ? 'page' : undefined,
+  },
+  {
+    to: '/minhas-matriculas',
+    label: 'Minhas matrículas',
+    Icon: GraduationCap,
+    // In a lesson the outline holds the current page; the rail only marks the section.
+    current: (pathname: string) => {
+      if (within(pathname, '/minhas-matriculas')) {
+        return 'page';
+      }
+
+      return isLesson(pathname) ? 'location' : undefined;
+    },
+  },
 ];
 
 // Every icon keeps its place in both widths, so collapsing only animates the width and fades the
@@ -33,6 +58,7 @@ const SHOWS_WHEN_COLLAPSED =
 
 export function AppSidebar() {
   const { state, isMobile, setOpenMobile } = useSidebar();
+  const { pathname } = useLocation();
   const collapsed = state === 'collapsed' && !isMobile;
 
   return (
@@ -46,25 +72,26 @@ export function AppSidebar() {
         <SidebarGroup className="p-0">
           <nav aria-label="Principal">
             <SidebarMenu>
-              {NAV.map(({ to, label, Icon }) => (
+              {NAV.map(({ to, label, Icon, current }) => (
                 <SidebarMenuItem key={to}>
                   <SidebarMenuButton asChild tooltip={label}>
-                    <NavLink
+                    <Link
                       to={to}
+                      aria-current={current(pathname)}
                       onClick={() => {
                         setOpenMobile(false);
                       }}
-                      className="group/nav h-11 gap-3 px-[13px] text-shell-foreground/85 transition-[background-color] duration-200 aria-[current=page]:font-bold aria-[current=page]:text-shell-foreground group-data-[collapsible=icon]:aria-[current=page]:bg-sidebar-accent"
+                      className="group/nav h-11 gap-3 px-[13px] text-shell-foreground/85 transition-[background-color] duration-200 aria-[current]:font-bold aria-[current]:text-shell-foreground group-data-[collapsible=icon]:aria-[current]:bg-sidebar-accent"
                     >
                       <Icon
                         aria-hidden="true"
-                        className="text-shell-muted group-aria-[current=page]/nav:text-chalk-yellow"
+                        className="text-shell-muted group-aria-[current]/nav:text-chalk-yellow"
                       />
                       <span className={`relative ${FADES}`}>
                         {label}
-                        <ChalkStroke className="absolute top-full left-0 hidden w-16 text-chalk-yellow group-aria-[current=page]/nav:block" />
+                        <ChalkStroke className="absolute top-full left-0 hidden w-16 text-chalk-yellow group-aria-[current]/nav:block" />
                       </span>
-                    </NavLink>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
