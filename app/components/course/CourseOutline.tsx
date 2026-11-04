@@ -97,22 +97,23 @@ export function CourseOutline({
   );
 }
 
+// A lesson to resume may already be done (the student went back to it): the check wins.
 function LessonState({ done, here }: { done: boolean; here: boolean }) {
-  if (here) {
-    return (
-      <CirclePlay
-        aria-hidden="true"
-        className="size-4.5 shrink-0 text-primary"
-      />
-    );
-  }
-
   if (done) {
     return (
       <CircleCheck
         role="img"
         aria-label="Concluída"
         className="size-4.5 shrink-0 text-success"
+      />
+    );
+  }
+
+  if (here) {
+    return (
+      <CirclePlay
+        aria-hidden="true"
+        className="size-4.5 shrink-0 text-primary"
       />
     );
   }
