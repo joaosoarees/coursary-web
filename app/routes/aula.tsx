@@ -73,7 +73,6 @@ export default function LessonRoute({ params }: Route.ComponentProps) {
   const courseCode = ApiFailure.codeOf(outline.error);
   const lessonCode = ApiFailure.codeOf(lesson.error);
 
-  // Only an active enrollment opens a lesson; anyone else goes to the course page to enroll.
   if (
     enrollment.data === null ||
     courseCode === 'FORBIDDEN' ||
@@ -220,7 +219,6 @@ function LessonView({
               attachments={content.attachments}
             />
           )}
-          {/* Whoever reads to the end moves on from there, without scrolling back to the video. */}
           {(hasBody || content.attachments.length > 0) && (
             <LessonLinks
               label="Aulas, no fim da aula"
@@ -249,6 +247,10 @@ function LessonLinks({
   previous: string | undefined;
   next: string | undefined;
 }) {
+  if (!previous && !next) {
+    return null;
+  }
+
   return (
     <nav
       aria-label={label}
