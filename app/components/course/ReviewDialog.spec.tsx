@@ -85,6 +85,17 @@ describe('ReviewDialog', () => {
     expect(screen.getByRole('button', { name: 'Agora não' })).toBeVisible();
   });
 
+  it('should tell how many characters are left near the limit', () => {
+    renderDialog();
+    const field = screen.getByRole('textbox', { name: /Comentário/ });
+
+    fireEvent.change(field, { target: { value: 'a'.repeat(1700) } });
+    expect(screen.queryByText(/Restam/)).toBeNull();
+
+    fireEvent.change(field, { target: { value: 'a'.repeat(1850) } });
+    expect(screen.getByText('Restam 150 caracteres')).toBeInTheDocument();
+  });
+
   it('should say so and stay open when the review is refused', async () => {
     vi.spyOn(ReviewService, 'save').mockRejectedValue(
       apiError(500, 'INTERNAL'),
