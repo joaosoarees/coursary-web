@@ -85,6 +85,23 @@ describe('LessonVideo', () => {
     expect(screen.queryByRole('alert')).toBeNull();
   });
 
+  it('should bring the player back when a new address arrives', () => {
+    const { onExpired, player, view } = renderVideo();
+    fireEvent.error(player);
+    fireEvent.error(player);
+
+    view.rerender(
+      <LessonVideo
+        title="Filtrando e agrupando"
+        video={video('https://files.test/b.mp4')}
+        onExpired={onExpired}
+      />,
+    );
+
+    expect(screen.queryByRole('alert')).toBeNull();
+    expect(player).toBeVisible();
+  });
+
   it('should go back to the same second and keep playing with the new address', () => {
     const play = vi
       .spyOn(HTMLMediaElement.prototype, 'play')
