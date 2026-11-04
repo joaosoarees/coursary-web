@@ -53,7 +53,6 @@ export function LessonOutline({
         </h2>
         {progress}
       </div>
-      {/* On a phone the outline comes after the lesson, closed, so the lesson stays first. */}
       <div className="flex flex-col gap-2.5 px-2 lg:hidden">
         <h2 className="font-display text-xl font-bold">
           <button
