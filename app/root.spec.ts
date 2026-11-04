@@ -22,6 +22,14 @@ describe('root', () => {
     expect(restoreSession).toHaveBeenCalledOnce();
   });
 
+  it('should keep the session it has when the loader runs again', async () => {
+    startSession('token-1');
+
+    await clientLoader();
+
+    expect(restoreSession).not.toHaveBeenCalled();
+  });
+
   it('should send the access token on every API call', async () => {
     const adapter = vi.fn<AxiosAdapter>((config) =>
       Promise.resolve({
