@@ -68,10 +68,15 @@ export default function CoursePageRoute({ params }: Route.ComponentProps) {
   return data ? <CourseDetails course={data} /> : null;
 }
 
-const minutesOf = (course: CoursePage) =>
-  course.modules
-    .flatMap((module) => module.lessons)
-    .reduce((sum, lesson) => sum + lesson.durationMinutes, 0);
+const outlineSummary = (course: CoursePage) => {
+  const lessons = course.modules.flatMap((module) => module.lessons);
+  const minutes = lessons.reduce(
+    (sum, lesson) => sum + lesson.durationMinutes,
+    0,
+  );
+
+  return `${CourseFormat.count(lessons.length, 'aula', 'aulas')} · ${CourseFormat.duration(minutes)}`;
+};
 
 function CourseDetails({ course }: { course: CoursePage }) {
   const enrollment = useEnrollment(course.id);
@@ -111,10 +116,7 @@ function CourseDetails({ course }: { course: CoursePage }) {
               {course.description}
             </p>
           </Section>
-          <Section
-            title="Conteúdo"
-            detail={`${CourseFormat.count(course.lessonCount, 'aula', 'aulas')} · ${CourseFormat.duration(minutesOf(course))}`}
-          >
+          <Section title="Conteúdo" detail={outlineSummary(course)}>
             <CourseOutline
               courseId={course.id}
               modules={course.modules}
