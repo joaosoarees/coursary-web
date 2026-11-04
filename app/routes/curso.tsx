@@ -90,7 +90,6 @@ function CourseDetails({ course }: { course: CoursePage }) {
         <ChevronLeft aria-hidden="true" className="size-4.5" />
         Catálogo
       </Link>
-      {/* On a phone the enrollment comes right after the header, before the long outline. */}
       <div className="grid items-start gap-x-10 gap-y-8 lg:grid-cols-[minmax(0,1fr)_21.25rem]">
         <header className="flex min-w-0 flex-col gap-3 lg:col-start-1">
           <h1 className="font-display text-3xl leading-tight font-bold tracking-tight text-balance md:text-4xl">
