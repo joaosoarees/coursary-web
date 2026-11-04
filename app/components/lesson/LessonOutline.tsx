@@ -69,7 +69,7 @@ export function LessonOutline({
       >
         {modules.map((module, index) => (
           <li key={module.id} className="flex flex-col gap-1">
-            <h3 className="flex justify-between gap-3 px-2 text-[0.9375rem] font-bold">
+            <h3 className="flex justify-between gap-3 px-2 font-bold">
               <span>
                 {index + 1}. {module.title}
               </span>
