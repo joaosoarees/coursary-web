@@ -125,7 +125,9 @@ describe('the lesson page', () => {
       await screen.findByRole('checkbox', { name: 'Marcar concluída' }),
     );
 
-    expect(await screen.findByRole('status')).toHaveTextContent('Concluída');
+    await waitFor(() => {
+      expect(screen.getByRole('status')).toHaveTextContent(/^Concluída$/);
+    });
     expect(completeLesson).toHaveBeenCalledWith({
       courseId: 'c1',
       lessonId: 'l2',

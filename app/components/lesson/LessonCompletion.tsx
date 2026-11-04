@@ -1,4 +1,4 @@
-import { CircleCheck } from 'lucide-react';
+import { Check, CircleCheck } from 'lucide-react';
 import { useId } from 'react';
 
 import { cn } from '~/lib/utils';
@@ -15,18 +15,30 @@ export function LessonCompletion({
 }) {
   const id = useId();
 
-  if (done) {
-    return (
-      <span
-        role="status"
-        className="inline-flex min-h-11 items-center gap-2.5 px-1.5 font-bold text-success"
-      >
-        <CircleCheck aria-hidden="true" className="size-5" />
-        Concluída
-      </span>
-    );
-  }
+  // One live region holds both states, so the change is announced; it existed before the change.
+  return (
+    <div role="status" className="flex">
+      {done ? (
+        <span className="inline-flex min-h-11 items-center gap-2.5 px-1.5 font-bold text-success">
+          <CircleCheck aria-hidden="true" className="size-5" />
+          Concluída
+        </span>
+      ) : (
+        <Box id={id} pending={pending} onComplete={onComplete} />
+      )}
+    </div>
+  );
+}
 
+function Box({
+  id,
+  pending,
+  onComplete,
+}: {
+  id: string;
+  pending: boolean;
+  onComplete: () => void;
+}) {
   return (
     <label
       htmlFor={id}
@@ -38,7 +50,7 @@ export function LessonCompletion({
       <input
         id={id}
         type="checkbox"
-        checked={false}
+        checked={pending}
         aria-busy={pending}
         onChange={() => {
           if (!pending) {
@@ -49,8 +61,10 @@ export function LessonCompletion({
       />
       <span
         aria-hidden="true"
-        className="size-5 rounded-sm border-2 border-muted-foreground"
-      />
+        className="grid size-5 place-items-center rounded-sm border-2 border-muted-foreground"
+      >
+        {pending && <Check className="size-3.5" strokeWidth={3} />}
+      </span>
       {pending ? 'Salvando…' : 'Marcar concluída'}
     </label>
   );
