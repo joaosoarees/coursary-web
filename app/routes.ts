@@ -13,11 +13,13 @@ export default [
     route('recuperar-senha', 'routes/recuperar-senha.tsx'),
     route('redefinir-senha', 'routes/redefinir-senha.tsx'),
   ]),
+  layout('routes/classroom-layout.tsx', [
+    route('cursos/:id/aulas/:aulaId', 'routes/aula.tsx'),
+  ]),
   layout('routes/layout.tsx', [
     index('routes/home.tsx'),
     route('cursos', 'routes/cursos.tsx'),
     route('cursos/:id', 'routes/curso.tsx'),
-    route('cursos/:id/aulas/:aulaId', 'routes/aula.tsx'),
     route('cursos/:id/continuar', 'routes/continuar.tsx'),
     route('minhas-matriculas', 'routes/minhas-matriculas.tsx'),
     route('perfil', 'routes/perfil.tsx'),
