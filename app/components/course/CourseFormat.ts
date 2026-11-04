@@ -18,6 +18,19 @@ export class CourseFormat {
     return `${String(count)} ${count === 1 ? one : many}`;
   }
 
+  static duration(minutes: number): string {
+    const hours = Math.floor(minutes / 60);
+    const rest = minutes % 60;
+
+    if (hours === 0) {
+      return `${String(rest)} min`;
+    }
+
+    return rest === 0
+      ? `${String(hours)} h`
+      : `${String(hours)} h ${String(rest)} min`;
+  }
+
   static date(iso: string): string {
     return DATE.format(new Date(iso));
   }

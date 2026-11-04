@@ -15,7 +15,7 @@ export function EnrollmentCard({
 }) {
   return (
     <Link
-      to={`/cursos/${enrollment.courseId}`}
+      to={`/cursos/${enrollment.courseId}/continuar`}
       prefetch="intent"
       className="group flex flex-col gap-5 rounded-md border bg-card p-4 shadow-sm transition-colors hover:border-ring focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:flex-row md:items-start"
     >

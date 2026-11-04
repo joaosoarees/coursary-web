@@ -16,6 +16,7 @@ import {
   enrollmentQuery,
   reviewsQuery,
   useCourse,
+  useEnrollment,
 } from '~/queries/course';
 import { ApiFailure } from '~/services/ApiFailure';
 import type { CoursePage } from '~/services/CourseService';
@@ -67,7 +68,19 @@ export default function CoursePageRoute({ params }: Route.ComponentProps) {
   return data ? <CourseDetails course={data} /> : null;
 }
 
+const outlineSummary = (course: CoursePage) => {
+  const lessons = course.modules.flatMap((module) => module.lessons);
+  const minutes = lessons.reduce(
+    (sum, lesson) => sum + lesson.durationMinutes,
+    0,
+  );
+
+  return `${CourseFormat.count(lessons.length, 'aula', 'aulas')} · ${CourseFormat.duration(minutes)}`;
+};
+
 function CourseDetails({ course }: { course: CoursePage }) {
+  const enrollment = useEnrollment(course.id);
+
   return (
     <article className="flex flex-col gap-8">
       <Link
@@ -103,8 +116,12 @@ function CourseDetails({ course }: { course: CoursePage }) {
               {course.description}
             </p>
           </Section>
-          <Section title="Conteúdo">
-            <CourseOutline modules={course.modules} />
+          <Section title="Conteúdo" detail={outlineSummary(course)}>
+            <CourseOutline
+              courseId={course.id}
+              modules={course.modules}
+              progress={enrollment.data}
+            />
           </Section>
           <Section title="Avaliações">
             <ReviewList courseId={course.id} />
@@ -118,14 +135,21 @@ function CourseDetails({ course }: { course: CoursePage }) {
 
 function Section({
   title,
+  detail,
   children,
 }: {
   title: string;
+  detail?: string;
   children: React.ReactNode;
 }) {
   return (
     <section className="flex flex-col gap-3">
-      <h2 className="font-display text-xl font-bold">{title}</h2>
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+        <h2 className="font-display text-xl font-bold">{title}</h2>
+        {detail && (
+          <span className="text-sm text-muted-foreground">{detail}</span>
+        )}
+      </div>
       {children}
     </section>
   );

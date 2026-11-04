@@ -100,6 +100,35 @@ describe('the course page', () => {
     expect(get).toHaveBeenCalledWith('c1', expect.any(AbortSignal));
   });
 
+  it('should sum up the outline and lead an enrolled student on', async () => {
+    vi.spyOn(EnrollmentService, 'progress').mockResolvedValue(progress);
+    renderCourse();
+
+    expect(
+      await screen.findByRole('link', { name: 'Continuar de onde parei' }),
+    ).toHaveAttribute('href', '/cursos/c1/continuar');
+    expect(
+      screen.getByText('Aula 1 de 2 · Instalando o ambiente'),
+    ).toBeVisible();
+    expect(screen.getByText('2 aulas · 20 min')).toBeVisible();
+    expect(
+      screen.getByRole('link', { name: /Instalando o ambiente/ }),
+    ).toHaveAttribute('href', '/cursos/c1/aulas/l1');
+  });
+
+  it('should offer to review a finished course', async () => {
+    vi.spyOn(EnrollmentService, 'progress').mockResolvedValue({
+      ...progress,
+      completedLessons: 2,
+      completedLessonIds: ['l1', 'l2'],
+    });
+    renderCourse();
+
+    expect(
+      await screen.findByRole('link', { name: 'Rever o curso' }),
+    ).toHaveAttribute('href', '/cursos/c1/continuar');
+  });
+
   it('should enroll and then show the enrollment', async () => {
     const read = vi
       .spyOn(EnrollmentService, 'progress')
