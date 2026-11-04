@@ -62,6 +62,7 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
     queryClient.query(enrollmentQuery(params.id)).catch(noop),
     queryClient.query(lessonQuery(params.id, params.aulaId)).catch(noop),
   ]);
+  void queryClient.query(myReviewQuery(params.id)).catch(noop);
   const lesson = outline
     ? lessonsOf(outline).find(({ id }) => id === params.aulaId)
     : undefined;
@@ -200,12 +201,15 @@ function LessonView({
         nextLink.current?.focus();
 
         // The last lesson closes the course: the review is suggested then, once, if there is none.
-        const review = client.getQueryData(
-          myReviewQuery(outline.courseId).queryKey,
-        );
-
-        if (completedLessons >= lessons.length && review === null) {
-          setSuggestReview(true);
+        if (completedLessons >= lessons.length) {
+          void client
+            .query(myReviewQuery(outline.courseId))
+            .then((review) => {
+              if (review === null) {
+                setSuggestReview(true);
+              }
+            })
+            .catch(noop);
         }
       },
       onError: () => {
