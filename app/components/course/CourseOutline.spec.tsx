@@ -65,6 +65,14 @@ describe('CourseOutline', () => {
     );
   });
 
+  it('should keep the check on a done lesson the student went back to', () => {
+    renderOutline({ ...progress(['l1']), lastLessonId: 'l1' });
+    const here = screen.getByRole('link', { name: /Instalando/ });
+
+    expect(here).toHaveTextContent('Você parou aqui');
+    expect(within(here).getByRole('img', { name: 'Concluída' })).toBeVisible();
+  });
+
   it('should mark no lesson as the stopping point once the course is done', () => {
     renderOutline(progress(['l1', 'l2', 'l3']));
 
