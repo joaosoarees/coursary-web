@@ -1,4 +1,5 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { noop, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useCallback } from 'react';
 
 import { enrollmentQuery } from '~/queries/course';
 import { EnrollmentService } from '~/services/EnrollmentService';
@@ -29,4 +30,24 @@ export const useCompleteLesson = (courseId: string) => {
       });
     },
   });
+};
+
+// A position that fails to save is simply sent again with the next one.
+export const useSavePosition = (courseId: string, lessonId: string) => {
+  const queryClient = useQueryClient();
+
+  return useCallback(
+    (positionSeconds: number, leaving = false) => {
+      queryClient.setQueryData(
+        enrollmentQuery(courseId).queryKey,
+        (progress) =>
+          progress && { ...progress, lastLessonId: lessonId, positionSeconds },
+      );
+      EnrollmentService.savePosition(
+        { courseId, lessonId, positionSeconds },
+        { leaving },
+      ).catch(noop);
+    },
+    [queryClient, courseId, lessonId],
+  );
 };
