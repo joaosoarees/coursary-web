@@ -41,6 +41,14 @@ describe('LessonBody', () => {
     ).not.toHaveAttribute('target');
   });
 
+  it('should keep a broken address as a plain link instead of failing', () => {
+    render(<LessonBody markdown="[site](http://)" />);
+
+    expect(screen.getByRole('link', { name: 'site' })).not.toHaveAttribute(
+      'target',
+    );
+  });
+
   it('should keep every heading level below the one above it', () => {
     render(<LessonBody markdown={'### Passo\n\n#### Detalhe'} />);
 
