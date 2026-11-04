@@ -16,6 +16,7 @@ import { queryClient } from '~/lib/queryClient';
 import { installAuthInterceptors } from '~/services/authInterceptors';
 import { apiOrigin, httpClient } from '~/services/httpClient';
 import { restoreSession } from '~/session/refreshSession';
+import { isSignedIn } from '~/session/session';
 import { ThemeProvider } from '~/theme/ThemeProvider';
 import { themeScript } from '~/theme/themeScript';
 
@@ -67,8 +68,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+// Every navigation to the address already open revalidates this loader: refreshing there would
+// spend the session's refresh token on every such click.
 export async function clientLoader() {
-  await restoreSession();
+  if (!isSignedIn()) {
+    await restoreSession();
+  }
 
   return null;
 }
