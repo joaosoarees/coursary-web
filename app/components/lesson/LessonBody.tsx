@@ -9,7 +9,7 @@ const isExternal = (href: string | undefined) => {
     return false;
   }
 
-  return new URL(href).origin !== window.location.origin;
+  return URL.canParse(href) && new URL(href).origin !== window.location.origin;
 };
 
 // The page already has its h1 (the lesson title), so the body's headings start one level down.
