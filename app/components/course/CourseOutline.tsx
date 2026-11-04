@@ -1,4 +1,4 @@
-import { Circle, CircleCheck, CirclePlay, Play } from 'lucide-react';
+import { Circle, CircleCheck, CirclePlay } from 'lucide-react';
 import { Link } from 'react-router';
 
 import { CourseFormat } from '~/components/course/CourseFormat';
@@ -75,10 +75,6 @@ export function CourseOutline({
                     </Link>
                   ) : (
                     <div className={ROW}>
-                      <Play
-                        aria-hidden="true"
-                        className="size-4 shrink-0 text-muted-foreground"
-                      />
                       <span className="min-w-0 flex-1 leading-snug">
                         {lesson.title}
                       </span>
