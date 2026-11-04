@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { courseUrl } from '~/services/apiPaths';
 import { httpClient } from '~/services/httpClient';
 
 const lessonSchema = z.object({
@@ -53,10 +54,9 @@ export class CourseService {
     courseId: string,
     signal?: AbortSignal,
   ): Promise<CoursePage> {
-    const { data } = await httpClient.get<unknown>(
-      `/courses/${encodeURIComponent(courseId)}`,
-      { signal },
-    );
+    const { data } = await httpClient.get<unknown>(courseUrl(courseId), {
+      signal,
+    });
 
     return coursePageSchema.parse(data);
   }
@@ -70,7 +70,7 @@ export class CourseService {
     signal?: AbortSignal,
   ): Promise<ReviewsPage> {
     const { data } = await httpClient.get<unknown>(
-      `/courses/${encodeURIComponent(courseId)}/reviews`,
+      `${courseUrl(courseId)}/reviews`,
       { params: { cursor, limit }, signal },
     );
 
