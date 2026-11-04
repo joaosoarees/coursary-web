@@ -1,5 +1,6 @@
 import { AccountMenu } from '~/components/AccountMenu';
 import { AppSidebar } from '~/components/AppSidebar';
+import { SkipLink } from '~/components/SkipLink';
 import { SidebarProvider, SidebarTrigger } from '~/components/ui/sidebar';
 import { Wordmark } from '~/components/Wordmark';
 import { useFocusOnNavigation } from '~/hooks/useFocusOnNavigation';
@@ -9,12 +10,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <SidebarProvider>
-      <a
-        href="#conteudo"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-chalk-yellow focus:px-4 focus:py-2 focus:font-bold focus:text-chalk-yellow-foreground"
-      >
-        Pular para o conteúdo
-      </a>
+      <SkipLink />
       <AppSidebar />
       <div className="relative flex min-w-0 flex-1 flex-col bg-background">
         <header className="flex items-center gap-2 bg-shell px-3 py-2.5 text-shell-foreground md:border-b md:bg-transparent md:px-4 md:py-3 md:text-muted-foreground">
