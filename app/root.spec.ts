@@ -1,14 +1,14 @@
 import type { AxiosAdapter } from 'axios';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { clientLoader } from '~/root';
+import { clientLoader, shouldRevalidate } from '~/root';
 import { httpClient } from '~/services/httpClient';
-import { restoreSession } from '~/session/refreshSession';
+import { ensureSession } from '~/session/refreshSession';
 import { endSession, startSession } from '~/session/session';
 
 vi.mock('~/session/refreshSession', () => ({
   refreshSession: vi.fn(),
-  restoreSession: vi.fn(() => Promise.resolve(false)),
+  ensureSession: vi.fn(() => Promise.resolve(false)),
 }));
 
 afterEach(() => {
@@ -19,15 +19,11 @@ describe('root', () => {
   it('should restore the session before the site renders', async () => {
     await expect(clientLoader()).resolves.toBeNull();
 
-    expect(restoreSession).toHaveBeenCalledOnce();
+    expect(ensureSession).toHaveBeenCalledOnce();
   });
 
-  it('should keep the session it has when the loader runs again', async () => {
-    startSession('token-1');
-
-    await clientLoader();
-
-    expect(restoreSession).not.toHaveBeenCalled();
+  it('should not run again on a click to the address already open', () => {
+    expect(shouldRevalidate()).toBe(false);
   });
 
   it('should send the access token on every API call', async () => {
