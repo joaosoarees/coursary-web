@@ -1,5 +1,5 @@
 import { ChevronDown, Circle, CircleCheck, CirclePlay } from 'lucide-react';
-import { useId, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { Link } from 'react-router';
 
 import { CourseProgress } from '~/components/course/CourseProgress';
@@ -19,6 +19,20 @@ export function LessonOutline({
 }) {
   const [open, setOpen] = useState(false);
   const listId = useId();
+  const list = useRef<HTMLOListElement>(null);
+  const currentLink = useRef<HTMLAnchorElement>(null);
+
+  // A long course scrolls inside the card; the lesson on screen starts in view, without moving the page.
+  useEffect(() => {
+    const box = list.current;
+    const link = currentLink.current;
+
+    if (!box || !link || box.scrollHeight <= box.clientHeight) {
+      return;
+    }
+
+    box.scrollTop = link.offsetTop - box.clientHeight / 2;
+  }, [currentLessonId]);
   const completed = new Set(completedLessonIds);
   const total = modules.reduce((sum, module) => sum + module.lessons.length, 0);
   const done = modules.reduce(
@@ -31,7 +45,7 @@ export function LessonOutline({
   return (
     <aside
       aria-labelledby={`${listId}-title`}
-      className="flex flex-col gap-4.5 rounded-md border bg-card px-3 pt-5 pb-4 shadow-sm"
+      className="flex flex-col gap-4.5 rounded-md border bg-card px-3 pt-5 pb-4 shadow-sm lg:sticky lg:top-6 lg:max-h-[calc(100svh-3rem)]"
     >
       <div className="hidden flex-col gap-2.5 px-2 lg:flex">
         <h2 id={`${listId}-title`} className="font-display text-xl font-bold">
@@ -64,8 +78,12 @@ export function LessonOutline({
         {progress}
       </div>
       <ol
+        ref={list}
         id={listId}
-        className={cn('flex-col gap-3.5', open ? 'flex' : 'hidden lg:flex')}
+        className={cn(
+          'relative flex-col gap-3.5 lg:min-h-0 lg:overflow-y-auto',
+          open ? 'flex' : 'hidden lg:flex',
+        )}
       >
         {modules.map((module, index) => (
           <li key={module.id} className="flex flex-col gap-1">
@@ -90,6 +108,7 @@ export function LessonOutline({
                   <li key={lesson.id}>
                     <Link
                       to={`/cursos/${courseId}/aulas/${lesson.id}`}
+                      ref={current ? currentLink : undefined}
                       aria-current={current ? 'page' : undefined}
                       className={cn(
                         'flex min-h-11 items-center gap-2.5 rounded-md p-2 hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring',
