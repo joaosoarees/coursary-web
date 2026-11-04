@@ -1,10 +1,10 @@
 import { ChevronLeft } from 'lucide-react';
 import { Link } from 'react-router';
 
+import { SkipLink } from '~/components/SkipLink';
 import { BoardMark } from '~/components/Wordmark';
 import { useFocusOnNavigation } from '~/hooks/useFocusOnNavigation';
 
-// The lesson is a classroom: no app rail, only the way out and the course on the board.
 export function ClassroomShell({
   back,
   courseTitle,
@@ -18,12 +18,7 @@ export function ClassroomShell({
 
   return (
     <div className="flex min-h-svh flex-col bg-background">
-      <a
-        href="#conteudo"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-chalk-yellow focus:px-4 focus:py-2 focus:font-bold focus:text-chalk-yellow-foreground"
-      >
-        Pular para o conteúdo
-      </a>
+      <SkipLink />
       <header className="flex min-h-14 items-center gap-2.5 bg-shell px-3 py-2 text-shell-foreground md:min-h-15 md:gap-4 md:px-6">
         <Link
           to={back}
