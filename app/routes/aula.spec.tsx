@@ -1,4 +1,5 @@
-import { fireEvent, screen, within } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
+import { toast } from 'sonner';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ZodError } from 'zod';
 
@@ -96,39 +97,101 @@ describe('the lesson page', () => {
     );
   });
 
-  it('should lead to the lessons before and after, by the video and at the end', async () => {
+  it('should lead to the lessons before and after from the strip under the video', async () => {
     renderLesson();
 
-    for (const label of ['Aulas', 'Aulas, no fim da aula']) {
-      const links = within(
-        await screen.findByRole('navigation', { name: label }),
-      );
-      expect(
-        links.getByRole('link', { name: 'Aula anterior' }),
-      ).toHaveAttribute('href', '/cursos/c1/aulas/l1');
-      expect(links.getByRole('link', { name: 'Próxima aula' })).toHaveAttribute(
-        'href',
-        '/cursos/c1/aulas/l3',
-      );
-    }
+    const links = within(
+      await screen.findByRole('navigation', { name: 'Aulas' }),
+    );
     expect(
-      screen.getByRole('link', { name: 'Python para análise de dados' }),
-    ).toHaveAttribute('href', '/cursos/c1');
+      links.getByRole('link', { name: 'Aula anterior: Instalando' }),
+    ).toHaveAttribute('href', '/cursos/c1/aulas/l1');
+    expect(
+      links.getByRole('link', { name: 'Próxima aula: Juntando' }),
+    ).toHaveAttribute('href', '/cursos/c1/aulas/l3');
   });
 
-  it('should lead back to the enrollments when the course is archived', async () => {
-    vi.spyOn(LessonService, 'outline').mockResolvedValue({
-      ...outline,
-      status: 'ARCHIVED',
-    });
+  it('should complete the lesson from the checkbox and show it done', async () => {
+    const completeLesson = vi
+      .spyOn(EnrollmentService, 'completeLesson')
+      .mockResolvedValue({
+        lessonId: 'l2',
+        completedLessons: 2,
+        created: true,
+      });
     renderLesson();
 
+    fireEvent.click(
+      await screen.findByRole('checkbox', { name: 'Marcar concluída' }),
+    );
+
+    expect(await screen.findByRole('status')).toHaveTextContent('Concluída');
+    expect(completeLesson).toHaveBeenCalledWith({
+      courseId: 'c1',
+      lessonId: 'l2',
+    });
     expect(
-      await screen.findByRole('link', { name: 'Minhas matrículas' }),
-    ).toHaveAttribute('href', '/minhas-matriculas');
+      screen.getByRole('link', { name: /Filtrando/, current: 'page' }),
+    ).toBeInTheDocument();
+  });
+
+  it('should complete the lesson when the video ends', async () => {
+    const completeLesson = vi
+      .spyOn(EnrollmentService, 'completeLesson')
+      .mockResolvedValue({
+        lessonId: 'l2',
+        completedLessons: 2,
+        created: true,
+      });
+    renderLesson();
+
+    fireEvent.ended(await screen.findByLabelText('Vídeo da aula Filtrando'));
+
+    await waitFor(() => {
+      expect(completeLesson).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('should say so and keep the box when the completion fails', async () => {
+    vi.spyOn(EnrollmentService, 'completeLesson').mockRejectedValue(
+      apiError(500, 'INTERNAL'),
+    );
+    const error = vi.spyOn(toast, 'error');
+    renderLesson();
+
+    fireEvent.click(
+      await screen.findByRole('checkbox', { name: 'Marcar concluída' }),
+    );
+
+    await waitFor(() => {
+      expect(error).toHaveBeenCalledWith(
+        'Não deu para marcar a aula. Tente de novo.',
+      );
+    });
+    expect(
+      screen.getByRole('checkbox', { name: 'Marcar concluída' }),
+    ).toBeInTheDocument();
+  });
+
+  it('should resume the last lesson opened at the saved second', async () => {
+    const duration = vi
+      .spyOn(HTMLMediaElement.prototype, 'duration', 'get')
+      .mockReturnValue(960);
+    renderLesson();
+    const player = await screen.findByLabelText<HTMLVideoElement>(
+      'Vídeo da aula Filtrando',
+    );
+
+    fireEvent.loadedMetadata(player);
+
+    expect(player.currentTime).toBe(252);
+    duration.mockRestore();
   });
 
   it('should leave out the video, text and material a lesson does not have', async () => {
+    const savePosition = vi
+      .spyOn(EnrollmentService, 'savePosition')
+      .mockResolvedValue();
     vi.spyOn(LessonService, 'open').mockResolvedValue({
       lessonId: 'l2',
       courseId: 'c1',
@@ -140,6 +203,13 @@ describe('the lesson page', () => {
     await screen.findByRole('heading', { level: 1, name: 'Filtrando' });
     expect(screen.queryByLabelText('Vídeo da aula Filtrando')).toBeNull();
     expect(screen.queryByRole('heading', { name: 'Material' })).toBeNull();
+    expect(
+      screen.getByRole('checkbox', { name: 'Marcar concluída' }),
+    ).toBeInTheDocument();
+    expect(savePosition).toHaveBeenCalledWith(
+      { courseId: 'c1', lessonId: 'l2', positionSeconds: 0 },
+      { leaving: false },
+    );
     expect(screen.getAllByRole('navigation', { name: /^Aulas/ })).toHaveLength(
       1,
     );
