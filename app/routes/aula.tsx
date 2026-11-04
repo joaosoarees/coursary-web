@@ -198,19 +198,24 @@ function LessonView({
               onExpired={renewVideo}
             />
           )}
-          <nav aria-label="Aulas" className="flex flex-wrap justify-end gap-3">
+          <nav
+            aria-label="Aulas"
+            className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:justify-end"
+          >
             {previous && (
               <Button variant="ghost" asChild>
-                <Link to={lessonPath(previous.id)}>
+                <Link to={lessonPath(previous.id)} aria-label="Aula anterior">
                   <ChevronLeft aria-hidden="true" />
-                  Aula anterior
+                  <span className="sm:hidden">Anterior</span>
+                  <span className="hidden sm:inline">Aula anterior</span>
                 </Link>
               </Button>
             )}
             {next && (
-              <Button variant="outline" asChild>
-                <Link to={lessonPath(next.id)}>
-                  Próxima aula
+              <Button variant="outline" className="col-start-2" asChild>
+                <Link to={lessonPath(next.id)} aria-label="Próxima aula">
+                  <span className="sm:hidden">Próxima</span>
+                  <span className="hidden sm:inline">Próxima aula</span>
                   <ChevronRight aria-hidden="true" />
                 </Link>
               </Button>
