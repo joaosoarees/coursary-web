@@ -214,6 +214,14 @@ describe('the lesson page', () => {
     expect(
       await screen.findByRole('dialog', { name: 'Você concluiu o curso' }),
     ).toBeVisible();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Agora não' }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('button', { name: 'Avaliar o curso' }),
+      ).toHaveFocus();
+    });
   });
 
   it('should not suggest a review to a student who already wrote one', async () => {
