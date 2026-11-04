@@ -38,11 +38,22 @@ export const useSavePosition = (courseId: string, lessonId: string) => {
 
   return useCallback(
     (positionSeconds: number, leaving = false) => {
-      queryClient.setQueryData(
-        enrollmentQuery(courseId).queryKey,
-        (progress) =>
-          progress && { ...progress, lastLessonId: lessonId, positionSeconds },
-      );
+      const { queryKey } = enrollmentQuery(courseId);
+
+      // Writing every second watched would render the lesson again for nothing on screen: only a
+      // new last lesson is written, and the rest is read again the next time it is shown.
+      if (queryClient.getQueryData(queryKey)?.lastLessonId !== lessonId) {
+        queryClient.setQueryData(
+          queryKey,
+          (progress) =>
+            progress && {
+              ...progress,
+              lastLessonId: lessonId,
+              positionSeconds,
+            },
+        );
+      }
+      void queryClient.invalidateQueries({ queryKey, refetchType: 'none' });
       EnrollmentService.savePosition(
         { courseId, lessonId, positionSeconds },
         { leaving },
