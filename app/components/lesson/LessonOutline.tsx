@@ -18,7 +18,6 @@ export function LessonOutline({
   completedLessonIds: string[];
 }) {
   const [open, setOpen] = useState(false);
-  // Only the module of the lesson on screen starts open; each lesson starts the outline afresh.
   const [expanded, setExpanded] = useState(
     () =>
       new Set(
