@@ -16,6 +16,7 @@ import {
 } from '~/components/ui/dialog';
 import { Skeleton } from '~/components/ui/skeleton';
 import { FormAlert } from '~/components/visitor/FormMessage';
+import { cn } from '~/lib/utils';
 import { useCancelEnrollment, useEnroll } from '~/mutations/enrollment';
 import { useEnrollment } from '~/queries/course';
 import { ApiFailure } from '~/services/ApiFailure';
@@ -27,18 +28,29 @@ const ENROLL_FAILURES = {
   COURSE_ARCHIVED: 'Este curso não aceita matrículas novas.',
 };
 
-export function EnrollmentPanel({ course }: { course: CoursePage }) {
+export function EnrollmentPanel({
+  course,
+  className,
+}: {
+  course: CoursePage;
+  className?: string;
+}) {
   return (
     <aside
       aria-label="Matrícula"
-      className="flex flex-col gap-4 rounded-md border bg-card p-4 shadow-sm"
+      className={cn(
+        'flex flex-col gap-4 rounded-md border bg-card p-4 shadow-sm',
+        className,
+      )}
     >
-      <CourseCover
-        courseId={course.id}
-        title={course.title}
-        coverUrl={course.coverUrl}
-        large
-      />
+      <div className="hidden lg:block">
+        <CourseCover
+          courseId={course.id}
+          title={course.title}
+          coverUrl={course.coverUrl}
+          large
+        />
+      </div>
       <EnrollmentAction course={course} />
       <p className="flex items-center gap-2 text-sm text-muted-foreground">
         <Clock aria-hidden="true" className="size-4 shrink-0" />
