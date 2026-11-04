@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { ApiFailure } from '~/services/ApiFailure';
+import { courseUrl } from '~/services/apiPaths';
 import { httpClient } from '~/services/httpClient';
 
 const progressSchema = z.object({
@@ -29,9 +30,6 @@ const enrollmentsPageSchema = z.object({
 export type Progress = z.infer<typeof progressSchema>;
 export type EnrollmentSummary = z.infer<typeof enrollmentSummarySchema>;
 export type EnrollmentsPage = z.infer<typeof enrollmentsPageSchema>;
-
-const courseUrl = (courseId: string) =>
-  `/courses/${encodeURIComponent(courseId)}`;
 
 export class EnrollmentService {
   static async listMine(
