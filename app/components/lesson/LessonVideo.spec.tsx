@@ -69,6 +69,22 @@ describe('LessonVideo', () => {
     expect(onExpired).toHaveBeenCalledTimes(1);
   });
 
+  it('should offer to try again when the new address fails too', () => {
+    const { onExpired, player } = renderVideo();
+
+    fireEvent.error(player);
+    fireEvent.error(player);
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Não foi possível carregar o vídeo',
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Tentar de novo' }));
+
+    expect(onExpired).toHaveBeenCalledTimes(2);
+    expect(screen.queryByRole('alert')).toBeNull();
+  });
+
   it('should go back to the same second and keep playing with the new address', () => {
     const play = vi
       .spyOn(HTMLMediaElement.prototype, 'play')
