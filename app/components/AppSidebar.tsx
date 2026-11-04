@@ -30,14 +30,20 @@ const NAV = [
     label: 'Catálogo',
     Icon: Library,
     current: (pathname: string) =>
-      within(pathname, '/cursos') && !isLesson(pathname),
+      within(pathname, '/cursos') && !isLesson(pathname) ? 'page' : undefined,
   },
   {
     to: '/minhas-matriculas',
     label: 'Minhas matrículas',
     Icon: GraduationCap,
-    current: (pathname: string) =>
-      within(pathname, '/minhas-matriculas') || isLesson(pathname),
+    // In a lesson the outline holds the current page; the rail only marks the section.
+    current: (pathname: string) => {
+      if (within(pathname, '/minhas-matriculas')) {
+        return 'page';
+      }
+
+      return isLesson(pathname) ? 'location' : undefined;
+    },
   },
 ];
 
@@ -71,19 +77,19 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild tooltip={label}>
                     <Link
                       to={to}
-                      aria-current={current(pathname) ? 'page' : undefined}
+                      aria-current={current(pathname)}
                       onClick={() => {
                         setOpenMobile(false);
                       }}
-                      className="group/nav h-11 gap-3 px-[13px] text-shell-foreground/85 transition-[background-color] duration-200 aria-[current=page]:font-bold aria-[current=page]:text-shell-foreground group-data-[collapsible=icon]:aria-[current=page]:bg-sidebar-accent"
+                      className="group/nav h-11 gap-3 px-[13px] text-shell-foreground/85 transition-[background-color] duration-200 aria-[current]:font-bold aria-[current]:text-shell-foreground group-data-[collapsible=icon]:aria-[current]:bg-sidebar-accent"
                     >
                       <Icon
                         aria-hidden="true"
-                        className="text-shell-muted group-aria-[current=page]/nav:text-chalk-yellow"
+                        className="text-shell-muted group-aria-[current]/nav:text-chalk-yellow"
                       />
                       <span className={`relative ${FADES}`}>
                         {label}
-                        <ChalkStroke className="absolute top-full left-0 hidden w-16 text-chalk-yellow group-aria-[current=page]/nav:block" />
+                        <ChalkStroke className="absolute top-full left-0 hidden w-16 text-chalk-yellow group-aria-[current]/nav:block" />
                       </span>
                     </Link>
                   </SidebarMenuButton>

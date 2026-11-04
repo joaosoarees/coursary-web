@@ -111,7 +111,7 @@ describe('the app shell', () => {
 
     expect(
       screen.getByRole('link', { name: 'Minhas matrículas' }),
-    ).toHaveAttribute('aria-current', 'page');
+    ).toHaveAttribute('aria-current', 'location');
     expect(screen.getByRole('link', { name: 'Catálogo' })).not.toHaveAttribute(
       'aria-current',
     );
