@@ -37,12 +37,25 @@ export function ReviewDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  // A new form on each opening starts from the saved review; it stays mounted while the dialog
+  // fades out, so the card does not empty mid-animation.
+  const [openings, setOpenings] = useState(0);
+  const [wasOpen, setWasOpen] = useState(open);
+
+  if (open !== wasOpen) {
+    setWasOpen(open);
+
+    if (open) {
+      setOpenings((count) => count + 1);
+    }
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[32rem]">
-        {/* Mounted with the dialog, so every opening starts from the saved review. */}
-        {open && (
+        {(open || openings > 0) && (
           <ReviewForm
+            key={openings}
             courseId={courseId}
             courseTitle={courseTitle}
             review={review}
@@ -149,6 +162,7 @@ function ReviewForm({
         </Label>
         <Textarea
           id={commentId}
+          aria-describedby={`${commentId}-count`}
           rows={4}
           maxLength={MAX_COMMENT}
           value={comment}
@@ -156,7 +170,10 @@ function ReviewForm({
             setComment(event.target.value);
           }}
         />
-        <span className="self-end text-sm text-muted-foreground">
+        <span
+          id={`${commentId}-count`}
+          className="self-end text-sm text-muted-foreground"
+        >
           {comment.length} de {MAX_COMMENT}
         </span>
       </div>
