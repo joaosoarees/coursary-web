@@ -25,9 +25,11 @@ const segmentsDone = (completed: number, total: number) => {
 export function CourseProgress({
   completed,
   total,
+  spelledOut = false,
 }: {
   completed: number;
   total: number;
+  spelledOut?: boolean;
 }) {
   const done = segmentsDone(completed, total);
   const finished = done === SEGMENTS;
@@ -57,7 +59,7 @@ export function CourseProgress({
       ) : (
         <span className="text-sm text-muted-foreground">
           {completed} de {total} aulas
-          <span className="sr-only"> concluídas</span>
+          <span className={cn(!spelledOut && 'sr-only')}> concluídas</span>
         </span>
       )}
     </div>
