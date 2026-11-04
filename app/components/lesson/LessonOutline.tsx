@@ -61,7 +61,7 @@ export function LessonOutline({
       sum + module.lessons.filter((lesson) => completed.has(lesson.id)).length,
     0,
   );
-  const progress = <CourseProgress completed={done} total={total} />;
+  const progress = <CourseProgress completed={done} total={total} spelledOut />;
 
   return (
     <aside
@@ -83,7 +83,7 @@ export function LessonOutline({
             onClick={() => {
               setOpen((value) => !value);
             }}
-            className="flex min-h-10 w-full items-center justify-between gap-3 rounded-md text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+            className="flex min-h-11 w-full items-center justify-between gap-3 rounded-md text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           >
             Conteúdo do curso
             <ChevronDown
@@ -101,7 +101,7 @@ export function LessonOutline({
         ref={list}
         id={listId}
         className={cn(
-          'relative flex-col gap-1 lg:min-h-0 lg:overflow-y-auto',
+          'relative flex-col gap-3 lg:min-h-0 lg:overflow-y-auto',
           open ? 'flex' : 'hidden lg:flex',
         )}
       >
@@ -115,7 +115,7 @@ export function LessonOutline({
                 onClick={() => {
                   toggle(module.id);
                 }}
-                className="flex min-h-11 w-full items-center gap-2.5 rounded-md p-2 text-left font-bold hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                className="flex min-h-11 w-full items-center gap-2.5 rounded-md p-2 text-left font-bold hover:bg-accent focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
               >
                 <span className="min-w-0 flex-1">
                   {index + 1}. {module.title}
@@ -152,7 +152,7 @@ export function LessonOutline({
                       ref={current ? currentLink : undefined}
                       aria-current={current ? 'page' : undefined}
                       className={cn(
-                        'flex min-h-11 items-center gap-2.5 rounded-md p-2 hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring',
+                        'flex min-h-11 items-center gap-2.5 rounded-md p-2 hover:bg-accent focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring',
                         current && 'bg-muted font-bold',
                       )}
                     >
