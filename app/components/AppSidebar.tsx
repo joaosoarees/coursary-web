@@ -20,30 +20,20 @@ import { ThemeCycleButton, ThemeSwitcher } from '~/theme/ThemeSwitcher';
 const within = (pathname: string, base: string) =>
   pathname === base || pathname.startsWith(`${base}/`);
 
-// A lesson lives under its course's address, but a student reaches it from their enrollments.
-const isLesson = (pathname: string) =>
-  /^\/cursos\/[^/]+\/aulas\//.test(pathname);
-
 const NAV = [
   {
     to: '/cursos',
     label: 'Catálogo',
     Icon: Library,
     current: (pathname: string) =>
-      within(pathname, '/cursos') && !isLesson(pathname) ? 'page' : undefined,
+      within(pathname, '/cursos') ? 'page' : undefined,
   },
   {
     to: '/minhas-matriculas',
     label: 'Minhas matrículas',
     Icon: GraduationCap,
-    // In a lesson the outline holds the current page; the rail only marks the section.
-    current: (pathname: string) => {
-      if (within(pathname, '/minhas-matriculas')) {
-        return 'page';
-      }
-
-      return isLesson(pathname) ? 'location' : undefined;
-    },
+    current: (pathname: string) =>
+      within(pathname, '/minhas-matriculas') ? 'page' : undefined,
   },
 ];
 

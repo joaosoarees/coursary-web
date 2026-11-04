@@ -96,24 +96,13 @@ describe('the app shell', () => {
     expect(screen.getByRole('main')).toHaveFocus();
   });
 
-  it('should mark the catalog on a course and the enrollments inside a lesson', async () => {
-    const { unmount } = renderShell('/cursos/c1');
+  it('should mark the catalog on a course page', async () => {
+    renderShell('/cursos/c1');
     await screen.findByRole('heading', { name: 'Catálogo' });
 
     expect(screen.getByRole('link', { name: 'Catálogo' })).toHaveAttribute(
       'aria-current',
       'page',
-    );
-
-    unmount();
-    renderShell('/cursos/c1/aulas/l1');
-    await screen.findByRole('heading', { name: 'Catálogo' });
-
-    expect(
-      screen.getByRole('link', { name: 'Minhas matrículas' }),
-    ).toHaveAttribute('aria-current', 'location');
-    expect(screen.getByRole('link', { name: 'Catálogo' })).not.toHaveAttribute(
-      'aria-current',
     );
   });
 
