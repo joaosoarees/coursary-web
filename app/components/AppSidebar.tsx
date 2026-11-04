@@ -1,5 +1,5 @@
 import { GraduationCap, Library } from 'lucide-react';
-import { NavLink } from 'react-router';
+import { Link, useLocation } from 'react-router';
 
 import { AccountMenu } from '~/components/AccountMenu';
 import { ChalkStroke } from '~/components/ChalkStroke';
@@ -17,9 +17,28 @@ import {
 import { Wordmark } from '~/components/Wordmark';
 import { ThemeCycleButton, ThemeSwitcher } from '~/theme/ThemeSwitcher';
 
+const within = (pathname: string, base: string) =>
+  pathname === base || pathname.startsWith(`${base}/`);
+
+// A lesson lives under its course's address, but a student reaches it from their enrollments.
+const isLesson = (pathname: string) =>
+  /^\/cursos\/[^/]+\/aulas\//.test(pathname);
+
 const NAV = [
-  { to: '/cursos', label: 'Catálogo', Icon: Library },
-  { to: '/minhas-matriculas', label: 'Minhas matrículas', Icon: GraduationCap },
+  {
+    to: '/cursos',
+    label: 'Catálogo',
+    Icon: Library,
+    current: (pathname: string) =>
+      within(pathname, '/cursos') && !isLesson(pathname),
+  },
+  {
+    to: '/minhas-matriculas',
+    label: 'Minhas matrículas',
+    Icon: GraduationCap,
+    current: (pathname: string) =>
+      within(pathname, '/minhas-matriculas') || isLesson(pathname),
+  },
 ];
 
 // Every icon keeps its place in both widths, so collapsing only animates the width and fades the
@@ -33,6 +52,7 @@ const SHOWS_WHEN_COLLAPSED =
 
 export function AppSidebar() {
   const { state, isMobile, setOpenMobile } = useSidebar();
+  const { pathname } = useLocation();
   const collapsed = state === 'collapsed' && !isMobile;
 
   return (
@@ -46,11 +66,12 @@ export function AppSidebar() {
         <SidebarGroup className="p-0">
           <nav aria-label="Principal">
             <SidebarMenu>
-              {NAV.map(({ to, label, Icon }) => (
+              {NAV.map(({ to, label, Icon, current }) => (
                 <SidebarMenuItem key={to}>
                   <SidebarMenuButton asChild tooltip={label}>
-                    <NavLink
+                    <Link
                       to={to}
+                      aria-current={current(pathname) ? 'page' : undefined}
                       onClick={() => {
                         setOpenMobile(false);
                       }}
@@ -64,7 +85,7 @@ export function AppSidebar() {
                         {label}
                         <ChalkStroke className="absolute top-full left-0 hidden w-16 text-chalk-yellow group-aria-[current=page]/nav:block" />
                       </span>
-                    </NavLink>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
