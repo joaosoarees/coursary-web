@@ -1,5 +1,7 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useEffectEvent, useRef, useState } from 'react';
 
+import { ErrorState } from '~/components/ErrorState';
+import { cn } from '~/lib/utils';
 import type { SignedUrl } from '~/services/LessonService';
 
 // The signed address may die before its expiresIn, with the session of the role that signed it,
@@ -24,45 +26,49 @@ export function LessonVideo({
   const element = useRef<HTMLVideoElement>(null);
   const resume = useRef<Resume | null>(null);
   const failedLoads = useRef(0);
+  const [failed, setFailed] = useState(false);
 
-  useEffect(() => {
-    // Read before the new address arrives: swapping the source resets the time and pauses.
-    function renew() {
-      const player = element.current;
+  // Read before the new address arrives: swapping the source resets the time and pauses.
+  function renew() {
+    const player = element.current;
 
-      if (player) {
-        resume.current = {
-          seconds: player.currentTime,
-          playing: !player.paused,
-        };
-      }
-
-      onExpired();
+    if (player) {
+      resume.current = { seconds: player.currentTime, playing: !player.paused };
     }
 
+    onExpired();
+  }
+
+  const renewOnTime = useEffectEvent(renew);
+
+  useEffect(() => {
     const seconds = Math.max(
       video.expiresIn - RENEW_EARLY_SECONDS,
       RENEW_AT_LEAST_AFTER_SECONDS,
     );
-    const timer = window.setTimeout(renew, seconds * 1000);
-    const player = element.current;
-
-    // A second failure in a row is not an expired address: the native player shows its own error.
-    function handleError() {
-      failedLoads.current += 1;
-
-      if (failedLoads.current === 1) {
-        renew();
-      }
-    }
-
-    player?.addEventListener('error', handleError);
+    const timer = window.setTimeout(renewOnTime, seconds * 1000);
 
     return () => {
       window.clearTimeout(timer);
-      player?.removeEventListener('error', handleError);
     };
-  }, [video.url, video.expiresIn, onExpired]);
+  }, [video.url, video.expiresIn]);
+
+  // A second failure in a row is not an expired address, so the reader gets the choice to retry.
+  function handleError() {
+    failedLoads.current += 1;
+
+    if (failedLoads.current === 1) {
+      renew();
+    } else {
+      setFailed(true);
+    }
+  }
+
+  function retry() {
+    failedLoads.current = 0;
+    setFailed(false);
+    renew();
+  }
 
   function handleLoadedMetadata() {
     failedLoads.current = 0;
@@ -82,16 +88,30 @@ export function LessonVideo({
   }
 
   return (
-    // eslint-disable-next-line jsx-a11y/media-has-caption -- the API stores no captions for a lesson.
-    <video
-      ref={element}
-      src={video.url}
-      controls
-      playsInline
-      preload="metadata"
-      aria-label={`Vídeo da aula ${title}`}
-      className="aspect-video w-full rounded-md bg-black"
-      onLoadedMetadata={handleLoadedMetadata}
-    />
+    <>
+      {failed && (
+        <ErrorState
+          variant="block"
+          title="Não foi possível carregar o vídeo"
+          message="O texto e o material da aula continuam abaixo."
+          onRetry={retry}
+        />
+      )}
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption -- the API stores no captions for a lesson. */}
+      <video
+        ref={element}
+        src={video.url}
+        controls
+        playsInline
+        preload="metadata"
+        aria-label={`Vídeo da aula ${title}`}
+        className={cn(
+          'aspect-video w-full rounded-md bg-black',
+          failed && 'hidden',
+        )}
+        onLoadedMetadata={handleLoadedMetadata}
+        onError={handleError}
+      />
+    </>
   );
 }
