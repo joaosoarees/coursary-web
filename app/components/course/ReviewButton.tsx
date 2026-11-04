@@ -10,10 +10,12 @@ export function ReviewButton({
   courseId,
   courseTitle,
   className,
+  ref,
 }: {
   courseId: string;
   courseTitle: string;
   className?: string;
+  ref?: React.Ref<HTMLButtonElement>;
 }) {
   const [open, setOpen] = useState(false);
   const review = useMyReview(courseId);
@@ -26,6 +28,7 @@ export function ReviewButton({
   return (
     <>
       <Button
+        ref={ref}
         variant="outline"
         className={cn('w-full', className)}
         onClick={() => {
