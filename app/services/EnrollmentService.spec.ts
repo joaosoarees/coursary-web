@@ -91,3 +91,55 @@ describe('EnrollmentService.listMine', () => {
     });
   });
 });
+
+describe('EnrollmentService.completeLesson', () => {
+  it('should complete one lesson of the course', async () => {
+    answer({ lessonId: 'l1', completedLessons: 3, created: true });
+
+    await expect(
+      EnrollmentService.completeLesson({ courseId: 'c1', lessonId: 'l1' }),
+    ).resolves.toEqual({ lessonId: 'l1', completedLessons: 3, created: true });
+    expect(adapter.mock.calls[0]?.[0]).toMatchObject({
+      method: 'put',
+      url: '/courses/c1/lessons/l1/completion',
+    });
+  });
+});
+
+describe('EnrollmentService.savePosition', () => {
+  it('should save whole seconds of the lesson being watched', async () => {
+    answer(undefined, 204);
+
+    await EnrollmentService.savePosition({
+      courseId: 'c1',
+      lessonId: 'l1',
+      positionSeconds: 42.7,
+    });
+
+    const config = adapter.mock.calls[0]?.[0];
+    expect(config).toMatchObject({
+      method: 'put',
+      url: '/courses/c1/position',
+    });
+    expect(JSON.parse(String(config?.data))).toEqual({
+      lessonId: 'l1',
+      positionSeconds: 42,
+    });
+  });
+
+  it('should send a request that outlives the page when leaving', async () => {
+    // The fetch adapter cannot run in jsdom; what matters is that the call asks for it.
+    const put = vi.spyOn(httpClient, 'put').mockResolvedValue({});
+
+    await EnrollmentService.savePosition(
+      { courseId: 'c1', lessonId: 'l1', positionSeconds: 5 },
+      { leaving: true },
+    );
+
+    expect(put).toHaveBeenCalledWith(
+      '/courses/c1/position',
+      { lessonId: 'l1', positionSeconds: 5 },
+      { adapter: 'fetch', fetchOptions: { keepalive: true } },
+    );
+  });
+});

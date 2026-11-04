@@ -27,7 +27,14 @@ const enrollmentsPageSchema = z.object({
   nextCursor: z.string().nullable(),
 });
 
+const completionSchema = z.object({
+  lessonId: z.string(),
+  completedLessons: z.number(),
+  created: z.boolean(),
+});
+
 export type Progress = z.infer<typeof progressSchema>;
+export type Completion = z.infer<typeof completionSchema>;
 export type EnrollmentSummary = z.infer<typeof enrollmentSummarySchema>;
 export type EnrollmentsPage = z.infer<typeof enrollmentsPageSchema>;
 
@@ -72,5 +79,35 @@ export class EnrollmentService {
 
   static async cancel(courseId: string): Promise<void> {
     await httpClient.delete(`${courseUrl(courseId)}/enrollment`);
+  }
+
+  static async completeLesson({
+    courseId,
+    lessonId,
+  }: {
+    courseId: string;
+    lessonId: string;
+  }): Promise<Completion> {
+    const { data } = await httpClient.put<unknown>(
+      `${courseUrl(courseId)}/lessons/${encodeURIComponent(lessonId)}/completion`,
+    );
+
+    return completionSchema.parse(data);
+  }
+
+  // Leaving the page cancels an ordinary request; a keepalive fetch outlives the page.
+  static async savePosition(
+    {
+      courseId,
+      lessonId,
+      positionSeconds,
+    }: { courseId: string; lessonId: string; positionSeconds: number },
+    { leaving = false }: { leaving?: boolean } = {},
+  ): Promise<void> {
+    await httpClient.put(
+      `${courseUrl(courseId)}/position`,
+      { lessonId, positionSeconds: Math.floor(positionSeconds) },
+      leaving ? { adapter: 'fetch', fetchOptions: { keepalive: true } } : {},
+    );
   }
 }

@@ -153,4 +153,108 @@ describe('LessonVideo', () => {
 
     expect(player.currentTime).toBe(0);
   });
+
+  it('should start where the student stopped, unless that is the very end', () => {
+    render(
+      <LessonVideo
+        title="Filtrando e agrupando"
+        video={video('https://files.test/a.mp4')}
+        startAt={252}
+        onExpired={vi.fn()}
+      />,
+    );
+    const player = screen.getByLabelText<HTMLVideoElement>(
+      'Vídeo da aula Filtrando e agrupando',
+    );
+    Object.defineProperty(player, 'duration', {
+      configurable: true,
+      value: 600,
+    });
+    setPlayback(player, { seconds: 0, paused: true });
+
+    fireEvent.loadedMetadata(player);
+
+    expect(player.currentTime).toBe(252);
+  });
+
+  it('should not jump to a position in the last seconds', () => {
+    render(
+      <LessonVideo
+        title="Filtrando e agrupando"
+        video={video('https://files.test/a.mp4')}
+        startAt={595}
+        onExpired={vi.fn()}
+      />,
+    );
+    const player = screen.getByLabelText<HTMLVideoElement>(
+      'Vídeo da aula Filtrando e agrupando',
+    );
+    Object.defineProperty(player, 'duration', {
+      configurable: true,
+      value: 600,
+    });
+    setPlayback(player, { seconds: 0, paused: true });
+
+    fireEvent.loadedMetadata(player);
+
+    expect(player.currentTime).toBe(0);
+  });
+
+  it('should report the position every 20 s of play, on pause and on leaving', () => {
+    const onPosition = vi.fn();
+    const view = render(
+      <LessonVideo
+        title="Filtrando e agrupando"
+        video={video('https://files.test/a.mp4')}
+        onExpired={vi.fn()}
+        onPosition={onPosition}
+      />,
+    );
+    const player = screen.getByLabelText<HTMLVideoElement>(
+      'Vídeo da aula Filtrando e agrupando',
+    );
+    setPlayback(player, { seconds: 30, paused: false });
+    fireEvent.timeUpdate(player);
+
+    act(() => {
+      vi.advanceTimersByTime(20_000);
+    });
+    expect(onPosition).toHaveBeenLastCalledWith(30, false);
+
+    setPlayback(player, { seconds: 41.6, paused: true });
+    fireEvent.timeUpdate(player);
+    fireEvent.pause(player);
+    expect(onPosition).toHaveBeenLastCalledWith(41, false);
+
+    window.dispatchEvent(new Event('pagehide'));
+    expect(onPosition).toHaveBeenCalledTimes(2);
+
+    setPlayback(player, { seconds: 50, paused: true });
+    fireEvent.timeUpdate(player);
+    window.dispatchEvent(new Event('pagehide'));
+    expect(onPosition).toHaveBeenLastCalledWith(50, true);
+
+    setPlayback(player, { seconds: 55, paused: true });
+    fireEvent.timeUpdate(player);
+    view.unmount();
+    expect(onPosition).toHaveBeenLastCalledWith(55, false);
+  });
+
+  it('should tell when the video reaches its end', () => {
+    const onEnded = vi.fn();
+    render(
+      <LessonVideo
+        title="Filtrando e agrupando"
+        video={video('https://files.test/a.mp4')}
+        onExpired={vi.fn()}
+        onEnded={onEnded}
+      />,
+    );
+
+    fireEvent.ended(
+      screen.getByLabelText('Vídeo da aula Filtrando e agrupando'),
+    );
+
+    expect(onEnded).toHaveBeenCalledTimes(1);
+  });
 });

@@ -65,9 +65,27 @@ describe('LessonOutline', () => {
         screen.getByRole('link', { name: /Instalando o ambiente/ }),
       ).getByRole('img', { name: 'Concluída' }),
     ).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /Lendo planilhas/ })).toBeNull();
+  });
+
+  it('should open only the current module and open the others on a click', () => {
+    renderOutline();
+    const other = screen.getByRole('button', { name: /2\. Pandas na prática/ });
+
+    expect(
+      screen.getByRole('button', { name: /1\. Primeiros passos/ }),
+    ).toHaveAttribute('aria-expanded', 'true');
+    expect(other).toHaveAttribute('aria-expanded', 'false');
+
+    fireEvent.click(other);
+
+    expect(other).toHaveAttribute('aria-expanded', 'true');
     expect(
       screen.getByRole('link', { name: /Lendo planilhas/ }),
     ).not.toHaveAttribute('aria-current');
+    expect(
+      screen.getByRole('link', { name: /Seu primeiro notebook/ }),
+    ).toBeInTheDocument();
   });
 
   it('should count only the lessons still in the course', () => {
