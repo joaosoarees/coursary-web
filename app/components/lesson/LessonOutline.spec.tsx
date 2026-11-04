@@ -1,0 +1,89 @@
+import { fireEvent, render, screen, within } from '@testing-library/react';
+import { createRoutesStub } from 'react-router';
+import { describe, expect, it } from 'vitest';
+
+import { LessonOutline } from '~/components/lesson/LessonOutline';
+import type { CourseModule } from '~/services/CourseService';
+
+const modules: CourseModule[] = [
+  {
+    id: 'm1',
+    title: 'Primeiros passos',
+    position: 0,
+    lessons: [
+      {
+        id: 'l1',
+        title: 'Instalando o ambiente',
+        durationMinutes: 12,
+        position: 0,
+      },
+      {
+        id: 'l2',
+        title: 'Seu primeiro notebook',
+        durationMinutes: 15,
+        position: 1,
+      },
+    ],
+  },
+  {
+    id: 'm2',
+    title: 'Pandas na prática',
+    position: 1,
+    lessons: [
+      { id: 'l3', title: 'Lendo planilhas', durationMinutes: 14, position: 0 },
+    ],
+  },
+];
+
+const renderOutline = () => {
+  const Stub = createRoutesStub([
+    {
+      path: '/cursos/:id/aulas/:aulaId',
+      Component: () => (
+        <LessonOutline
+          courseId="c1"
+          modules={modules}
+          currentLessonId="l2"
+          completedLessonIds={['l1', 'gone']}
+        />
+      ),
+    },
+  ]);
+
+  return render(<Stub initialEntries={['/cursos/c1/aulas/l2']} />);
+};
+
+describe('LessonOutline', () => {
+  it('should link every lesson and mark the current one and the finished ones', () => {
+    renderOutline();
+
+    const current = screen.getByRole('link', { name: /Seu primeiro notebook/ });
+    expect(current).toHaveAttribute('aria-current', 'page');
+    expect(current).toHaveAttribute('href', '/cursos/c1/aulas/l2');
+    expect(
+      within(
+        screen.getByRole('link', { name: /Instalando o ambiente/ }),
+      ).getByRole('img', { name: 'Concluída' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: /Lendo planilhas/ }),
+    ).not.toHaveAttribute('aria-current');
+  });
+
+  it('should count only the lessons still in the course', () => {
+    renderOutline();
+
+    expect(screen.getAllByText('1 de 3 aulas')[0]).toBeInTheDocument();
+    expect(screen.getByText('1 de 2')).toBeInTheDocument();
+    expect(screen.getByText('0 de 1')).toBeInTheDocument();
+  });
+
+  it('should open and close the list on a phone', () => {
+    renderOutline();
+    const toggle = screen.getByRole('button', { name: /Conteúdo do curso/ });
+
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    fireEvent.click(toggle);
+    expect(toggle).toHaveAttribute('aria-expanded', 'true');
+  });
+});
