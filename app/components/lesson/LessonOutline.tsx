@@ -18,6 +18,28 @@ export function LessonOutline({
   completedLessonIds: string[];
 }) {
   const [open, setOpen] = useState(false);
+  // Only the module of the lesson on screen starts open; each lesson starts the outline afresh.
+  const [expanded, setExpanded] = useState(
+    () =>
+      new Set(
+        modules
+          .filter((module) =>
+            module.lessons.some((lesson) => lesson.id === currentLessonId),
+          )
+          .map((module) => module.id),
+      ),
+  );
+  const toggle = (moduleId: string) => {
+    setExpanded((current) => {
+      const next = new Set(current);
+
+      if (!next.delete(moduleId)) {
+        next.add(moduleId);
+      }
+
+      return next;
+    });
+  };
   const listId = useId();
   const list = useRef<HTMLOListElement>(null);
   const currentLink = useRef<HTMLAnchorElement>(null);
@@ -80,26 +102,47 @@ export function LessonOutline({
         ref={list}
         id={listId}
         className={cn(
-          'relative flex-col gap-3.5 lg:min-h-0 lg:overflow-y-auto',
+          'relative flex-col gap-1 lg:min-h-0 lg:overflow-y-auto',
           open ? 'flex' : 'hidden lg:flex',
         )}
       >
         {modules.map((module, index) => (
-          <li key={module.id} className="flex flex-col gap-1">
-            <h3 className="flex justify-between gap-3 px-2 font-bold">
-              <span>
-                {index + 1}. {module.title}
-              </span>
-              <span className="shrink-0 text-sm font-normal text-muted-foreground">
-                {
-                  module.lessons.filter((lesson) => completed.has(lesson.id))
-                    .length
-                }{' '}
-                de {module.lessons.length}
-                <span className="sr-only"> concluídas</span>
-              </span>
+          <li key={module.id} className="flex flex-col gap-0.5">
+            <h3>
+              <button
+                type="button"
+                aria-expanded={expanded.has(module.id)}
+                aria-controls={`${listId}-${module.id}`}
+                onClick={() => {
+                  toggle(module.id);
+                }}
+                className="flex min-h-11 w-full items-center gap-2.5 rounded-md p-2 text-left font-bold hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              >
+                <span className="min-w-0 flex-1">
+                  {index + 1}. {module.title}
+                </span>
+                <span className="shrink-0 text-sm font-normal text-muted-foreground">
+                  {
+                    module.lessons.filter((lesson) => completed.has(lesson.id))
+                      .length
+                  }{' '}
+                  de {module.lessons.length}
+                  <span className="sr-only"> concluídas</span>
+                </span>
+                <ChevronDown
+                  aria-hidden="true"
+                  className={cn(
+                    'size-4.5 shrink-0 text-muted-foreground transition-transform motion-reduce:transition-none',
+                    expanded.has(module.id) && 'rotate-180',
+                  )}
+                />
+              </button>
             </h3>
-            <ol className="flex flex-col">
+            <ol
+              id={`${listId}-${module.id}`}
+              hidden={!expanded.has(module.id)}
+              className="flex flex-col [&[hidden]]:hidden"
+            >
               {module.lessons.map((lesson) => {
                 const current = lesson.id === currentLessonId;
 
