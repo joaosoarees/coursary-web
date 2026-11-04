@@ -1,8 +1,10 @@
-import { Check, Clock } from 'lucide-react';
+import { Check, Clock, Play, RotateCcw } from 'lucide-react';
 import { useState } from 'react';
+import { Link } from 'react-router';
 
 import { CourseCover } from '~/components/course/CourseCover';
 import { ErrorState } from '~/components/ErrorState';
+import { Resume } from '~/components/lesson/Resume';
 import { Button } from '~/components/ui/button';
 import {
   Dialog,
@@ -18,6 +20,7 @@ import { useCancelEnrollment, useEnroll } from '~/mutations/enrollment';
 import { useEnrollment } from '~/queries/course';
 import { ApiFailure } from '~/services/ApiFailure';
 import type { CoursePage } from '~/services/CourseService';
+import type { Progress } from '~/services/EnrollmentService';
 
 const ENROLL_FAILURES = {
   OWN_COURSE: 'Você é o instrutor deste curso.',
@@ -64,7 +67,7 @@ function EnrollmentAction({ course }: { course: CoursePage }) {
   }
 
   if (enrollment.data) {
-    return <Enrolled course={course} />;
+    return <Enrolled course={course} progress={enrollment.data} />;
   }
 
   const ownCourse = ApiFailure.codeOf(enroll.error) === 'OWN_COURSE';
@@ -95,9 +98,16 @@ function EnrollmentAction({ course }: { course: CoursePage }) {
   );
 }
 
-function Enrolled({ course }: { course: CoursePage }) {
+function Enrolled({
+  course,
+  progress,
+}: {
+  course: CoursePage;
+  progress: Progress;
+}) {
   const [confirming, setConfirming] = useState(false);
   const cancel = useCancelEnrollment();
+  const resume = Resume.of(course.modules, progress);
 
   return (
     <div className="flex flex-col gap-2.5">
@@ -108,6 +118,30 @@ function Enrolled({ course }: { course: CoursePage }) {
         <Check aria-hidden="true" className="size-4.5 shrink-0" />
         Você está matriculado
       </div>
+      {resume && (
+        <div className="flex flex-col gap-1.5">
+          <Button className="h-12" asChild>
+            <Link to={`/cursos/${course.id}/continuar`}>
+              {resume.finished ? (
+                <>
+                  <RotateCcw aria-hidden="true" />
+                  Rever o curso
+                </>
+              ) : (
+                <>
+                  <Play aria-hidden="true" className="fill-current" />
+                  Continuar de onde parei
+                </>
+              )}
+            </Link>
+          </Button>
+          {!resume.finished && (
+            <p className="text-center text-sm text-muted-foreground">
+              Aula {resume.position} de {resume.total} · {resume.title}
+            </p>
+          )}
+        </div>
+      )}
       <Dialog
         open={confirming}
         onOpenChange={(open) => {
