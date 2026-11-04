@@ -11,11 +11,13 @@ export function ErrorState({
   title = 'Algo deu errado',
   message = 'Não foi possível mostrar esta parte agora. Tente de novo em instantes.',
   onRetry,
+  back = { to: '/', label: 'Ir para o início' },
 }: {
   variant?: 'page' | 'block';
   title?: string;
   message?: string;
   onRetry?: () => void;
+  back?: { to: string; label: string };
 }) {
   const page = variant === 'page';
 
@@ -61,7 +63,7 @@ export function ErrorState({
         )}
         {page && (
           <Button variant="outline" asChild>
-            <Link to="/">Ir para o início</Link>
+            <Link to={back.to}>{back.label}</Link>
           </Button>
         )}
       </div>
