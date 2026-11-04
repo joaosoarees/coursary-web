@@ -8,6 +8,7 @@ import {
   type Review,
 } from '~/services/CourseService';
 import { EnrollmentService, type Progress } from '~/services/EnrollmentService';
+import { ReviewService } from '~/services/ReviewService';
 import { apiError, renderRoutes } from '~/test/renderRoutes';
 
 const course: CoursePage = {
@@ -72,6 +73,7 @@ beforeEach(() => {
     },
   );
   vi.spyOn(CourseService, 'get').mockResolvedValue(course);
+  vi.spyOn(ReviewService, 'mine').mockResolvedValue(null);
   vi.spyOn(CourseService, 'listReviews').mockResolvedValue({
     items: [review('Ana Souza')],
     nextCursor: null,
@@ -114,6 +116,19 @@ describe('the course page', () => {
     expect(
       screen.getByRole('link', { name: /Instalando o ambiente/ }),
     ).toHaveAttribute('href', '/cursos/c1/aulas/l1');
+  });
+
+  it('should let an enrolled student review the course from the panel', async () => {
+    vi.spyOn(EnrollmentService, 'progress').mockResolvedValue(progress);
+    renderCourse();
+
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Avaliar o curso' }),
+    );
+
+    expect(
+      screen.getByRole('dialog', { name: 'Avaliar o curso' }),
+    ).toBeVisible();
   });
 
   it('should offer to review a finished course', async () => {
