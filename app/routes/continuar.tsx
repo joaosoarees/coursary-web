@@ -4,8 +4,7 @@ import { Resume } from '~/components/lesson/Resume';
 import { queryClient } from '~/lib/queryClient';
 import { enrollmentQuery } from '~/queries/course';
 import { outlineQuery } from '~/queries/lesson';
-import { restoreSession } from '~/session/refreshSession';
-import { isSignedIn } from '~/session/session';
+import { ensureSession } from '~/session/refreshSession';
 
 import type { Route } from './+types/continuar';
 
@@ -15,7 +14,7 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const coursePath = `/cursos/${params.id}`;
 
   // On a cold load this runs beside the root loader, before the session is back: wait for it.
-  if (!isSignedIn() && !(await restoreSession())) {
+  if (!(await ensureSession())) {
     return redirect(coursePath);
   }
 
