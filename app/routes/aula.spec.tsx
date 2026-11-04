@@ -1,4 +1,4 @@
-import { fireEvent, screen } from '@testing-library/react';
+import { fireEvent, screen, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ZodError } from 'zod';
 
@@ -76,7 +76,9 @@ describe('the lesson page', () => {
     expect(
       await screen.findByRole('heading', { level: 1, name: 'Filtrando' }),
     ).toBeVisible();
-    expect(screen.getByText('Módulo 2 · Aula 2 de 3 · 16 min')).toBeVisible();
+    expect(
+      screen.getByText('Módulo 2 · Pandas na prática · Aula 2 de 3 · 16 min'),
+    ).toBeVisible();
     expect(screen.getByLabelText('Vídeo da aula Filtrando')).toHaveAttribute(
       'src',
       'https://files.test/v.mp4',
@@ -94,16 +96,21 @@ describe('the lesson page', () => {
     );
   });
 
-  it('should lead to the lessons before and after and back to the course', async () => {
+  it('should lead to the lessons before and after, by the video and at the end', async () => {
     renderLesson();
 
-    expect(
-      await screen.findByRole('link', { name: 'Aula anterior' }),
-    ).toHaveAttribute('href', '/cursos/c1/aulas/l1');
-    expect(screen.getByRole('link', { name: 'Próxima aula' })).toHaveAttribute(
-      'href',
-      '/cursos/c1/aulas/l3',
-    );
+    for (const label of ['Aulas', 'Aulas, no fim da aula']) {
+      const links = within(
+        await screen.findByRole('navigation', { name: label }),
+      );
+      expect(
+        links.getByRole('link', { name: 'Aula anterior' }),
+      ).toHaveAttribute('href', '/cursos/c1/aulas/l1');
+      expect(links.getByRole('link', { name: 'Próxima aula' })).toHaveAttribute(
+        'href',
+        '/cursos/c1/aulas/l3',
+      );
+    }
     expect(
       screen.getByRole('link', { name: 'Python para análise de dados' }),
     ).toHaveAttribute('href', '/cursos/c1');
@@ -133,6 +140,9 @@ describe('the lesson page', () => {
     await screen.findByRole('heading', { level: 1, name: 'Filtrando' });
     expect(screen.queryByLabelText('Vídeo da aula Filtrando')).toBeNull();
     expect(screen.queryByRole('heading', { name: 'Material' })).toBeNull();
+    expect(screen.getAllByRole('navigation', { name: /^Aulas/ })).toHaveLength(
+      1,
+    );
   });
 
   it('should send someone without an enrollment to the course page', async () => {

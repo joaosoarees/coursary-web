@@ -32,7 +32,11 @@ const LESSON_NOT_FOUND = new Set(['LESSON_NOT_FOUND', 'VALIDATION']);
 
 const lessonsOf = (outline: CourseOutline) =>
   outline.modules.flatMap((module, moduleIndex) =>
-    module.lessons.map((lesson) => ({ ...lesson, moduleIndex })),
+    module.lessons.map((lesson) => ({
+      ...lesson,
+      moduleIndex,
+      moduleTitle: module.title,
+    })),
   );
 
 export const meta: Route.MetaFunction = ({ loaderData }) => [
@@ -164,6 +168,7 @@ function LessonView({
     return null;
   }
 
+  const hasBody = content.body.trim() !== '';
   const lessonPath = (id: string) => `/cursos/${outline.courseId}/aulas/${id}`;
   // An archived course has no public page; its students reach it from their enrollments.
   const back =
@@ -187,8 +192,8 @@ function LessonView({
               {lesson.title}
             </h1>
             <p className="text-muted-foreground">
-              Módulo {lesson.moduleIndex + 1} · Aula {index + 1} de{' '}
-              {lessons.length} · {lesson.durationMinutes} min
+              Módulo {lesson.moduleIndex + 1} · {lesson.moduleTitle} · Aula{' '}
+              {index + 1} de {lessons.length} · {lesson.durationMinutes} min
             </p>
           </header>
           {content.video && (
@@ -198,30 +203,12 @@ function LessonView({
               onExpired={renewVideo}
             />
           )}
-          <nav
-            aria-label="Aulas"
-            className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:justify-end"
-          >
-            {previous && (
-              <Button variant="ghost" asChild>
-                <Link to={lessonPath(previous.id)} aria-label="Aula anterior">
-                  <ChevronLeft aria-hidden="true" />
-                  <span className="sm:hidden">Anterior</span>
-                  <span className="hidden sm:inline">Aula anterior</span>
-                </Link>
-              </Button>
-            )}
-            {next && (
-              <Button variant="outline" className="col-start-2" asChild>
-                <Link to={lessonPath(next.id)} aria-label="Próxima aula">
-                  <span className="sm:hidden">Próxima</span>
-                  <span className="hidden sm:inline">Próxima aula</span>
-                  <ChevronRight aria-hidden="true" />
-                </Link>
-              </Button>
-            )}
-          </nav>
-          {content.body.trim() !== '' && (
+          <LessonLinks
+            label="Aulas"
+            previous={previous && lessonPath(previous.id)}
+            next={next && lessonPath(next.id)}
+          />
+          {hasBody && (
             <section aria-label="Texto da aula">
               <LessonBody markdown={content.body} />
             </section>
@@ -233,6 +220,14 @@ function LessonView({
               attachments={content.attachments}
             />
           )}
+          {/* Whoever reads to the end moves on from there, without scrolling back to the video. */}
+          {(hasBody || content.attachments.length > 0) && (
+            <LessonLinks
+              label="Aulas, no fim da aula"
+              previous={previous && lessonPath(previous.id)}
+              next={next && lessonPath(next.id)}
+            />
+          )}
         </div>
         <LessonOutline
           courseId={outline.courseId}
@@ -242,6 +237,42 @@ function LessonView({
         />
       </div>
     </article>
+  );
+}
+
+function LessonLinks({
+  label,
+  previous,
+  next,
+}: {
+  label: string;
+  previous: string | undefined;
+  next: string | undefined;
+}) {
+  return (
+    <nav
+      aria-label={label}
+      className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:justify-end"
+    >
+      {previous && (
+        <Button variant="ghost" asChild>
+          <Link to={previous} aria-label="Aula anterior">
+            <ChevronLeft aria-hidden="true" />
+            <span className="sm:hidden">Anterior</span>
+            <span className="hidden sm:inline">Aula anterior</span>
+          </Link>
+        </Button>
+      )}
+      {next && (
+        <Button variant="outline" className="col-start-2" asChild>
+          <Link to={next} aria-label="Próxima aula">
+            <span className="sm:hidden">Próxima</span>
+            <span className="hidden sm:inline">Próxima aula</span>
+            <ChevronRight aria-hidden="true" />
+          </Link>
+        </Button>
+      )}
+    </nav>
   );
 }
 
