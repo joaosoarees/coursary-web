@@ -10,7 +10,11 @@ import {
 } from 'vitest';
 
 import { AuthService } from '~/services/AuthService';
-import { refreshSession, restoreSession } from '~/session/refreshSession';
+import {
+  ensureSession,
+  refreshSession,
+  restoreSession,
+} from '~/session/refreshSession';
 import {
   endSession,
   getAccessToken,
@@ -117,5 +121,20 @@ describe('restoreSession', () => {
     endSession();
 
     await expect(restoreSession()).resolves.toBe(false);
+  });
+});
+
+describe('ensureSession', () => {
+  it('should keep a session it holds and restore one it does not', async () => {
+    startSession('held');
+
+    await expect(ensureSession()).resolves.toBe(true);
+    expect(refresh).not.toHaveBeenCalled();
+
+    endSession();
+
+    await expect(ensureSession()).resolves.toBe(true);
+    expect(refresh).toHaveBeenCalledOnce();
+    expect(getAccessToken()).toBe('new');
   });
 });
