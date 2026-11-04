@@ -145,6 +145,26 @@ describe('the lesson page', () => {
     );
   });
 
+  it('should leave out the lesson links in a course of one lesson', async () => {
+    vi.spyOn(LessonService, 'outline').mockResolvedValue({
+      ...outline,
+      modules: [
+        {
+          id: 'm1',
+          title: 'Único',
+          position: 0,
+          lessons: [
+            { id: 'l2', title: 'Filtrando', durationMinutes: 16, position: 0 },
+          ],
+        },
+      ],
+    });
+    renderLesson();
+
+    await screen.findByRole('heading', { level: 1, name: 'Filtrando' });
+    expect(screen.queryByRole('navigation', { name: /^Aulas/ })).toBeNull();
+  });
+
   it('should send someone without an enrollment to the course page', async () => {
     vi.spyOn(EnrollmentService, 'progress').mockResolvedValue(null);
     renderLesson();
