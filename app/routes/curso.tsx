@@ -14,8 +14,10 @@ import { queryClient } from '~/lib/queryClient';
 import {
   courseQuery,
   enrollmentQuery,
+  myReviewQuery,
   reviewsQuery,
   useCourse,
+  useEnrollment,
 } from '~/queries/course';
 import { ApiFailure } from '~/services/ApiFailure';
 import type { CoursePage } from '~/services/CourseService';
@@ -36,6 +38,7 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   }
 
   void queryClient.query(enrollmentQuery(params.id)).catch(noop);
+  void queryClient.query(myReviewQuery(params.id)).catch(noop);
   void queryClient.infiniteQuery(reviewsQuery(params.id)).catch(noop);
   const course = await queryClient.query(courseQuery(params.id)).catch(noop);
 
@@ -67,7 +70,19 @@ export default function CoursePageRoute({ params }: Route.ComponentProps) {
   return data ? <CourseDetails course={data} /> : null;
 }
 
+const outlineSummary = (course: CoursePage) => {
+  const lessons = course.modules.flatMap((module) => module.lessons);
+  const minutes = lessons.reduce(
+    (sum, lesson) => sum + lesson.durationMinutes,
+    0,
+  );
+
+  return `${CourseFormat.count(lessons.length, 'aula', 'aulas')} · ${CourseFormat.duration(minutes)}`;
+};
+
 function CourseDetails({ course }: { course: CoursePage }) {
+  const enrollment = useEnrollment(course.id);
+
   return (
     <article className="flex flex-col gap-8">
       <Link
@@ -77,40 +92,47 @@ function CourseDetails({ course }: { course: CoursePage }) {
         <ChevronLeft aria-hidden="true" className="size-4.5" />
         Catálogo
       </Link>
-      <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_21.25rem]">
-        <div className="flex min-w-0 flex-col gap-8">
-          <header className="flex flex-col gap-3">
-            <h1 className="font-display text-3xl leading-tight font-bold tracking-tight text-balance md:text-4xl">
-              {course.title}
-            </h1>
-            <p className="text-muted-foreground">Com {course.instructorName}</p>
-            <p className="flex flex-wrap gap-x-4.5 gap-y-1.5 text-sm text-muted-foreground">
-              <CourseRating
-                average={course.ratingAverage}
-                count={course.ratingCount}
-              />
-              <span>
-                {CourseFormat.count(course.lessonCount, 'aula', 'aulas')} em{' '}
-                {CourseFormat.count(course.modules.length, 'módulo', 'módulos')}
-              </span>
-              <span>
-                {CourseFormat.count(course.enrollmentCount, 'aluno', 'alunos')}
-              </span>
-            </p>
-          </header>
+      <div className="grid items-start gap-x-10 gap-y-8 lg:grid-cols-[minmax(0,1fr)_21.25rem]">
+        <header className="flex min-w-0 flex-col gap-3 lg:col-start-1">
+          <h1 className="font-display text-3xl leading-tight font-bold tracking-tight text-balance md:text-4xl">
+            {course.title}
+          </h1>
+          <p className="text-muted-foreground">Com {course.instructorName}</p>
+          <p className="flex flex-wrap gap-x-4.5 gap-y-1.5 text-sm text-muted-foreground">
+            <CourseRating
+              average={course.ratingAverage}
+              count={course.ratingCount}
+            />
+            <span>
+              {CourseFormat.count(course.lessonCount, 'aula', 'aulas')} em{' '}
+              {CourseFormat.count(course.modules.length, 'módulo', 'módulos')}
+            </span>
+            <span>
+              {CourseFormat.count(course.enrollmentCount, 'aluno', 'alunos')}
+            </span>
+          </p>
+        </header>
+        <EnrollmentPanel
+          course={course}
+          className="lg:col-start-2 lg:row-span-2 lg:row-start-1"
+        />
+        <div className="flex min-w-0 flex-col gap-8 lg:col-start-1">
           <Section title="Sobre o curso">
             <p className="max-w-prose whitespace-pre-line">
               {course.description}
             </p>
           </Section>
-          <Section title="Conteúdo">
-            <CourseOutline modules={course.modules} />
+          <Section title="Conteúdo" detail={outlineSummary(course)}>
+            <CourseOutline
+              courseId={course.id}
+              modules={course.modules}
+              progress={enrollment.data}
+            />
           </Section>
           <Section title="Avaliações">
             <ReviewList courseId={course.id} />
           </Section>
         </div>
-        <EnrollmentPanel course={course} />
       </div>
     </article>
   );
@@ -118,14 +140,21 @@ function CourseDetails({ course }: { course: CoursePage }) {
 
 function Section({
   title,
+  detail,
   children,
 }: {
   title: string;
+  detail?: string;
   children: React.ReactNode;
 }) {
   return (
     <section className="flex flex-col gap-3">
-      <h2 className="font-display text-xl font-bold">{title}</h2>
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+        <h2 className="font-display text-xl font-bold">{title}</h2>
+        {detail && (
+          <span className="text-sm text-muted-foreground">{detail}</span>
+        )}
+      </div>
       {children}
     </section>
   );

@@ -15,7 +15,7 @@ import { Toaster } from '~/components/ui/sonner';
 import { queryClient } from '~/lib/queryClient';
 import { installAuthInterceptors } from '~/services/authInterceptors';
 import { apiOrigin, httpClient } from '~/services/httpClient';
-import { restoreSession } from '~/session/refreshSession';
+import { ensureSession } from '~/session/refreshSession';
 import { ThemeProvider } from '~/theme/ThemeProvider';
 import { themeScript } from '~/theme/themeScript';
 
@@ -68,10 +68,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export async function clientLoader() {
-  await restoreSession();
+  await ensureSession();
 
   return null;
 }
+
+// A click on the address already open revalidates every loader; this one only matters on the
+// first load, and running it again would refresh the session for nothing.
+export const shouldRevalidate = () => false;
 
 export default function App() {
   return (

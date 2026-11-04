@@ -8,6 +8,7 @@ import {
   type Review,
 } from '~/services/CourseService';
 import { EnrollmentService, type Progress } from '~/services/EnrollmentService';
+import { ReviewService } from '~/services/ReviewService';
 import { apiError, renderRoutes } from '~/test/renderRoutes';
 
 const course: CoursePage = {
@@ -72,6 +73,7 @@ beforeEach(() => {
     },
   );
   vi.spyOn(CourseService, 'get').mockResolvedValue(course);
+  vi.spyOn(ReviewService, 'mine').mockResolvedValue(null);
   vi.spyOn(CourseService, 'listReviews').mockResolvedValue({
     items: [review('Ana Souza')],
     nextCursor: null,
@@ -98,6 +100,48 @@ describe('the course page', () => {
     expect(await screen.findByText('Ana Souza')).toBeVisible();
     expect(screen.getByRole('img', { name: '4 de 5' })).toBeVisible();
     expect(get).toHaveBeenCalledWith('c1', expect.any(AbortSignal));
+  });
+
+  it('should sum up the outline and lead an enrolled student on', async () => {
+    vi.spyOn(EnrollmentService, 'progress').mockResolvedValue(progress);
+    renderCourse();
+
+    expect(
+      await screen.findByRole('link', { name: 'Continuar de onde parei' }),
+    ).toHaveAttribute('href', '/cursos/c1/continuar');
+    expect(
+      screen.getByText('Aula 1 de 2 · Instalando o ambiente'),
+    ).toBeVisible();
+    expect(screen.getByText('2 aulas · 20 min')).toBeVisible();
+    expect(
+      screen.getByRole('link', { name: /Instalando o ambiente/ }),
+    ).toHaveAttribute('href', '/cursos/c1/aulas/l1');
+  });
+
+  it('should let an enrolled student review the course from the panel', async () => {
+    vi.spyOn(EnrollmentService, 'progress').mockResolvedValue(progress);
+    renderCourse();
+
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Avaliar o curso' }),
+    );
+
+    expect(
+      screen.getByRole('dialog', { name: 'Avaliar o curso' }),
+    ).toBeVisible();
+  });
+
+  it('should offer to review a finished course', async () => {
+    vi.spyOn(EnrollmentService, 'progress').mockResolvedValue({
+      ...progress,
+      completedLessons: 2,
+      completedLessonIds: ['l1', 'l2'],
+    });
+    renderCourse();
+
+    expect(
+      await screen.findByRole('link', { name: 'Rever o curso' }),
+    ).toHaveAttribute('href', '/cursos/c1/continuar');
   });
 
   it('should enroll and then show the enrollment', async () => {

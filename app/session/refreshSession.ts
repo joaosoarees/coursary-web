@@ -4,6 +4,7 @@ import { AuthService } from '~/services/AuthService';
 import {
   endSession,
   getSessionGeneration,
+  isSignedIn,
   startSession,
 } from '~/session/session';
 
@@ -54,3 +55,5 @@ export const restoreSession = () =>
     () => true,
     () => false,
   );
+
+export const ensureSession = async () => isSignedIn() || restoreSession();

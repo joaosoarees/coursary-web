@@ -1,8 +1,11 @@
-import { Check, Clock } from 'lucide-react';
+import { Check, Clock, Play, RotateCcw } from 'lucide-react';
 import { useState } from 'react';
+import { Link } from 'react-router';
 
 import { CourseCover } from '~/components/course/CourseCover';
+import { ReviewButton } from '~/components/course/ReviewButton';
 import { ErrorState } from '~/components/ErrorState';
+import { Resume } from '~/components/lesson/Resume';
 import { Button } from '~/components/ui/button';
 import {
   Dialog,
@@ -14,28 +17,41 @@ import {
 } from '~/components/ui/dialog';
 import { Skeleton } from '~/components/ui/skeleton';
 import { FormAlert } from '~/components/visitor/FormMessage';
+import { cn } from '~/lib/utils';
 import { useCancelEnrollment, useEnroll } from '~/mutations/enrollment';
 import { useEnrollment } from '~/queries/course';
 import { ApiFailure } from '~/services/ApiFailure';
 import type { CoursePage } from '~/services/CourseService';
+import type { Progress } from '~/services/EnrollmentService';
 
 const ENROLL_FAILURES = {
   OWN_COURSE: 'Você é o instrutor deste curso.',
   COURSE_ARCHIVED: 'Este curso não aceita matrículas novas.',
 };
 
-export function EnrollmentPanel({ course }: { course: CoursePage }) {
+export function EnrollmentPanel({
+  course,
+  className,
+}: {
+  course: CoursePage;
+  className?: string;
+}) {
   return (
     <aside
       aria-label="Matrícula"
-      className="flex flex-col gap-4 rounded-md border bg-card p-4 shadow-sm"
+      className={cn(
+        'flex flex-col gap-4 rounded-md border bg-card p-4 shadow-sm',
+        className,
+      )}
     >
-      <CourseCover
-        courseId={course.id}
-        title={course.title}
-        coverUrl={course.coverUrl}
-        large
-      />
+      <div className="hidden lg:block">
+        <CourseCover
+          courseId={course.id}
+          title={course.title}
+          coverUrl={course.coverUrl}
+          large
+        />
+      </div>
       <EnrollmentAction course={course} />
       <p className="flex items-center gap-2 text-sm text-muted-foreground">
         <Clock aria-hidden="true" className="size-4 shrink-0" />
@@ -50,7 +66,7 @@ function EnrollmentAction({ course }: { course: CoursePage }) {
   const enroll = useEnroll();
 
   if (enrollment.isLoading) {
-    return <Skeleton className="h-12 w-full" />;
+    return <Skeleton className="h-11 w-full" />;
   }
 
   if (enrollment.isLoadingError) {
@@ -64,7 +80,7 @@ function EnrollmentAction({ course }: { course: CoursePage }) {
   }
 
   if (enrollment.data) {
-    return <Enrolled course={course} />;
+    return <Enrolled course={course} progress={enrollment.data} />;
   }
 
   const ownCourse = ApiFailure.codeOf(enroll.error) === 'OWN_COURSE';
@@ -72,7 +88,6 @@ function EnrollmentAction({ course }: { course: CoursePage }) {
   return (
     <div className="flex flex-col gap-2.5">
       <Button
-        className="h-12"
         disabled={enroll.isPending || ownCourse}
         onClick={() => {
           enroll.mutate(course.id);
@@ -95,9 +110,16 @@ function EnrollmentAction({ course }: { course: CoursePage }) {
   );
 }
 
-function Enrolled({ course }: { course: CoursePage }) {
+function Enrolled({
+  course,
+  progress,
+}: {
+  course: CoursePage;
+  progress: Progress;
+}) {
   const [confirming, setConfirming] = useState(false);
   const cancel = useCancelEnrollment();
+  const resume = Resume.of(course.modules, progress);
 
   return (
     <div className="flex flex-col gap-2.5">
@@ -108,6 +130,31 @@ function Enrolled({ course }: { course: CoursePage }) {
         <Check aria-hidden="true" className="size-4.5 shrink-0" />
         Você está matriculado
       </div>
+      {resume && (
+        <div className="flex flex-col gap-2">
+          <Button asChild>
+            <Link to={`/cursos/${course.id}/continuar`}>
+              {resume.finished ? (
+                <>
+                  <RotateCcw aria-hidden="true" />
+                  Rever o curso
+                </>
+              ) : (
+                <>
+                  <Play aria-hidden="true" className="fill-current" />
+                  Continuar de onde parei
+                </>
+              )}
+            </Link>
+          </Button>
+          {!resume.finished && (
+            <p className="text-center text-sm text-muted-foreground">
+              Aula {resume.position} de {resume.total} · {resume.title}
+            </p>
+          )}
+        </div>
+      )}
+      <ReviewButton courseId={course.id} courseTitle={course.title} />
       <Dialog
         open={confirming}
         onOpenChange={(open) => {
