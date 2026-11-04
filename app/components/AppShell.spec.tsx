@@ -11,10 +11,10 @@ import { ThemeProvider } from '~/theme/ThemeProvider';
 
 let mobile = false;
 
-const renderShell = () => {
+const renderShell = (path = '/cursos') => {
   const Stub = createRoutesStub([
     {
-      path: '/cursos',
+      path: '/cursos/*',
       Component: () => (
         <AppShell>
           <h1>Catálogo</h1>
@@ -27,7 +27,7 @@ const renderShell = () => {
     <QueryClientProvider client={new QueryClient()}>
       <ThemeProvider>
         <AuthProvider>
-          <Stub initialEntries={['/cursos']} />
+          <Stub initialEntries={[path]} />
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>,
@@ -94,6 +94,27 @@ describe('the app shell', () => {
       await screen.findByRole('heading', { name: 'Perfil' }),
     ).toBeVisible();
     expect(screen.getByRole('main')).toHaveFocus();
+  });
+
+  it('should mark the catalog on a course and the enrollments inside a lesson', async () => {
+    const { unmount } = renderShell('/cursos/c1');
+    await screen.findByRole('heading', { name: 'Catálogo' });
+
+    expect(screen.getByRole('link', { name: 'Catálogo' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+
+    unmount();
+    renderShell('/cursos/c1/aulas/l1');
+    await screen.findByRole('heading', { name: 'Catálogo' });
+
+    expect(
+      screen.getByRole('link', { name: 'Minhas matrículas' }),
+    ).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('link', { name: 'Catálogo' })).not.toHaveAttribute(
+      'aria-current',
+    );
   });
 
   it('should collapse the sidebar and remember it', async () => {
