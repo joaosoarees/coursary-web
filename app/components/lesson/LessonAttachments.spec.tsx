@@ -61,6 +61,34 @@ describe('LessonAttachments', () => {
     });
   });
 
+  it('should stay focusable and ask only once while the address is on its way', async () => {
+    let answer: (value: { url: string; expiresIn: number }) => void = () =>
+      undefined;
+    const download = vi
+      .spyOn(LessonService, 'attachmentDownload')
+      .mockImplementation(
+        () =>
+          new Promise((resolve) => {
+            answer = resolve;
+          }),
+      );
+    renderList();
+    const button = screen.getByRole('button', { name: 'Baixar guia.pdf' });
+
+    fireEvent.click(button);
+    fireEvent.click(button);
+
+    expect(button).toBeEnabled();
+    expect(button).toHaveAttribute('aria-busy', 'true');
+    expect(button).toHaveTextContent('Baixando…');
+    expect(download).toHaveBeenCalledTimes(1);
+
+    answer({ url: 'https://files.test/guia.pdf', expiresIn: 300 });
+    await waitFor(() => {
+      expect(button).toHaveTextContent('Baixar');
+    });
+  });
+
   it('should say so when the address cannot be had', async () => {
     vi.spyOn(LessonService, 'attachmentDownload').mockRejectedValue(
       apiError(500, 'INTERNAL'),
