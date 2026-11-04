@@ -9,7 +9,7 @@ const lessonSchema = z.object({
   position: z.number(),
 });
 
-const moduleSchema = z.object({
+export const moduleSchema = z.object({
   id: z.string(),
   title: z.string(),
   position: z.number(),
