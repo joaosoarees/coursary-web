@@ -53,7 +53,7 @@ function EnrollmentAction({ course }: { course: CoursePage }) {
   const enroll = useEnroll();
 
   if (enrollment.isLoading) {
-    return <Skeleton className="h-12 w-full" />;
+    return <Skeleton className="h-11 w-full" />;
   }
 
   if (enrollment.isLoadingError) {
@@ -75,7 +75,6 @@ function EnrollmentAction({ course }: { course: CoursePage }) {
   return (
     <div className="flex flex-col gap-2.5">
       <Button
-        className="h-12"
         disabled={enroll.isPending || ownCourse}
         onClick={() => {
           enroll.mutate(course.id);
@@ -119,8 +118,8 @@ function Enrolled({
         Você está matriculado
       </div>
       {resume && (
-        <div className="flex flex-col gap-1.5">
-          <Button className="h-12" asChild>
+        <div className="flex flex-col gap-2">
+          <Button asChild>
             <Link to={`/cursos/${course.id}/continuar`}>
               {resume.finished ? (
                 <>
