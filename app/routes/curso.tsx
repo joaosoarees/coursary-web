@@ -14,6 +14,7 @@ import { queryClient } from '~/lib/queryClient';
 import {
   courseQuery,
   enrollmentQuery,
+  myReviewQuery,
   reviewsQuery,
   useCourse,
   useEnrollment,
@@ -37,6 +38,7 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   }
 
   void queryClient.query(enrollmentQuery(params.id)).catch(noop);
+  void queryClient.query(myReviewQuery(params.id)).catch(noop);
   void queryClient.infiniteQuery(reviewsQuery(params.id)).catch(noop);
   const course = await queryClient.query(courseQuery(params.id)).catch(noop);
 
