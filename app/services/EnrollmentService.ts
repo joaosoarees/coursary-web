@@ -30,7 +30,6 @@ const enrollmentsPageSchema = z.object({
 const completionSchema = z.object({
   lessonId: z.string(),
   completedLessons: z.number(),
-  created: z.boolean(),
 });
 
 export type Progress = z.infer<typeof progressSchema>;
