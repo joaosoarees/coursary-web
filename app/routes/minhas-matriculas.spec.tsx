@@ -64,7 +64,7 @@ describe('my enrollments', () => {
 
     expect(
       await screen.findByRole('link', { name: /Python para análise de dados/ }),
-    ).toHaveAttribute('href', '/cursos/c1');
+    ).toHaveAttribute('href', '/cursos/c1/continuar');
     expect(screen.getByText(/10 de 42 aulas/)).toBeVisible();
     expect(screen.getByText('Concluído')).toBeVisible();
     expect(screen.getAllByText('Arquivado')).toHaveLength(1);
