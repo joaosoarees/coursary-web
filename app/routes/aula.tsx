@@ -309,7 +309,7 @@ function LessonStrip({
                 aria-label={`Próxima aula: ${next.title}`}
               >
                 <span className="flex min-w-0 flex-col leading-tight">
-                  <span className="text-[0.8125rem] font-normal opacity-80">
+                  <span className="text-xs font-normal opacity-80">
                     Próxima aula
                   </span>
                   <span className="truncate">{next.title}</span>
