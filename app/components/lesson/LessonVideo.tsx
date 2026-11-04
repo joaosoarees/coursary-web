@@ -26,7 +26,9 @@ export function LessonVideo({
   const element = useRef<HTMLVideoElement>(null);
   const resume = useRef<Resume | null>(null);
   const failedLoads = useRef(0);
-  const [failed, setFailed] = useState(false);
+  // Tied to the address that failed, so a new one brings the player back on its own.
+  const [failedUrl, setFailedUrl] = useState<string | null>(null);
+  const failed = failedUrl === video.url;
 
   // Read before the new address arrives: swapping the source resets the time and pauses.
   function renew() {
@@ -60,13 +62,13 @@ export function LessonVideo({
     if (failedLoads.current === 1) {
       renew();
     } else {
-      setFailed(true);
+      setFailedUrl(video.url);
     }
   }
 
   function retry() {
     failedLoads.current = 0;
-    setFailed(false);
+    setFailedUrl(null);
     renew();
   }
 
