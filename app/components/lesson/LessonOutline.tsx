@@ -40,29 +40,29 @@ export function LessonOutline({
         {progress}
       </div>
       {/* On a phone the outline comes after the lesson, closed, so the lesson stays first. */}
-      <button
-        type="button"
-        aria-expanded={open}
-        aria-controls={listId}
-        onClick={() => {
-          setOpen((value) => !value);
-        }}
-        className="flex items-center gap-3 rounded-md px-2 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring lg:hidden"
-      >
-        <span className="flex flex-1 flex-col gap-2">
-          <span className="font-display text-xl font-bold">
+      <div className="flex flex-col gap-2.5 px-2 lg:hidden">
+        <h2 className="font-display text-xl font-bold">
+          <button
+            type="button"
+            aria-expanded={open}
+            aria-controls={listId}
+            onClick={() => {
+              setOpen((value) => !value);
+            }}
+            className="flex min-h-10 w-full items-center justify-between gap-3 rounded-md text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          >
             Conteúdo do curso
-          </span>
-          {progress}
-        </span>
-        <ChevronDown
-          aria-hidden="true"
-          className={cn(
-            'size-5 shrink-0 text-muted-foreground transition-transform motion-reduce:transition-none',
-            open && 'rotate-180',
-          )}
-        />
-      </button>
+            <ChevronDown
+              aria-hidden="true"
+              className={cn(
+                'size-5 shrink-0 text-muted-foreground transition-transform motion-reduce:transition-none',
+                open && 'rotate-180',
+              )}
+            />
+          </button>
+        </h2>
+        {progress}
+      </div>
       <ol
         id={listId}
         className={cn('flex-col gap-3.5', open ? 'flex' : 'hidden lg:flex')}
@@ -79,6 +79,7 @@ export function LessonOutline({
                     .length
                 }{' '}
                 de {module.lessons.length}
+                <span className="sr-only"> concluídas</span>
               </span>
             </h3>
             <ol className="flex flex-col">
