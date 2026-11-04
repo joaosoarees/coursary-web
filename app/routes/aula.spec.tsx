@@ -122,7 +122,6 @@ describe('the lesson page', () => {
       .mockResolvedValue({
         lessonId: 'l2',
         completedLessons: 2,
-        created: true,
       });
     renderLesson();
 
@@ -151,7 +150,6 @@ describe('the lesson page', () => {
       .mockResolvedValue({
         lessonId: 'l2',
         completedLessons: 2,
-        created: true,
       });
     renderLesson();
 

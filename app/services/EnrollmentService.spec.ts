@@ -94,11 +94,11 @@ describe('EnrollmentService.listMine', () => {
 
 describe('EnrollmentService.completeLesson', () => {
   it('should complete one lesson of the course', async () => {
-    answer({ lessonId: 'l1', completedLessons: 3, created: true });
+    answer({ lessonId: 'l1', completedLessons: 3 });
 
     await expect(
       EnrollmentService.completeLesson({ courseId: 'c1', lessonId: 'l1' }),
-    ).resolves.toEqual({ lessonId: 'l1', completedLessons: 3, created: true });
+    ).resolves.toEqual({ lessonId: 'l1', completedLessons: 3 });
     expect(adapter.mock.calls[0]?.[0]).toMatchObject({
       method: 'put',
       url: '/courses/c1/lessons/l1/completion',
