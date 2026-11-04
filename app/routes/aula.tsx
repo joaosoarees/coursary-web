@@ -1,9 +1,11 @@
-import { noop } from '@tanstack/react-query';
+import { noop, useQueryClient } from '@tanstack/react-query';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, Navigate } from 'react-router';
 import { toast } from 'sonner';
 
+import { ReviewButton } from '~/components/course/ReviewButton';
+import { ReviewDialog } from '~/components/course/ReviewDialog';
 import { ErrorState } from '~/components/ErrorState';
 import { LessonAttachments } from '~/components/lesson/LessonAttachments';
 import { LessonBody } from '~/components/lesson/LessonBody';
@@ -15,7 +17,11 @@ import { Button } from '~/components/ui/button';
 import { Skeleton } from '~/components/ui/skeleton';
 import { queryClient } from '~/lib/queryClient';
 import { useCompleteLesson, useSavePosition } from '~/mutations/progress';
-import { enrollmentQuery, useEnrollment } from '~/queries/course';
+import {
+  enrollmentQuery,
+  myReviewQuery,
+  useEnrollment,
+} from '~/queries/course';
 import {
   lessonQuery,
   outlineQuery,
@@ -56,6 +62,7 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
     queryClient.query(enrollmentQuery(params.id)).catch(noop),
     queryClient.query(lessonQuery(params.id, params.aulaId)).catch(noop),
   ]);
+  void queryClient.query(myReviewQuery(params.id)).catch(noop);
   const lesson = outline
     ? lessonsOf(outline).find(({ id }) => id === params.aulaId)
     : undefined;
@@ -169,6 +176,9 @@ function LessonView({
   }, [onVideoExpired]);
   const hasVideo = content.video !== undefined;
   const nextLink = useRef<HTMLAnchorElement>(null);
+  const reviewButton = useRef<HTMLButtonElement>(null);
+  const client = useQueryClient();
+  const [suggestReview, setSuggestReview] = useState(false);
 
   // A lesson without a video is still the last one opened.
   useEffect(() => {
@@ -188,8 +198,20 @@ function LessonView({
 
     complete.mutate(lesson.id, {
       // The box the student just ticked goes away: hand the focus to the next step.
-      onSuccess: () => {
+      onSuccess: ({ completedLessons }) => {
         nextLink.current?.focus();
+
+        // The last lesson closes the course: the review is suggested then, once, if there is none.
+        if (completedLessons >= lessons.length) {
+          void client
+            .query(myReviewQuery(outline.courseId))
+            .then((review) => {
+              if (review === null) {
+                setSuggestReview(true);
+              }
+            })
+            .catch(noop);
+        }
       },
       onError: () => {
         toast.error('Não deu para marcar a aula. Tente de novo.');
@@ -270,6 +292,26 @@ function LessonView({
         modules={outline.modules}
         currentLessonId={lesson.id}
         completedLessonIds={progress.completedLessonIds}
+        footer={
+          <ReviewButton
+            ref={reviewButton}
+            courseId={outline.courseId}
+            courseTitle={outline.title}
+          />
+        }
+      />
+      <ReviewDialog
+        courseId={outline.courseId}
+        courseTitle={outline.title}
+        review={null}
+        finished
+        open={suggestReview}
+        onOpenChange={setSuggestReview}
+        // The box that opened it went away with the last lesson: land on the review button.
+        onCloseAutoFocus={(event) => {
+          event.preventDefault();
+          reviewButton.current?.focus();
+        }}
       />
     </article>
   );

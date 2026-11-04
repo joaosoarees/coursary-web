@@ -10,6 +10,7 @@ import {
   type LessonContent,
   LessonService,
 } from '~/services/LessonService';
+import { ReviewService } from '~/services/ReviewService';
 import { apiError, Landing, renderRoutes } from '~/test/renderRoutes';
 
 const outline: CourseOutline = {
@@ -58,6 +59,7 @@ beforeEach(() => {
   vi.spyOn(LessonService, 'outline').mockResolvedValue(outline);
   vi.spyOn(EnrollmentService, 'progress').mockResolvedValue(progress);
   vi.spyOn(LessonService, 'open').mockResolvedValue(content);
+  vi.spyOn(ReviewService, 'mine').mockResolvedValue(null);
 });
 
 const renderLesson = (path = '/cursos/c1/aulas/l2') =>
@@ -179,6 +181,75 @@ describe('the lesson page', () => {
     expect(
       screen.getByRole('checkbox', { name: 'Marcar concluída' }),
     ).toBeInTheDocument();
+  });
+
+  it('should offer to review the course from the outline', async () => {
+    renderLesson();
+
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Avaliar o curso' }),
+    );
+
+    expect(
+      screen.getByRole('dialog', { name: 'Avaliar o curso' }),
+    ).toBeVisible();
+  });
+
+  it('should suggest a review when the last lesson completes the course', async () => {
+    vi.spyOn(EnrollmentService, 'progress').mockResolvedValue({
+      ...progress,
+      completedLessons: 2,
+      completedLessonIds: ['l1', 'l2'],
+    });
+    vi.spyOn(EnrollmentService, 'completeLesson').mockResolvedValue({
+      lessonId: 'l3',
+      completedLessons: 3,
+    });
+    renderLesson('/cursos/c1/aulas/l3');
+
+    fireEvent.click(
+      await screen.findByRole('checkbox', { name: 'Marcar concluída' }),
+    );
+
+    expect(
+      await screen.findByRole('dialog', { name: 'Você concluiu o curso' }),
+    ).toBeVisible();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Agora não' }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('button', { name: 'Avaliar o curso' }),
+      ).toHaveFocus();
+    });
+  });
+
+  it('should not suggest a review to a student who already wrote one', async () => {
+    vi.spyOn(ReviewService, 'mine').mockResolvedValue({
+      courseId: 'c1',
+      rating: 5,
+      comment: '',
+      createdAt: '2026-11-04T12:00:00.000Z',
+      updatedAt: '2026-11-04T12:00:00.000Z',
+    });
+    vi.spyOn(EnrollmentService, 'progress').mockResolvedValue({
+      ...progress,
+      completedLessons: 2,
+      completedLessonIds: ['l1', 'l2'],
+    });
+    vi.spyOn(EnrollmentService, 'completeLesson').mockResolvedValue({
+      lessonId: 'l3',
+      completedLessons: 3,
+    });
+    renderLesson('/cursos/c1/aulas/l3');
+
+    await screen.findByRole('button', { name: 'Editar sua avaliação' });
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Marcar concluída' }));
+
+    await waitFor(() => {
+      expect(screen.getByRole('status')).toHaveTextContent(/^Concluída$/);
+    });
+    expect(screen.queryByRole('dialog')).toBeNull();
   });
 
   it('should resume the last lesson opened at the saved second', async () => {

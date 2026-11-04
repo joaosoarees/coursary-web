@@ -7,6 +7,7 @@ import {
 
 import { CourseService } from '~/services/CourseService';
 import { EnrollmentService } from '~/services/EnrollmentService';
+import { ReviewService } from '~/services/ReviewService';
 
 const REVIEWS_PAGE_SIZE = 10;
 
@@ -39,6 +40,13 @@ export const enrollmentQuery = (courseId: string) =>
     staleTime: FRESH_FOR,
   });
 
+export const myReviewQuery = (courseId: string) =>
+  queryOptions({
+    queryKey: ['courses', courseId, 'review'],
+    queryFn: ({ signal }) => ReviewService.mine(courseId, signal),
+    staleTime: FRESH_FOR,
+  });
+
 export const useCourse = (courseId: string) => useQuery(courseQuery(courseId));
 
 export const useReviews = (courseId: string) =>
@@ -46,3 +54,6 @@ export const useReviews = (courseId: string) =>
 
 export const useEnrollment = (courseId: string) =>
   useQuery(enrollmentQuery(courseId));
+
+export const useMyReview = (courseId: string) =>
+  useQuery(myReviewQuery(courseId));

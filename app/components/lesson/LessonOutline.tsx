@@ -11,11 +11,13 @@ export function LessonOutline({
   modules,
   currentLessonId,
   completedLessonIds,
+  footer,
 }: {
   courseId: string;
   modules: CourseModule[];
   currentLessonId: string;
   completedLessonIds: string[];
+  footer?: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
   const [expanded, setExpanded] = useState(
@@ -174,6 +176,7 @@ export function LessonOutline({
           </li>
         ))}
       </ol>
+      {footer && <div className="px-2">{footer}</div>}
     </aside>
   );
 }
