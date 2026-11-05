@@ -6,7 +6,7 @@ import {
   InstructorService,
   type ManagedCourse,
 } from '~/services/InstructorService';
-import { apiError, renderRoutes } from '~/test/renderRoutes';
+import { apiError, Landing, renderRoutes } from '~/test/renderRoutes';
 
 const draft: ManagedCourse = {
   id: 'c1',
@@ -21,7 +21,13 @@ const draft: ManagedCourse = {
 
 const renderAt = () =>
   renderRoutes(
-    [{ path: '/instrutor/cursos/:id', Component: EditCoursePage }],
+    [
+      { path: '/instrutor/cursos/:id', Component: EditCoursePage },
+      {
+        path: '/instrutor/cursos',
+        Component: () => <Landing title="Meus cursos" />,
+      },
+    ],
     '/instrutor/cursos/c1',
   );
 
@@ -78,6 +84,37 @@ describe('edit course', () => {
       ).not.toHaveAttribute('aria-disabled', 'true');
     });
     expect(update).not.toHaveBeenCalled();
+  });
+
+  it('should ask before leaving with unsaved changes', async () => {
+    vi.spyOn(InstructorService, 'get').mockResolvedValue(draft);
+    renderAt();
+
+    fireEvent.change(await screen.findByLabelText('Título'), {
+      target: { value: 'Gráficos com propósito' },
+    });
+    fireEvent.click(screen.getByRole('link', { name: 'Meus cursos' }));
+
+    expect(
+      await screen.findByRole('dialog', { name: 'Sair sem salvar?' }),
+    ).toBeVisible();
+    fireEvent.click(screen.getByRole('button', { name: 'Continuar editando' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).toBeNull();
+    });
+    expect(screen.getByLabelText('Título')).toHaveValue(
+      'Gráficos com propósito',
+    );
+
+    fireEvent.click(screen.getByRole('link', { name: 'Meus cursos' }));
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Sair sem salvar' }),
+    );
+
+    expect(
+      await screen.findByRole('heading', { name: 'Meus cursos' }),
+    ).toBeVisible();
   });
 
   it('should show an archived course read-only', async () => {
