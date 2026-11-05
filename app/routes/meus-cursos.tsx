@@ -36,7 +36,8 @@ export function clientLoader() {
 export default function MyCoursesPage() {
   const list = useMyCourses();
   const courses = list.data?.pages.flatMap((page) => page.items) ?? NO_COURSES;
-  const none = list.isSuccess && courses.length === 0;
+  // Hidden until the list answers, so it never appears and then gives way to the empty state.
+  const hasCourses = courses.length > 0 || list.isLoadingError;
 
   return (
     <section className="flex flex-col gap-7">
@@ -44,7 +45,7 @@ export default function MyCoursesPage() {
         title="Meus cursos"
         description="Os cursos que você criou, do rascunho ao arquivado."
         actions={
-          !none && (
+          hasCourses && (
             <Button asChild>
               <Link to="/instrutor/cursos/novo">
                 <Plus aria-hidden="true" />
@@ -119,7 +120,7 @@ function CourseList({
 
 function FirstCourse() {
   return (
-    <div className="flex max-w-180 flex-col items-start gap-4 rounded-lg bg-board px-8 py-10 text-chalk">
+    <div className="flex max-w-180 flex-col items-start gap-4 rounded-lg bg-board px-8 py-10 text-chalk ring-1 ring-chalk/10 ring-inset">
       <ChalkStroke className="w-44 text-chalk-yellow" />
       <h2 className="font-display text-3xl leading-tight font-bold tracking-tight">
         Você ainda não criou nenhum curso
