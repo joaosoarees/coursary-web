@@ -117,6 +117,26 @@ describe('edit course', () => {
     ).toBeVisible();
   });
 
+  it('should leave freely after saving a change the server trims away', async () => {
+    vi.spyOn(InstructorService, 'get').mockResolvedValue(draft);
+    vi.spyOn(InstructorService, 'update').mockResolvedValue(draft);
+    renderAt();
+
+    fireEvent.change(await screen.findByLabelText('Título'), {
+      target: { value: `${draft.title} ` },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Salvar alterações' }));
+    await waitFor(() => {
+      expect(screen.getByLabelText('Título')).toHaveValue(draft.title);
+    });
+    fireEvent.click(screen.getByRole('link', { name: 'Meus cursos' }));
+
+    expect(
+      await screen.findByRole('heading', { name: 'Meus cursos' }),
+    ).toBeVisible();
+    expect(screen.queryByRole('dialog')).toBeNull();
+  });
+
   it('should show an archived course read-only', async () => {
     vi.spyOn(InstructorService, 'get').mockResolvedValue({
       ...draft,
