@@ -24,6 +24,10 @@ export class MyCourseFacts {
       'alunos',
     );
 
+    if (course.status === 'ARCHIVED') {
+      return `${lessons} · ${students} · fora do catálogo`;
+    }
+
     return `${lessons} · ${students} · publicado em ${CourseFormat.date(course.publishedAt)}`;
   }
 }
