@@ -2,13 +2,11 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import { useImageUpload } from '~/hooks/useImageUpload';
 import { checkCover } from '~/instructor/coverRules';
+import { COURSE_ARCHIVED } from '~/instructor/instructorMessages';
 import { storeManagedCourse } from '~/mutations/instructor';
 import { managedCourseQuery } from '~/queries/instructor';
 import { ApiFailure } from '~/services/ApiFailure';
 import { InstructorService } from '~/services/InstructorService';
-
-export const COURSE_ARCHIVED =
-  'O curso foi arquivado e não pode mais ser editado.';
 
 export function useCoverUpload(courseId: string) {
   const queryClient = useQueryClient();
