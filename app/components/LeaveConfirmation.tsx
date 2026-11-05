@@ -40,8 +40,8 @@ export function LeaveConfirmation({ when }: { when: boolean }) {
         }
       }}
     >
-      <DialogContent showCloseButton={false} className="sm:max-w-[30rem]">
-        <DialogHeader className="gap-4">
+      <DialogContent showCloseButton={false} className="sm:max-w-[32rem]">
+        <DialogHeader className="gap-4 text-left">
           <DialogTitle>Sair sem salvar?</DialogTitle>
           <DialogDescription className="text-base">
             As alterações que você fez nesta página ainda não foram salvas e
