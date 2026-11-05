@@ -52,6 +52,12 @@ describe('my courses', () => {
     vi.spyOn(InstructorService, 'listMine').mockResolvedValue({
       items: [
         course('c1', 'Gráficos que contam uma história'),
+        course('c3', 'Fotografia com o celular', {
+          status: 'ARCHIVED',
+          lessonCount: 24,
+          enrollmentCount: 96,
+          publishedAt: '2026-03-03T12:00:00.000Z',
+        }),
         course('c2', 'Planilhas sem medo', {
           status: 'PUBLISHED',
           lessonCount: 31,
@@ -75,6 +81,9 @@ describe('my courses', () => {
     expect(screen.getByText('Publicado')).toBeVisible();
     expect(
       screen.getByText('31 aulas · 1 aluno · publicado em 28 de set. de 2026'),
+    ).toBeVisible();
+    expect(
+      screen.getByText('24 aulas · 96 alunos · fora do catálogo'),
     ).toBeVisible();
     expect(screen.getByRole('link', { name: 'Novo curso' })).toHaveAttribute(
       'href',
