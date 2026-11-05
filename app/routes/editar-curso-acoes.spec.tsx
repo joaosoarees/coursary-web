@@ -50,7 +50,9 @@ describe('course actions', () => {
 
     const publish = await screen.findByRole('button', { name: 'Publicar' });
 
-    expect(publish).toBeDisabled();
+    expect(publish).toHaveAttribute('aria-disabled', 'true');
+    fireEvent.click(publish);
+    expect(screen.queryByRole('dialog')).toBeNull();
     expect(publish).toHaveAccessibleDescription(
       'Adicione ao menos uma aula para publicar.',
     );
@@ -72,6 +74,19 @@ describe('course actions', () => {
       screen.getByRole('link', { name: 'Ver a página do curso' }),
     ).toHaveAttribute('href', '/cursos/c1');
     expect(publish).toHaveBeenCalledWith('c1');
+  });
+
+  it('should give the focus back to the button that opened a cancelled dialog', async () => {
+    vi.spyOn(InstructorService, 'get').mockResolvedValue(published);
+    renderAt();
+
+    const archive = await screen.findByRole('button', { name: 'Arquivar' });
+    fireEvent.click(archive);
+    fireEvent.click(within(dialog()).getByRole('button', { name: 'Cancelar' }));
+
+    await waitFor(() => {
+      expect(archive).toHaveFocus();
+    });
   });
 
   it('should keep the dialog open with the reason when publishing is refused', async () => {
@@ -107,6 +122,11 @@ describe('course actions', () => {
 
     expect(await screen.findByRole('note')).toBeVisible();
     expect(screen.queryByRole('button', { name: 'Arquivar' })).toBeNull();
+    await waitFor(() => {
+      expect(
+        screen.getByRole('heading', { level: 1, name: draft.title }),
+      ).toHaveFocus();
+    });
   });
 
   it('should delete a draft and go back to my courses even with unsaved changes', async () => {
@@ -120,7 +140,9 @@ describe('course actions', () => {
       target: { value: 'Mudado' },
     });
     fireEvent.click(screen.getByRole('button', { name: 'Apagar rascunho' }));
-    expect(dialog()).toHaveTextContent('Isso não pode ser desfeito');
+    expect(dialog()).toHaveTextContent(
+      'será apagado com a capa e as 12 aulas. Isso não pode ser desfeito.',
+    );
     fireEvent.click(
       within(dialog()).getByRole('button', { name: 'Apagar rascunho' }),
     );
