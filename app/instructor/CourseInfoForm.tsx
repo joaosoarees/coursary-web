@@ -53,8 +53,9 @@ export function CourseInfoForm({
   });
   const { errors, isSubmitting, isDirty } = form.formState;
   const description = useWatch({ control: form.control, name: 'description' });
-  // Off while saving, so the navigation that follows a save is not held back.
-  const unsaved = isDirty && !isSubmitting;
+  // Off while saving, so the navigation that follows a save is not held back, and once the course
+  // is archived, since nothing typed can be saved any more.
+  const unsaved = isDirty && !isSubmitting && !readOnly;
 
   useUnsavedChangesWarning(unsaved);
 
