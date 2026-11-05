@@ -19,6 +19,8 @@ const buttonVariants = cva(
           'not-disabled:hover:bg-accent not-disabled:hover:text-accent-foreground',
         destructive:
           'bg-destructive text-destructive-foreground not-disabled:hover:bg-destructive-hover',
+        'destructive-outline':
+          'border border-destructive bg-card text-destructive not-disabled:hover:bg-destructive/10',
         link: 'text-link underline-offset-4 not-disabled:hover:bg-accent not-disabled:hover:underline',
       },
       size: {
