@@ -3,7 +3,8 @@ const RATING = new Intl.NumberFormat('pt-BR', {
   maximumFractionDigits: 1,
 });
 
-const INTEGER = new Intl.NumberFormat('pt-BR');
+// Without 'always', pt-BR leaves four-digit numbers ungrouped in browsers (1284), not in Node.
+const INTEGER = new Intl.NumberFormat('pt-BR', { useGrouping: 'always' });
 
 const DATE = new Intl.DateTimeFormat('pt-BR', {
   day: 'numeric',
