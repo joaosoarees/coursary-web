@@ -77,6 +77,14 @@ describe('new course', () => {
     expect(create).not.toHaveBeenCalled();
   });
 
+  it('should ask for a title when there is none', async () => {
+    renderAt();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Criar rascunho' }));
+
+    expect(await screen.findByText('Dê um título ao curso.')).toBeVisible();
+  });
+
   it('should say when the API refuses the draft', async () => {
     vi.spyOn(InstructorService, 'create').mockRejectedValue(
       apiError(500, 'INTERNAL'),
