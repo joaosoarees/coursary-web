@@ -6,6 +6,7 @@ export const courseInfoSchema = z.object({
   title: z
     .string()
     .trim()
+    .min(1, 'Dê um título ao curso.')
     .min(3, 'Use ao menos 3 caracteres no título.')
     .max(120, 'Use no máximo 120 caracteres no título.'),
   description: z
