@@ -1,5 +1,6 @@
 import { noop } from '@tanstack/react-query';
 import { Archive } from 'lucide-react';
+import { useRef } from 'react';
 import { toast } from 'sonner';
 
 import { CourseFormat } from '~/components/course/CourseFormat';
@@ -71,18 +72,23 @@ export default function EditCoursePage({ params }: Route.ComponentProps) {
 function CourseEditor({ course }: { course: ManagedCourse }) {
   const update = useUpdateCourse(course.id);
   const archived = course.status === 'ARCHIVED';
+  const heading = useRef<HTMLHeadingElement>(null);
 
   return (
     <>
       <header className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
         <div className="flex min-w-0 flex-[1_1_26rem] flex-col gap-2">
           <CourseStatusBadge status={course.status} />
-          <h1 className="font-display text-3xl leading-tight font-bold tracking-tight text-balance md:text-4xl">
+          <h1
+            ref={heading}
+            tabIndex={-1}
+            className="font-display text-3xl leading-tight font-bold tracking-tight text-balance outline-none md:text-4xl"
+          >
             {course.title}
           </h1>
           <p className="text-muted-foreground">{MyCourseFacts.of(course)}</p>
         </div>
-        <CourseActions course={course} />
+        <CourseActions course={course} heading={heading} />
       </header>
       {archived && (
         <div

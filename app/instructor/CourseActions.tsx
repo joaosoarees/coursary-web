@@ -1,4 +1,4 @@
-import { useId, useState } from 'react';
+import { useId, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
@@ -27,10 +27,30 @@ const NEEDS_A_LESSON = 'Adicione ao menos uma aula para publicar.';
 
 type Action = 'publish' | 'archive' | 'delete';
 
-export function CourseActions({ course }: { course: ManagedCourse }) {
+export function CourseActions({
+  course,
+  heading,
+}: {
+  course: ManagedCourse;
+  heading: React.RefObject<HTMLHeadingElement | null>;
+}) {
   const hintId = useId();
   const [asking, setAsking] = useState<Action>();
+  const opener = useRef<HTMLElement>(null);
   const empty = course.lessonCount === 0;
+  const ask = (action: Action, from: HTMLElement) => {
+    opener.current = from;
+    setAsking(action);
+  };
+  const close = () => {
+    setAsking(undefined);
+  };
+  // The dialogs open from state, not from a trigger, so Radix has nowhere to send the focus back;
+  // and after a publish or an archive the button that opened it is gone.
+  const returnFocus = (event: Event) => {
+    event.preventDefault();
+    (opener.current?.isConnected ? opener.current : heading.current)?.focus();
+  };
 
   return (
     <div className="flex flex-col items-start gap-2 md:items-end">
@@ -40,17 +60,21 @@ export function CourseActions({ course }: { course: ManagedCourse }) {
             <Button
               variant="outline"
               className="border-destructive text-destructive hover:bg-destructive/10 hover:text-destructive"
-              onClick={() => {
-                setAsking('delete');
+              onClick={(event) => {
+                ask('delete', event.currentTarget);
               }}
             >
               Apagar rascunho
             </Button>
+            {/* aria-disabled, not disabled: it stays in the tab order, so its reason is heard. */}
             <Button
-              disabled={empty}
+              aria-disabled={empty}
               aria-describedby={empty ? hintId : undefined}
-              onClick={() => {
-                setAsking('publish');
+              className="aria-disabled:cursor-not-allowed aria-disabled:opacity-50"
+              onClick={(event) => {
+                if (!empty) {
+                  ask('publish', event.currentTarget);
+                }
               }}
             >
               Publicar
@@ -65,8 +89,8 @@ export function CourseActions({ course }: { course: ManagedCourse }) {
         {course.status === 'PUBLISHED' && (
           <Button
             variant="outline"
-            onClick={() => {
-              setAsking('archive');
+            onClick={(event) => {
+              ask('archive', event.currentTarget);
             }}
           >
             Arquivar
@@ -81,23 +105,20 @@ export function CourseActions({ course }: { course: ManagedCourse }) {
       <PublishDialog
         course={course}
         open={asking === 'publish'}
-        onClose={() => {
-          setAsking(undefined);
-        }}
+        onClose={close}
+        onCloseAutoFocus={returnFocus}
       />
       <ArchiveDialog
         course={course}
         open={asking === 'archive'}
-        onClose={() => {
-          setAsking(undefined);
-        }}
+        onClose={close}
+        onCloseAutoFocus={returnFocus}
       />
       <DeleteDialog
         course={course}
         open={asking === 'delete'}
-        onClose={() => {
-          setAsking(undefined);
-        }}
+        onClose={close}
+        onCloseAutoFocus={returnFocus}
       />
     </div>
   );
@@ -107,15 +128,22 @@ interface DialogProps {
   course: ManagedCourse;
   open: boolean;
   onClose: () => void;
+  onCloseAutoFocus: (event: Event) => void;
 }
 
-function PublishDialog({ course, open, onClose }: DialogProps) {
+function PublishDialog({
+  course,
+  open,
+  onClose,
+  onCloseAutoFocus,
+}: DialogProps) {
   const publish = usePublishCourse(course.id);
 
   return (
     <ConfirmDialog
       open={open}
       onClose={onClose}
+      onCloseAutoFocus={onCloseAutoFocus}
       pending={publish.isPending}
       error={
         publish.error &&
@@ -130,10 +158,10 @@ function PublishDialog({ course, open, onClose }: DialogProps) {
         <>
           Depois de publicado,{' '}
           <strong className="text-foreground">{course.title}</strong> aparece no
-          catálogo e qualquer pessoa pode se matricular. Ele não volta a ser
-          rascunho: para tirá-lo do catálogo, você arquiva.
+          catálogo e qualquer pessoa pode se matricular.
         </>
       }
+      consequence="Ele não volta a ser rascunho: para tirá-lo do catálogo, você arquiva."
       confirm={{ label: 'Publicar', pending: 'Publicando…' }}
       onConfirm={() => {
         publish.mutate(undefined, {
@@ -147,7 +175,12 @@ function PublishDialog({ course, open, onClose }: DialogProps) {
   );
 }
 
-function ArchiveDialog({ course, open, onClose }: DialogProps) {
+function ArchiveDialog({
+  course,
+  open,
+  onClose,
+  onCloseAutoFocus,
+}: DialogProps) {
   const archive = useArchiveCourse(course.id);
   const students =
     course.enrollmentCount === 1
@@ -158,6 +191,7 @@ function ArchiveDialog({ course, open, onClose }: DialogProps) {
     <ConfirmDialog
       open={open}
       onClose={onClose}
+      onCloseAutoFocus={onCloseAutoFocus}
       pending={archive.isPending}
       error={
         archive.error &&
@@ -170,15 +204,14 @@ function ArchiveDialog({ course, open, onClose }: DialogProps) {
       title="Arquivar o curso?"
       description={
         <>
-          <strong className="text-foreground">{course.title}</strong> sai do
-          catálogo e da busca.{' '}
+          O curso <strong className="text-foreground">{course.title}</strong>{' '}
+          sai do catálogo e da busca.{' '}
           {course.enrollmentCount === 0
             ? 'Ninguém está matriculado agora.'
-            : `${students} um aviso por e-mail.`}{' '}
-          Arquivar não tem volta: o curso não pode mais ser editado nem
-          publicado de novo.
+            : `${students} um aviso por e-mail.`}
         </>
       }
+      consequence="Arquivar não tem volta: o curso não pode mais ser editado nem publicado de novo."
       confirm={{
         label: 'Arquivar o curso',
         pending: 'Arquivando…',
@@ -196,7 +229,12 @@ function ArchiveDialog({ course, open, onClose }: DialogProps) {
   );
 }
 
-function DeleteDialog({ course, open, onClose }: DialogProps) {
+function DeleteDialog({
+  course,
+  open,
+  onClose,
+  onCloseAutoFocus,
+}: DialogProps) {
   const remove = useDeleteDraft(course.id);
   const navigate = useNavigate();
 
@@ -204,6 +242,7 @@ function DeleteDialog({ course, open, onClose }: DialogProps) {
     <ConfirmDialog
       open={open}
       onClose={onClose}
+      onCloseAutoFocus={onCloseAutoFocus}
       pending={remove.isPending}
       error={
         remove.error &&
@@ -216,8 +255,11 @@ function DeleteDialog({ course, open, onClose }: DialogProps) {
       description={
         <>
           O rascunho <strong className="text-foreground">{course.title}</strong>{' '}
-          será apagado com a capa e tudo o que estiver nele. Isso não pode ser
-          desfeito.
+          será apagado com a capa
+          {course.lessonCount === 0
+            ? ''
+            : ` e ${course.lessonCount === 1 ? 'a aula' : `as ${CourseFormat.count(course.lessonCount, 'aula', 'aulas')}`}`}
+          . Isso não pode ser desfeito.
         </>
       }
       confirm={{
@@ -243,6 +285,8 @@ function DeleteDialog({ course, open, onClose }: DialogProps) {
 function ConfirmDialog({
   open,
   onClose,
+  onCloseAutoFocus,
+  consequence,
   pending,
   error,
   onReset,
@@ -253,6 +297,8 @@ function ConfirmDialog({
 }: {
   open: boolean;
   onClose: () => void;
+  onCloseAutoFocus: (event: Event) => void;
+  consequence?: string;
   pending: boolean;
   error: string | null;
   onReset: () => void;
@@ -275,11 +321,18 @@ function ConfirmDialog({
         }
       }}
     >
-      <DialogContent showCloseButton={false} className="sm:max-w-[32rem]">
+      <DialogContent
+        showCloseButton={false}
+        className="sm:max-w-[32rem]"
+        onCloseAutoFocus={onCloseAutoFocus}
+      >
         <DialogHeader className="gap-4 text-left">
           <DialogTitle>{title}</DialogTitle>
-          <DialogDescription className="text-base">
-            {description}
+          <DialogDescription asChild>
+            <div className="flex flex-col gap-4 text-base">
+              <p>{description}</p>
+              {consequence && <p>{consequence}</p>}
+            </div>
           </DialogDescription>
         </DialogHeader>
         {error && <FormAlert>{error}</FormAlert>}
