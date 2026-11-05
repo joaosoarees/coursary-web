@@ -397,6 +397,7 @@ Firmes, legíveis e marcados a giz: cada controle tem tamanho de dedo, bordas qu
 
 ### Estados
 - **Vazio:** bloco centralizado com borda tracejada em Cinza-Musgo, cantos de 6 px, 48 px de respiro vertical; ícone de 32 px em Verde Grafite, título em Title, descrição apagada e uma ação.
+- **Primeiro uso:** quando a pessoa ainda não criou nada ("Você ainda não criou nenhum curso"), o vazio vira uma lousa: bloco em Verde Lousa de até 720 px, alinhado à esquerda, com o traço de giz amarelo no topo, título em Headline em Giz Branco, descrição em Musgo Claro e uma única ação em Giz Amarelo. O tracejado fica para as listas que só estão vazias.
 - **Erro:** ícone de alerta em Tijolo ao lado de título e mensagem; na página inteira, título em Headline com "Tentar de novo" e "Ir para o início"; num bloco, um card com borda Cinza-Musgo e botão pequeno. A causa nunca aparece para quem lê.
 - **Carregando:** blocos em Sálvia Pálida com cantos de 6 px e pulso, no formato do conteúdo que virá.
 
