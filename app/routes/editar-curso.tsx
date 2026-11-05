@@ -1,6 +1,6 @@
 import { noop } from '@tanstack/react-query';
 import { Archive } from 'lucide-react';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import { CourseFormat } from '~/components/course/CourseFormat';
@@ -73,6 +73,7 @@ function CourseEditor({ course }: { course: ManagedCourse }) {
   const update = useUpdateCourse(course.id);
   const archived = course.status === 'ARCHIVED';
   const heading = useRef<HTMLHeadingElement>(null);
+  const [unsaved, setUnsaved] = useState(false);
 
   return (
     <>
@@ -88,7 +89,7 @@ function CourseEditor({ course }: { course: ManagedCourse }) {
           </h1>
           <p className="text-muted-foreground">{MyCourseFacts.of(course)}</p>
         </div>
-        <CourseActions course={course} heading={heading} />
+        <CourseActions course={course} heading={heading} unsaved={unsaved} />
       </header>
       {archived && (
         <div
@@ -116,6 +117,7 @@ function CourseEditor({ course }: { course: ManagedCourse }) {
           <CourseInfoForm
             saved={{ title: course.title, description: course.description }}
             readOnly={archived}
+            onDirtyChange={setUnsaved}
             submitLabel="Salvar alterações"
             pendingLabel="Salvando…"
             onSave={async (info) => {

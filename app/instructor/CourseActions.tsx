@@ -25,19 +25,31 @@ import type { ManagedCourse } from '~/services/InstructorService';
 
 const NEEDS_A_LESSON = 'Adicione ao menos uma aula para publicar.';
 
+const BLOCKED = 'aria-disabled:cursor-not-allowed aria-disabled:opacity-50';
+
 type Action = 'publish' | 'archive' | 'delete';
 
 export function CourseActions({
   course,
   heading,
+  unsaved,
 }: {
   course: ManagedCourse;
   heading: React.RefObject<HTMLHeadingElement | null>;
+  unsaved: boolean;
 }) {
   const hintId = useId();
   const [asking, setAsking] = useState<Action>();
   const opener = useRef<HTMLElement>(null);
-  const empty = course.lessonCount === 0;
+  // Publishing or archiving now would leave the unsaved edits behind; archiving, for good.
+  const blockedBy =
+    course.status === 'DRAFT' && course.lessonCount === 0
+      ? NEEDS_A_LESSON
+      : unsaved && course.status === 'DRAFT'
+        ? 'Salve as alterações antes de publicar.'
+        : unsaved && course.status === 'PUBLISHED'
+          ? 'Salve as alterações antes de arquivar.'
+          : undefined;
   const ask = (action: Action, from: HTMLElement) => {
     opener.current = from;
     setAsking(action);
@@ -58,8 +70,7 @@ export function CourseActions({
         {course.status === 'DRAFT' && (
           <>
             <Button
-              variant="outline"
-              className="border-destructive text-destructive hover:bg-destructive/10 hover:text-destructive"
+              variant="destructive-outline"
               onClick={(event) => {
                 ask('delete', event.currentTarget);
               }}
@@ -68,11 +79,11 @@ export function CourseActions({
             </Button>
             {/* aria-disabled, not disabled: it stays in the tab order, so its reason is heard. */}
             <Button
-              aria-disabled={empty}
-              aria-describedby={empty ? hintId : undefined}
-              className="aria-disabled:cursor-not-allowed aria-disabled:opacity-50"
+              aria-disabled={blockedBy !== undefined}
+              aria-describedby={blockedBy ? hintId : undefined}
+              className={BLOCKED}
               onClick={(event) => {
-                if (!empty) {
+                if (!blockedBy) {
                   ask('publish', event.currentTarget);
                 }
               }}
@@ -88,18 +99,23 @@ export function CourseActions({
         )}
         {course.status === 'PUBLISHED' && (
           <Button
-            variant="outline"
+            variant="destructive-outline"
+            aria-disabled={blockedBy !== undefined}
+            aria-describedby={blockedBy ? hintId : undefined}
+            className={BLOCKED}
             onClick={(event) => {
-              ask('archive', event.currentTarget);
+              if (!blockedBy) {
+                ask('archive', event.currentTarget);
+              }
             }}
           >
             Arquivar
           </Button>
         )}
       </div>
-      {course.status === 'DRAFT' && empty && (
+      {blockedBy && (
         <p id={hintId} className="text-muted-foreground">
-          {NEEDS_A_LESSON}
+          {blockedBy}
         </p>
       )}
       <PublishDialog
