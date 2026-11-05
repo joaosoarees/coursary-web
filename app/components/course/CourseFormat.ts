@@ -3,6 +3,8 @@ const RATING = new Intl.NumberFormat('pt-BR', {
   maximumFractionDigits: 1,
 });
 
+const INTEGER = new Intl.NumberFormat('pt-BR');
+
 const DATE = new Intl.DateTimeFormat('pt-BR', {
   day: 'numeric',
   month: 'short',
@@ -15,7 +17,7 @@ export class CourseFormat {
   }
 
   static count(count: number, one: string, many: string): string {
-    return `${String(count)} ${count === 1 ? one : many}`;
+    return `${INTEGER.format(count)} ${count === 1 ? one : many}`;
   }
 
   static duration(minutes: number): string {
