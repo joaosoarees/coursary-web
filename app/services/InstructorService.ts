@@ -103,4 +103,25 @@ export class InstructorService {
 
     return coverUploadStatusSchema.parse(data).status;
   }
+
+  static async publish(courseId: string): Promise<ManagedCourse> {
+    const { data } = await httpClient.post<unknown>(
+      `${courseUrl(courseId)}/publish`,
+    );
+
+    return managedCourseSchema.parse(data);
+  }
+
+  static async archive(courseId: string): Promise<ManagedCourse> {
+    const { data } = await httpClient.post<unknown>(
+      `${courseUrl(courseId)}/archive`,
+    );
+
+    return managedCourseSchema.parse(data);
+  }
+
+  // 202: the draft is marked for deletion and its content goes in the background.
+  static async deleteDraft(courseId: string): Promise<void> {
+    await httpClient.delete(courseUrl(courseId));
+  }
 }
