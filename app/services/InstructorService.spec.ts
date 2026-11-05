@@ -108,3 +108,27 @@ describe('InstructorService course editing', () => {
     });
   });
 });
+
+describe('InstructorService course lifecycle', () => {
+  it('should publish, archive and delete a course', async () => {
+    answer({ ...managed, status: 'PUBLISHED' });
+    answer({ ...managed, status: 'ARCHIVED' });
+    answer({ id: 'c1', status: 'DELETING' });
+
+    await expect(InstructorService.publish('c1')).resolves.toMatchObject({
+      status: 'PUBLISHED',
+    });
+    await expect(InstructorService.archive('c1')).resolves.toMatchObject({
+      status: 'ARCHIVED',
+    });
+    await InstructorService.deleteDraft('c1');
+
+    expect(
+      adapter.mock.calls.map(([config]) => [config.method, config.url]),
+    ).toEqual([
+      ['post', '/courses/c1/publish'],
+      ['post', '/courses/c1/archive'],
+      ['delete', '/courses/c1'],
+    ]);
+  });
+});

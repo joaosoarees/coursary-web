@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useId } from 'react';
+import { useEffect, useEffectEvent, useId } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -36,6 +36,7 @@ export function CourseInfoForm({
   submitLabel,
   pendingLabel,
   onSave,
+  onDirtyChange,
   actions,
 }: {
   saved?: CourseInfoValues;
@@ -43,6 +44,7 @@ export function CourseInfoForm({
   submitLabel: string;
   pendingLabel: string;
   onSave: (info: CourseInfoValues) => Promise<unknown>;
+  onDirtyChange?: (dirty: boolean) => void;
   actions?: React.ReactNode;
 }) {
   const id = useId();
@@ -53,10 +55,19 @@ export function CourseInfoForm({
   });
   const { errors, isSubmitting, isDirty } = form.formState;
   const description = useWatch({ control: form.control, name: 'description' });
-  // Off while saving, so the navigation that follows a save is not held back.
-  const unsaved = isDirty && !isSubmitting;
+  // Off while saving, so the navigation that follows a save is not held back, and once the course
+  // is archived, since nothing typed can be saved any more.
+  const unsaved = isDirty && !isSubmitting && !readOnly;
 
   useUnsavedChangesWarning(unsaved);
+
+  const reportDirty = useEffectEvent((dirty: boolean) => {
+    onDirtyChange?.(dirty);
+  });
+
+  useEffect(() => {
+    reportDirty(isDirty);
+  }, [isDirty]);
 
   const handleSubmit = form.handleSubmit(async (info) => {
     if (saved && !isDirty) {
@@ -170,7 +181,7 @@ export function CourseInfoForm({
           <Button
             type="submit"
             aria-disabled={isSubmitting}
-            className="aria-disabled:cursor-progress aria-disabled:opacity-50"
+            className="aria-disabled:cursor-progress"
           >
             {isSubmitting ? pendingLabel : submitLabel}
           </Button>

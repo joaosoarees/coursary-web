@@ -1,5 +1,6 @@
 import { noop } from '@tanstack/react-query';
 import { Archive } from 'lucide-react';
+import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import { CourseFormat } from '~/components/course/CourseFormat';
@@ -9,6 +10,7 @@ import { MyCourseFacts } from '~/components/instructor/MyCourseCard';
 import { LoadingNote } from '~/components/LoadingNote';
 import { Skeleton } from '~/components/ui/skeleton';
 import { BackToMyCourses } from '~/instructor/BackToMyCourses';
+import { CourseActions } from '~/instructor/CourseActions';
 import { CourseInfoForm } from '~/instructor/CourseInfoForm';
 import { CoverCard } from '~/instructor/CoverCard';
 import { queryClient } from '~/lib/queryClient';
@@ -70,15 +72,24 @@ export default function EditCoursePage({ params }: Route.ComponentProps) {
 function CourseEditor({ course }: { course: ManagedCourse }) {
   const update = useUpdateCourse(course.id);
   const archived = course.status === 'ARCHIVED';
+  const heading = useRef<HTMLHeadingElement>(null);
+  const [unsaved, setUnsaved] = useState(false);
 
   return (
     <>
-      <header className="flex flex-col gap-2">
-        <CourseStatusBadge status={course.status} />
-        <h1 className="font-display text-3xl leading-tight font-bold tracking-tight text-balance md:text-4xl">
-          {course.title}
-        </h1>
-        <p className="text-muted-foreground">{MyCourseFacts.of(course)}</p>
+      <header className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
+        <div className="flex min-w-0 flex-[1_1_26rem] flex-col gap-2">
+          <CourseStatusBadge status={course.status} />
+          <h1
+            ref={heading}
+            tabIndex={-1}
+            className="font-display text-3xl leading-tight font-bold tracking-tight text-balance outline-none md:text-4xl"
+          >
+            {course.title}
+          </h1>
+          <p className="text-muted-foreground">{MyCourseFacts.of(course)}</p>
+        </div>
+        <CourseActions course={course} heading={heading} unsaved={unsaved} />
       </header>
       {archived && (
         <div
@@ -106,6 +117,7 @@ function CourseEditor({ course }: { course: ManagedCourse }) {
           <CourseInfoForm
             saved={{ title: course.title, description: course.description }}
             readOnly={archived}
+            onDirtyChange={setUnsaved}
             submitLabel="Salvar alterações"
             pendingLabel="Salvando…"
             onSave={async (info) => {
