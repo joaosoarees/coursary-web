@@ -77,6 +77,19 @@ describe('new course', () => {
     expect(create).not.toHaveBeenCalled();
   });
 
+  it('should send the draft once when submitted twice', async () => {
+    const create = vi
+      .spyOn(InstructorService, 'create')
+      .mockReturnValue(new Promise(() => undefined));
+    renderAt();
+
+    fill('Gráficos');
+    fireEvent.click(screen.getByRole('button', { name: 'Criar rascunho' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Criando…' }));
+
+    expect(create).toHaveBeenCalledTimes(1);
+  });
+
   it('should ask for a title when there is none', async () => {
     renderAt();
 
