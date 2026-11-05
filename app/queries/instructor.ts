@@ -1,4 +1,9 @@
-import { infiniteQueryOptions, useInfiniteQuery } from '@tanstack/react-query';
+import {
+  infiniteQueryOptions,
+  queryOptions,
+  useInfiniteQuery,
+  useQuery,
+} from '@tanstack/react-query';
 
 import { InstructorService } from '~/services/InstructorService';
 
@@ -18,3 +23,13 @@ export const myCoursesQuery = infiniteQueryOptions({
 });
 
 export const useMyCourses = () => useInfiniteQuery(myCoursesQuery);
+
+export const managedCourseQuery = (courseId: string) =>
+  queryOptions({
+    queryKey: ['courses', 'teaching', 'course', courseId],
+    queryFn: ({ signal }) => InstructorService.get(courseId, signal),
+    staleTime: 30_000,
+  });
+
+export const useManagedCourse = (courseId: string) =>
+  useQuery(managedCourseQuery(courseId));
