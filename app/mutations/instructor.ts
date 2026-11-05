@@ -47,11 +47,18 @@ export const useUpdateCourse = (courseId: string) => {
   });
 };
 
+// A refusal for the course's status means it changed elsewhere (another tab): show what it is now.
+const refreshIfStale = (queryClient: QueryClient, courseId: string) => () =>
+  void queryClient.invalidateQueries({
+    queryKey: managedCourseQuery(courseId).queryKey,
+  });
+
 export const usePublishCourse = (courseId: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: () => InstructorService.publish(courseId),
+    onError: refreshIfStale(queryClient, courseId),
     onSuccess: (course) => {
       storeManagedCourse(queryClient, course);
     },
@@ -63,6 +70,7 @@ export const useArchiveCourse = (courseId: string) => {
 
   return useMutation({
     mutationFn: () => InstructorService.archive(courseId),
+    onError: refreshIfStale(queryClient, courseId),
     onSuccess: (course) => {
       storeManagedCourse(queryClient, course);
     },
@@ -74,6 +82,7 @@ export const useDeleteDraft = (courseId: string) => {
 
   return useMutation({
     mutationFn: () => InstructorService.deleteDraft(courseId),
+    onError: refreshIfStale(queryClient, courseId),
     onSuccess: () => {
       // Not removed: the edit page still observes it until it navigates away, and would refetch it.
       void queryClient.invalidateQueries({
