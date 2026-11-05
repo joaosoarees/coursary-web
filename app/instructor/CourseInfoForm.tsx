@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useId } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
+import { toast } from 'sonner';
 
 import { Button } from '~/components/ui/button';
 import {
@@ -19,9 +20,13 @@ import {
   DESCRIPTION_MAX,
 } from '~/instructor/courseInfoSchema';
 import { COURSE_ARCHIVED } from '~/instructor/instructorMessages';
+import { cn } from '~/lib/utils';
 import { ApiFailure } from '~/services/ApiFailure';
 
 const EMPTY: CourseInfoValues = { title: '', description: '' };
+
+// Read-only, not disabled: an archived course's text stays legible, selectable and reachable.
+const READ_ONLY = 'border-border bg-muted text-muted-foreground';
 
 export function CourseInfoForm({
   saved,
@@ -48,6 +53,11 @@ export function CourseInfoForm({
   const description = useWatch({ control: form.control, name: 'description' });
 
   const handleSubmit = form.handleSubmit(async (info) => {
+    if (saved && !isDirty) {
+      toast.message('Nenhuma alteração para salvar.');
+      return;
+    }
+
     try {
       await onSave(info);
     } catch (error) {
@@ -63,9 +73,6 @@ export function CourseInfoForm({
       noValidate
       className="flex flex-col gap-5"
     >
-      {errors.root?.server && (
-        <FormAlert>{errors.root.server.message}</FormAlert>
-      )}
       <FieldGroup className="gap-5">
         <Controller
           control={form.control}
@@ -76,12 +83,12 @@ export function CourseInfoForm({
               <Input
                 {...field}
                 id={`${id}-title`}
-                disabled={readOnly}
+                readOnly={readOnly}
                 aria-invalid={fieldState.invalid}
-                aria-describedby={`${id}-title-hint`}
-                className="h-11 md:text-base"
+                aria-describedby={readOnly ? undefined : `${id}-title-hint`}
+                className={cn('h-11 md:text-base', readOnly && READ_ONLY)}
               />
-              {fieldState.invalid ? (
+              {readOnly ? null : fieldState.invalid ? (
                 <FieldError
                   id={`${id}-title-hint`}
                   errors={[fieldState.error]}
@@ -109,30 +116,43 @@ export function CourseInfoForm({
               <Textarea
                 {...field}
                 id={`${id}-description`}
-                disabled={readOnly}
+                readOnly={readOnly}
                 rows={7}
                 maxLength={DESCRIPTION_MAX}
                 aria-invalid={fieldState.invalid}
-                aria-describedby={`${id}-description-count`}
-                className="min-h-42 md:text-base"
+                aria-describedby={
+                  readOnly ? undefined : `${id}-description-count`
+                }
+                className={cn(
+                  'min-h-42 md:text-base',
+                  readOnly && `${READ_ONLY} resize-none`,
+                )}
               />
               <FieldError errors={[fieldState.error]} />
-              <span
-                id={`${id}-description-count`}
-                className="text-right text-sm text-muted-foreground"
-              >
-                {description.length} de {DESCRIPTION_MAX}
-              </span>
+              {!readOnly && (
+                <span
+                  id={`${id}-description-count`}
+                  className="text-right text-sm text-muted-foreground"
+                >
+                  {description.length} de {DESCRIPTION_MAX}
+                </span>
+              )}
             </Field>
           )}
         />
       </FieldGroup>
+      {/* Beside the button, so a phone that sent the form from the bottom sees the answer. */}
+      {errors.root?.server && (
+        <FormAlert>{errors.root.server.message}</FormAlert>
+      )}
       {!readOnly && (
         <div className="flex flex-wrap justify-end gap-3">
           {actions}
+          {/* Not disabled while saving: a disabled button drops the keyboard focus to the page. */}
           <Button
             type="submit"
-            disabled={isSubmitting || (saved !== undefined && !isDirty)}
+            aria-disabled={isSubmitting}
+            className="aria-disabled:cursor-progress aria-disabled:opacity-50"
           >
             {isSubmitting ? pendingLabel : submitLabel}
           </Button>
