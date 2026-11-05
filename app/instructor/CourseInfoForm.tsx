@@ -181,7 +181,7 @@ export function CourseInfoForm({
           <Button
             type="submit"
             aria-disabled={isSubmitting}
-            className="aria-disabled:cursor-progress aria-disabled:opacity-50"
+            className="aria-disabled:cursor-progress"
           >
             {isSubmitting ? pendingLabel : submitLabel}
           </Button>
