@@ -41,21 +41,19 @@ export function MyCourseCard({ course }: { course: MyCourse }) {
         coverUrl={course.coverUrl}
         className="rounded-sm md:w-44 md:shrink-0"
       />
+      {/* The title comes first in the markup, so the link's name starts with it. */}
       <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-        <CourseStatusBadge status={course.status} />
         <h2 className="text-lg leading-snug font-bold group-hover:underline group-hover:underline-offset-4">
           {course.title}
         </h2>
-        <span className="text-muted-foreground">
+        <CourseStatusBadge status={course.status} className="-order-1" />
+        <span className="text-pretty text-muted-foreground">
           {MyCourseFacts.of(course)}
         </span>
       </div>
-      <span
-        aria-hidden="true"
-        className="hidden items-center gap-1.5 pr-2 font-bold text-link md:inline-flex"
-      >
+      <span className="sr-only md:not-sr-only md:inline-flex md:items-center md:gap-1.5 md:pr-2 md:font-bold md:text-link">
         Editar
-        <ChevronRight className="size-4" />
+        <ChevronRight aria-hidden="true" className="size-4" />
       </span>
     </Link>
   );
