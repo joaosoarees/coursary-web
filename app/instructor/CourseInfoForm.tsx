@@ -66,6 +66,9 @@ export function CourseInfoForm({
 
     try {
       await onSave(info);
+      // The answer can equal the saved course (only spaces were trimmed), and then `values` does
+      // not reset the form: reset it here, or it stays dirty.
+      form.reset(info);
     } catch (error) {
       form.setError('root.server', {
         message: ApiFailure.message(error, { COURSE_ARCHIVED }),
@@ -75,7 +78,15 @@ export function CourseInfoForm({
 
   return (
     <form
-      onSubmit={(event) => void handleSubmit(event)}
+      onSubmit={(event) => {
+        // The button stays focusable while saving, so Enter or a second click must not resend.
+        if (form.formState.isSubmitting) {
+          event.preventDefault();
+          return;
+        }
+
+        void handleSubmit(event);
+      }}
       noValidate
       className="flex flex-col gap-5"
     >
