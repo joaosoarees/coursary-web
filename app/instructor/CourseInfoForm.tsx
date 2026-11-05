@@ -3,6 +3,7 @@ import { useId } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
 
+import { LeaveConfirmation } from '~/components/LeaveConfirmation';
 import { Button } from '~/components/ui/button';
 import {
   Field,
@@ -14,6 +15,7 @@ import {
 import { Input } from '~/components/ui/input';
 import { Textarea } from '~/components/ui/textarea';
 import { FormAlert } from '~/components/visitor/FormMessage';
+import { useUnsavedChangesWarning } from '~/hooks/useUnsavedChangesWarning';
 import {
   courseInfoSchema,
   type CourseInfoValues,
@@ -51,6 +53,10 @@ export function CourseInfoForm({
   });
   const { errors, isSubmitting, isDirty } = form.formState;
   const description = useWatch({ control: form.control, name: 'description' });
+  // Off while saving, so the navigation that follows a save is not held back.
+  const unsaved = isDirty && !isSubmitting;
+
+  useUnsavedChangesWarning(unsaved);
 
   const handleSubmit = form.handleSubmit(async (info) => {
     if (saved && !isDirty) {
@@ -73,6 +79,7 @@ export function CourseInfoForm({
       noValidate
       className="flex flex-col gap-5"
     >
+      <LeaveConfirmation when={unsaved} />
       <FieldGroup className="gap-5">
         <Controller
           control={form.control}
