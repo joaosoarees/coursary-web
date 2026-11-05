@@ -106,6 +106,26 @@ describe('the app shell', () => {
     );
   });
 
+  it('should show my courses to an instructor only', async () => {
+    const { unmount } = renderShell();
+    await screen.findByText('Ana Souza');
+
+    expect(screen.queryByRole('link', { name: 'Meus cursos' })).toBeNull();
+
+    unmount();
+    vi.spyOn(AccountService, 'getMe').mockResolvedValue({
+      id: 'account-2',
+      name: 'Rafael Tavares',
+      email: 'rafael@exemplo.com',
+      role: 'instructor',
+    });
+    renderShell();
+
+    expect(
+      await screen.findByRole('link', { name: 'Meus cursos' }),
+    ).toHaveAttribute('href', '/instrutor/cursos');
+  });
+
   it('should collapse the sidebar and remember it', async () => {
     const { unmount } = renderShell();
     await screen.findByRole('heading', { name: 'Catálogo' });

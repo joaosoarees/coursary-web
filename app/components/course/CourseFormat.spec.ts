@@ -9,3 +9,10 @@ describe('CourseFormat.duration', () => {
     expect(CourseFormat.duration(134)).toBe('2 h 14 min');
   });
 });
+
+describe('CourseFormat.count', () => {
+  it('should group thousands and pick the singular for one', () => {
+    expect(CourseFormat.count(1, 'aluno', 'alunos')).toBe('1 aluno');
+    expect(CourseFormat.count(1284, 'aluno', 'alunos')).toBe('1.284 alunos');
+  });
+});
