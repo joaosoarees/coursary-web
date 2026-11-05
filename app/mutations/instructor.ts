@@ -46,3 +46,51 @@ export const useUpdateCourse = (courseId: string) => {
     },
   });
 };
+
+export const usePublishCourse = (courseId: string) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => InstructorService.publish(courseId),
+    onSuccess: (course) => {
+      storeManagedCourse(queryClient, course);
+    },
+  });
+};
+
+export const useArchiveCourse = (courseId: string) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => InstructorService.archive(courseId),
+    onSuccess: (course) => {
+      storeManagedCourse(queryClient, course);
+    },
+  });
+};
+
+export const useDeleteDraft = (courseId: string) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => InstructorService.deleteDraft(courseId),
+    onSuccess: () => {
+      // Not removed: the edit page still observes it until it navigates away, and would refetch it.
+      void queryClient.invalidateQueries({
+        queryKey: managedCourseQuery(courseId).queryKey,
+        refetchType: 'none',
+      });
+      queryClient.setQueryData(myCoursesQuery.queryKey, (list) =>
+        list
+          ? {
+              ...list,
+              pages: list.pages.map((page) => ({
+                ...page,
+                items: page.items.filter((course) => course.id !== courseId),
+              })),
+            }
+          : list,
+      );
+    },
+  });
+};
