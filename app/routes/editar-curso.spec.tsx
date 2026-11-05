@@ -39,9 +39,6 @@ describe('edit course', () => {
         name: 'Gráficos que contam uma história',
       }),
     ).toBeVisible();
-    expect(
-      screen.getByRole('button', { name: 'Salvar alterações' }),
-    ).toBeDisabled();
     expect(screen.getByRole('button', { name: /Enviar capa/ })).toBeVisible();
 
     fireEvent.change(screen.getByLabelText('Título'), {
@@ -56,9 +53,9 @@ describe('edit course', () => {
       }),
     ).toBeVisible();
     await waitFor(() => {
-      expect(
-        screen.getByRole('button', { name: 'Salvar alterações' }),
-      ).toBeDisabled();
+      expect(screen.getByLabelText('Título')).toHaveValue(
+        'Gráficos com propósito',
+      );
     });
     expect(update).toHaveBeenCalledWith('c1', {
       title: 'Gráficos com propósito',
@@ -66,18 +63,37 @@ describe('edit course', () => {
     });
   });
 
+  it('should not send an unchanged form', async () => {
+    vi.spyOn(InstructorService, 'get').mockResolvedValue(draft);
+    const update = vi.spyOn(InstructorService, 'update');
+    renderAt();
+
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Salvar alterações' }),
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('button', { name: 'Salvar alterações' }),
+      ).not.toHaveAttribute('aria-disabled', 'true');
+    });
+    expect(update).not.toHaveBeenCalled();
+  });
+
   it('should show an archived course read-only', async () => {
     vi.spyOn(InstructorService, 'get').mockResolvedValue({
       ...draft,
       status: 'ARCHIVED',
+      enrollmentCount: 96,
       publishedAt: '2026-03-03T12:00:00.000Z',
     });
     renderAt();
 
     expect(await screen.findByRole('note')).toHaveTextContent(
-      'não pode mais ser editado',
+      'os 96 alunos matriculados continuam com acesso',
     );
-    expect(screen.getByLabelText('Título')).toBeDisabled();
+    expect(screen.getByLabelText('Título')).toHaveAttribute('readonly');
+    expect(screen.queryByText(/de 5000/)).toBeNull();
     expect(
       screen.queryByRole('button', { name: 'Salvar alterações' }),
     ).toBeNull();
