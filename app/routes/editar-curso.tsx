@@ -106,7 +106,7 @@ function CourseEditor({ course }: { course: ManagedCourse }) {
           </p>
         </div>
       )}
-      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
         <section
           aria-labelledby="informacoes"
           className="flex flex-col gap-5 rounded-lg border bg-card p-5 text-card-foreground shadow-sm md:p-7"
