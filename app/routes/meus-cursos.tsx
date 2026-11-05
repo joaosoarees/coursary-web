@@ -37,7 +37,7 @@ export default function MyCoursesPage() {
   const list = useMyCourses();
   const courses = list.data?.pages.flatMap((page) => page.items) ?? NO_COURSES;
   // Hidden until the list answers, so it never appears and then gives way to the empty state.
-  const hasCourses = courses.length > 0 || list.isLoadingError;
+  const showNewCourse = courses.length > 0 || list.isLoadingError;
 
   return (
     <section className="flex flex-col gap-7">
@@ -45,7 +45,7 @@ export default function MyCoursesPage() {
         title="Meus cursos"
         description="Os cursos que você criou, do rascunho ao arquivado."
         actions={
-          hasCourses && (
+          showNewCourse && (
             <Button asChild>
               <Link to="/instrutor/cursos/novo">
                 <Plus aria-hidden="true" />
