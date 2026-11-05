@@ -24,10 +24,7 @@ export function CourseStatusBadge({
   const look = LOOKS[status];
 
   return (
-    <Badge
-      variant="outline"
-      className={cn('text-sm', look.className, className)}
-    >
+    <Badge variant="outline" className={cn(look.className, className)}>
       {look.label}
     </Badge>
   );
