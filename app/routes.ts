@@ -25,6 +25,7 @@ export default [
     route('perfil', 'routes/perfil.tsx'),
     layout('routes/teaching-layout.tsx', [
       route('instrutor/cursos', 'routes/meus-cursos.tsx'),
+      route('instrutor/cursos/novo', 'routes/novo-curso.tsx'),
     ]),
     ...(import.meta.env.DEV ? [route('design', 'routes/design.tsx')] : []),
     route('*', 'routes/not-found.tsx'),
