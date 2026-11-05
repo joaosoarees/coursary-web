@@ -52,8 +52,8 @@ export function CoverCard({
           </div>
         )}
       </div>
-      {busy && (
-        <div className="flex flex-col gap-1.5">
+      <div className="flex flex-col gap-1.5">
+        {phase.step === 'uploading' && (
           <div
             role="progressbar"
             aria-label="Envio da capa"
@@ -67,13 +67,19 @@ export function CoverCard({
               style={{ width: `${String(percent)}%` }}
             />
           </div>
-          <p role="status" className="text-sm text-muted-foreground">
-            {phase.step === 'uploading'
-              ? `Enviando… ${String(percent)}%`
-              : 'Preparando a capa. Leva alguns segundos.'}
-          </p>
-        </div>
-      )}
+        )}
+        {/* Mounted before it has text, so the first phase is announced; the percent is not. */}
+        <p role="status" className="text-sm text-muted-foreground">
+          {phase.step === 'uploading'
+            ? 'Enviando a capa…'
+            : phase.step === 'processing'
+              ? 'Preparando a capa. Leva alguns segundos.'
+              : ''}
+          {phase.step === 'uploading' && (
+            <span aria-hidden="true"> {percent}%</span>
+          )}
+        </p>
+      </div>
       {problem && <FormAlert>{problem}</FormAlert>}
       {!readOnly && (
         <>
@@ -94,11 +100,17 @@ export function CoverCard({
             }}
           />
           <div className="flex flex-col items-start gap-2">
+            {/* Not disabled while busy: the button keeps the focus it had when the picker closed. */}
             <Button
               variant="outline"
-              disabled={busy}
+              aria-disabled={busy}
               aria-describedby={hintId}
-              onClick={() => input.current?.click()}
+              className="aria-disabled:cursor-progress aria-disabled:opacity-50"
+              onClick={() => {
+                if (!busy) {
+                  input.current?.click();
+                }
+              }}
             >
               <ImageUp aria-hidden="true" />
               {phase.step === 'uploading'
