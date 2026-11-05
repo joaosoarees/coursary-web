@@ -99,7 +99,7 @@ export function CourseInfoForm({
         void handleSubmit(event);
       }}
       noValidate
-      className="flex flex-col gap-5"
+      className="flex flex-1 flex-col gap-5"
     >
       <LeaveConfirmation when={unsaved} />
       <FieldGroup className="gap-5">
@@ -175,7 +175,7 @@ export function CourseInfoForm({
         <FormAlert>{errors.root.server.message}</FormAlert>
       )}
       {!readOnly && (
-        <div className="flex flex-wrap justify-end gap-3">
+        <div className="mt-auto flex flex-wrap justify-end gap-3">
           {actions}
           {/* Not disabled while saving: a disabled button drops the keyboard focus to the page. */}
           <Button
