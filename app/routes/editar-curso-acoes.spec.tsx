@@ -58,6 +58,24 @@ describe('course actions', () => {
     );
   });
 
+  it('should hold publishing and archiving while there are unsaved changes', async () => {
+    vi.spyOn(InstructorService, 'get').mockResolvedValue(published);
+    renderAt();
+
+    fireEvent.change(await screen.findByLabelText('Título'), {
+      target: { value: 'Mudado' },
+    });
+    const archive = screen.getByRole('button', { name: 'Arquivar' });
+
+    await waitFor(() => {
+      expect(archive).toHaveAccessibleDescription(
+        'Salve as alterações antes de arquivar.',
+      );
+    });
+    fireEvent.click(archive);
+    expect(screen.queryByRole('dialog')).toBeNull();
+  });
+
   it('should publish a draft after confirming', async () => {
     vi.spyOn(InstructorService, 'get').mockResolvedValue(draft);
     const publish = vi
