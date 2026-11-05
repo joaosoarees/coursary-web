@@ -2,6 +2,7 @@ import { noop } from '@tanstack/react-query';
 import { Archive } from 'lucide-react';
 import { toast } from 'sonner';
 
+import { CourseFormat } from '~/components/course/CourseFormat';
 import { ErrorState } from '~/components/ErrorState';
 import { CourseStatusBadge } from '~/components/instructor/CourseStatusBadge';
 import { MyCourseFacts } from '~/components/instructor/MyCourseCard';
@@ -86,9 +87,12 @@ function CourseEditor({ course }: { course: ManagedCourse }) {
         >
           <Archive aria-hidden="true" className="mt-0.5 size-5 shrink-0" />
           <p>
-            Arquivado: o curso saiu do catálogo e da busca, e os alunos
-            matriculados continuam com acesso. Um curso arquivado não pode mais
-            ser editado nem publicado de novo.
+            Arquivado: o curso saiu do catálogo e da busca, e{' '}
+            {course.enrollmentCount === 1
+              ? 'o aluno matriculado continua'
+              : `os ${CourseFormat.count(course.enrollmentCount, 'aluno', 'alunos')} matriculados continuam`}{' '}
+            com acesso. Um curso arquivado não pode mais ser editado nem
+            publicado de novo.
           </p>
         </div>
       )}
