@@ -5,6 +5,7 @@ import {
 } from '@tanstack/react-query';
 
 import { managedCourseQuery, myCoursesQuery } from '~/queries/instructor';
+import { ApiFailure } from '~/services/ApiFailure';
 import {
   type CourseInfo,
   InstructorService,
@@ -47,11 +48,22 @@ export const useUpdateCourse = (courseId: string) => {
   });
 };
 
-// A refusal for the course's status means it changed elsewhere (another tab): show what it is now.
-const refreshIfStale = (queryClient: QueryClient, courseId: string) => () =>
-  void queryClient.invalidateQueries({
-    queryKey: managedCourseQuery(courseId).queryKey,
-  });
+// These refusals mean the course changed elsewhere (another tab): show what it is now.
+const STALE = new Set([
+  'COURSE_ARCHIVED',
+  'COURSE_EMPTY',
+  'COURSE_NOT_DRAFT',
+  'COURSE_NOT_PUBLISHED',
+]);
+
+const refreshIfStale =
+  (queryClient: QueryClient, courseId: string) => (error: Error) => {
+    if (STALE.has(ApiFailure.codeOf(error) ?? '')) {
+      void queryClient.invalidateQueries({
+        queryKey: managedCourseQuery(courseId).queryKey,
+      });
+    }
+  };
 
 export const usePublishCourse = (courseId: string) => {
   const queryClient = useQueryClient();
