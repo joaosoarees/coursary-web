@@ -83,16 +83,15 @@ function CourseEditor({ course }: { course: ManagedCourse }) {
       {archived && (
         <div
           role="note"
-          className="flex max-w-prose items-start gap-3 rounded-lg border border-highlight-border bg-highlight px-5 py-4 text-highlight-foreground"
+          className="flex max-w-prose items-start gap-3 rounded-lg border bg-muted px-5 py-4"
         >
           <Archive aria-hidden="true" className="mt-0.5 size-5 shrink-0" />
           <p>
-            Arquivado: o curso saiu do catálogo e da busca, e{' '}
+            Saiu do catálogo e da busca;{' '}
             {course.enrollmentCount === 1
               ? 'o aluno matriculado continua'
               : `os ${CourseFormat.count(course.enrollmentCount, 'aluno', 'alunos')} matriculados continuam`}{' '}
-            com acesso. Um curso arquivado não pode mais ser editado nem
-            publicado de novo.
+            com acesso. Não pode mais ser editado nem publicado.
           </p>
         </div>
       )}
