@@ -9,6 +9,7 @@ import { MyCourseFacts } from '~/components/instructor/MyCourseCard';
 import { LoadingNote } from '~/components/LoadingNote';
 import { Skeleton } from '~/components/ui/skeleton';
 import { BackToMyCourses } from '~/instructor/BackToMyCourses';
+import { CourseActions } from '~/instructor/CourseActions';
 import { CourseInfoForm } from '~/instructor/CourseInfoForm';
 import { CoverCard } from '~/instructor/CoverCard';
 import { queryClient } from '~/lib/queryClient';
@@ -73,12 +74,15 @@ function CourseEditor({ course }: { course: ManagedCourse }) {
 
   return (
     <>
-      <header className="flex flex-col gap-2">
-        <CourseStatusBadge status={course.status} />
-        <h1 className="font-display text-3xl leading-tight font-bold tracking-tight text-balance md:text-4xl">
-          {course.title}
-        </h1>
-        <p className="text-muted-foreground">{MyCourseFacts.of(course)}</p>
+      <header className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
+        <div className="flex min-w-0 flex-[1_1_26rem] flex-col gap-2">
+          <CourseStatusBadge status={course.status} />
+          <h1 className="font-display text-3xl leading-tight font-bold tracking-tight text-balance md:text-4xl">
+            {course.title}
+          </h1>
+          <p className="text-muted-foreground">{MyCourseFacts.of(course)}</p>
+        </div>
+        <CourseActions course={course} />
       </header>
       {archived && (
         <div
