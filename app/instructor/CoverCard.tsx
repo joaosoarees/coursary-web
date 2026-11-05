@@ -105,7 +105,7 @@ export function CoverCard({
               variant="outline"
               aria-disabled={busy}
               aria-describedby={hintId}
-              className="aria-disabled:cursor-progress aria-disabled:opacity-50"
+              className="aria-disabled:cursor-progress"
               onClick={() => {
                 if (!busy) {
                   input.current?.click();
