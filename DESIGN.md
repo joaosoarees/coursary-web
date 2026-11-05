@@ -357,7 +357,7 @@ Firmes, legíveis e marcados a giz: cada controle tem tamanho de dedo, bordas qu
 - **Shape:** cantos de 6 px; texto em Label (700, 1rem); ícone de 18 px com 8 px de vão.
 - **Primary:** Verde Lousa com texto Pó de Giz no claro, Giz Amarelo com texto Lousa Noturna no escuro; 44 px de altura, 20 px laterais.
 - **Hover / Focus:** todo hover muda o fundo ou a borda (primário para Verde Lousa Claro, destrutivo para Tijolo Queimado, contornado para borda no anel e fundo Sálvia Pálida, fantasma e link para Sálvia Pálida, este também sublinhando). Foco por teclado: contorno de 2 px na cor do anel, afastado 2 px. Desabilitado: 50% de opacidade e cursor de bloqueio, sem hover.
-- **Secondary / Outline / Ghost / Destructive / Link:** secundário em Névoa de Giz; contornado em folha com borda Cinza-Musgo; fantasma sem fundo até o hover; destrutivo em Tijolo; link em Verde Folha (Giz Amarelo no escuro) com a mesma altura dos outros do seu tamanho.
+- **Secondary / Outline / Ghost / Destructive / Link:** secundário em Névoa de Giz; contornado em folha com borda Cinza-Musgo; fantasma sem fundo até o hover; destrutivo em Tijolo; destrutivo contornado (o gatilho de uma ação sem volta, que confirma num diálogo) em folha com borda e texto Tijolo; link em Verde Folha (Giz Amarelo no escuro) com a mesma altura dos outros do seu tamanho.
 - **Sizes:** padrão 44 px; pequeno 40 px com 16 px laterais; ícone 40 × 40 px.
 
 ### Chips (Badges)
@@ -397,6 +397,7 @@ Firmes, legíveis e marcados a giz: cada controle tem tamanho de dedo, bordas qu
 
 ### Estados
 - **Vazio:** bloco centralizado com borda tracejada em Cinza-Musgo, cantos de 6 px, 48 px de respiro vertical; ícone de 32 px em Verde Grafite, título em Title, descrição apagada e uma ação.
+- **Primeiro uso:** quando a pessoa ainda não criou nada ("Você ainda não criou nenhum curso"), o vazio vira uma lousa: bloco em Verde Lousa de até 720 px, alinhado à esquerda, com o traço de giz amarelo no topo, título em Headline em Giz Branco, descrição em Musgo Claro e uma única ação em Giz Amarelo. O tracejado fica para as listas que só estão vazias.
 - **Erro:** ícone de alerta em Tijolo ao lado de título e mensagem; na página inteira, título em Headline com "Tentar de novo" e "Ir para o início"; num bloco, um card com borda Cinza-Musgo e botão pequeno. A causa nunca aparece para quem lê.
 - **Carregando:** blocos em Sálvia Pálida com cantos de 6 px e pulso, no formato do conteúdo que virá.
 

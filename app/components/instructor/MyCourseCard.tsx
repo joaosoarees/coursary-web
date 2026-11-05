@@ -1,0 +1,77 @@
+import { ChevronRight } from 'lucide-react';
+import { Link } from 'react-router';
+
+import { CourseCover } from '~/components/course/CourseCover';
+import { CourseFormat } from '~/components/course/CourseFormat';
+import { CourseStatusBadge } from '~/components/instructor/CourseStatusBadge';
+import { Skeleton } from '~/components/ui/skeleton';
+import type { MyCourse } from '~/services/InstructorService';
+
+export class MyCourseFacts {
+  static of(course: MyCourse): string {
+    const lessons =
+      course.lessonCount === 0
+        ? 'Nenhuma aula ainda'
+        : CourseFormat.count(course.lessonCount, 'aula', 'aulas');
+
+    if (course.status === 'DRAFT' || !course.publishedAt) {
+      return `${lessons} · criado em ${CourseFormat.date(course.createdAt)}`;
+    }
+
+    const students = CourseFormat.count(
+      course.enrollmentCount,
+      'aluno',
+      'alunos',
+    );
+
+    if (course.status === 'ARCHIVED') {
+      return `${lessons} · ${students} · fora do catálogo`;
+    }
+
+    return `${lessons} · ${students} · publicado em ${CourseFormat.date(course.publishedAt)}`;
+  }
+}
+
+export function MyCourseCard({ course }: { course: MyCourse }) {
+  return (
+    <Link
+      to={`/instrutor/cursos/${course.id}`}
+      prefetch="intent"
+      className="group flex flex-col gap-5 rounded-md border bg-card p-3.5 shadow-sm transition-colors hover:border-ring focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:flex-row md:items-center"
+    >
+      <CourseCover
+        courseId={course.id}
+        title={course.title}
+        coverUrl={course.coverUrl}
+        className="rounded-sm md:w-44 md:shrink-0"
+      />
+      {/* The title comes first in the markup, so the link's name starts with it. */}
+      <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+        <h2 className="text-lg leading-snug font-bold group-hover:underline group-hover:underline-offset-4">
+          {course.title}
+        </h2>
+        <CourseStatusBadge status={course.status} className="-order-1" />
+        <span className="text-pretty text-muted-foreground">
+          {MyCourseFacts.of(course)}
+        </span>
+      </div>
+      <span className="sr-only md:not-sr-only md:inline-flex md:items-center md:gap-1.5 md:pr-2 md:font-bold md:text-link">
+        Editar
+        <ChevronRight aria-hidden="true" className="size-4" />
+      </span>
+    </Link>
+  );
+}
+
+export function MyCourseCardSkeleton() {
+  return (
+    <div className="flex flex-col gap-5 rounded-md border p-3.5 md:flex-row md:items-center">
+      <Skeleton className="aspect-video w-full md:w-44 md:shrink-0" />
+      <div className="flex flex-1 flex-col gap-3">
+        <Skeleton className="h-5 w-20" />
+        <Skeleton className="h-5 w-2/3" />
+        <Skeleton className="h-4 w-1/3" />
+      </div>
+    </div>
+  );
+}

@@ -1,6 +1,7 @@
-import { GraduationCap, Library } from 'lucide-react';
+import { GraduationCap, Library, Presentation } from 'lucide-react';
 import { Link, useLocation } from 'react-router';
 
+import { canTeach } from '~/auth/TeachingGuard';
 import { AccountMenu } from '~/components/AccountMenu';
 import { ChalkStroke } from '~/components/ChalkStroke';
 import {
@@ -15,6 +16,7 @@ import {
   useSidebar,
 } from '~/components/ui/sidebar';
 import { Wordmark } from '~/components/Wordmark';
+import { useMe } from '~/queries/me';
 import { ThemeCycleButton, ThemeSwitcher } from '~/theme/ThemeSwitcher';
 
 const within = (pathname: string, base: string) =>
@@ -35,6 +37,14 @@ const NAV = [
     current: (pathname: string) =>
       within(pathname, '/minhas-matriculas') ? 'page' : undefined,
   },
+  {
+    to: '/instrutor/cursos',
+    label: 'Meus cursos',
+    Icon: Presentation,
+    teaching: true,
+    current: (pathname: string) =>
+      within(pathname, '/instrutor/cursos') ? 'page' : undefined,
+  },
 ];
 
 // Every icon keeps its place in both widths, so collapsing only animates the width and fades the
@@ -50,6 +60,9 @@ export function AppSidebar() {
   const { state, isMobile, setOpenMobile } = useSidebar();
   const { pathname } = useLocation();
   const collapsed = state === 'collapsed' && !isMobile;
+  const me = useMe();
+  const teaches = me.data ? canTeach(me.data.role) : false;
+  const items = NAV.filter((item) => !item.teaching || teaches);
 
   return (
     <Sidebar collapsible="icon" className="border-none">
@@ -62,7 +75,7 @@ export function AppSidebar() {
         <SidebarGroup className="p-0">
           <nav aria-label="Principal">
             <SidebarMenu>
-              {NAV.map(({ to, label, Icon, current }) => (
+              {items.map(({ to, label, Icon, current }) => (
                 <SidebarMenuItem key={to}>
                   <SidebarMenuButton asChild tooltip={label}>
                     <Link

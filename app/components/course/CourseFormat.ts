@@ -3,6 +3,9 @@ const RATING = new Intl.NumberFormat('pt-BR', {
   maximumFractionDigits: 1,
 });
 
+// Without 'always', pt-BR leaves four-digit numbers ungrouped in browsers (1284), not in Node.
+const INTEGER = new Intl.NumberFormat('pt-BR', { useGrouping: 'always' });
+
 const DATE = new Intl.DateTimeFormat('pt-BR', {
   day: 'numeric',
   month: 'short',
@@ -15,7 +18,7 @@ export class CourseFormat {
   }
 
   static count(count: number, one: string, many: string): string {
-    return `${String(count)} ${count === 1 ? one : many}`;
+    return `${INTEGER.format(count)} ${count === 1 ? one : many}`;
   }
 
   static duration(minutes: number): string {

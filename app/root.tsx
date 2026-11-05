@@ -84,7 +84,7 @@ export default function App() {
         <AuthProvider>
           <Outlet />
         </AuthProvider>
-        <Toaster position="top-right" />
+        <Toaster position="top-right" containerAriaLabel="Notificações" />
       </ThemeProvider>
       <ReactQueryDevtools />
     </QueryClientProvider>
