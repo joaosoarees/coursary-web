@@ -25,8 +25,6 @@ import type { ManagedCourse } from '~/services/InstructorService';
 
 const NEEDS_A_LESSON = 'Adicione ao menos uma aula para publicar.';
 
-const BLOCKED = 'aria-disabled:cursor-not-allowed aria-disabled:opacity-50';
-
 type Action = 'publish' | 'archive' | 'delete';
 
 export function CourseActions({
@@ -81,7 +79,6 @@ export function CourseActions({
             <Button
               aria-disabled={blockedBy !== undefined}
               aria-describedby={blockedBy ? hintId : undefined}
-              className={BLOCKED}
               onClick={(event) => {
                 if (!blockedBy) {
                   ask('publish', event.currentTarget);
@@ -102,7 +99,6 @@ export function CourseActions({
             variant="destructive-outline"
             aria-disabled={blockedBy !== undefined}
             aria-describedby={blockedBy ? hintId : undefined}
-            className={BLOCKED}
             onClick={(event) => {
               if (!blockedBy) {
                 ask('archive', event.currentTarget);
@@ -271,11 +267,7 @@ function DeleteDialog({
       description={
         <>
           O rascunho <strong className="text-foreground">{course.title}</strong>{' '}
-          será apagado com a capa
-          {course.lessonCount === 0
-            ? ''
-            : ` e ${course.lessonCount === 1 ? 'a aula' : `as ${CourseFormat.count(course.lessonCount, 'aula', 'aulas')}`}`}
-          . Isso não pode ser desfeito.
+          será apagado{DraftContents.of(course)}. Isso não pode ser desfeito.
         </>
       }
       confirm={{
@@ -296,6 +288,22 @@ function DeleteDialog({
       }}
     />
   );
+}
+
+class DraftContents {
+  // " com a capa e as 12 aulas", " com a aula", or nothing for an empty draft.
+  static of(course: ManagedCourse): string {
+    const parts = [
+      course.coverUrl ? 'a capa' : undefined,
+      course.lessonCount === 0
+        ? undefined
+        : course.lessonCount === 1
+          ? 'a aula'
+          : `as ${CourseFormat.count(course.lessonCount, 'aula', 'aulas')}`,
+    ].filter((part) => part !== undefined);
+
+    return parts.length === 0 ? '' : ` com ${parts.join(' e ')}`;
+  }
 }
 
 function ConfirmDialog({

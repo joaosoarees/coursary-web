@@ -159,7 +159,7 @@ describe('course actions', () => {
     });
     fireEvent.click(screen.getByRole('button', { name: 'Apagar rascunho' }));
     expect(dialog()).toHaveTextContent(
-      'será apagado com a capa e as 12 aulas. Isso não pode ser desfeito.',
+      'será apagado com as 12 aulas. Isso não pode ser desfeito.',
     );
     fireEvent.click(
       within(dialog()).getByRole('button', { name: 'Apagar rascunho' }),
