@@ -137,4 +137,30 @@ describe('LessonOutline', () => {
     expect(screen.getByText('3 aulas · 2 módulos')).toBeInTheDocument();
     expect(screen.queryByText(/concluídas/)).toBeNull();
   });
+
+  it('should show an empty module in a preview as a heading that does not open', () => {
+    const Stub = createRoutesStub([
+      {
+        path: '/previa',
+        Component: () => (
+          <LessonOutline
+            courseId="c1"
+            modules={[
+              ...modules,
+              { id: 'm3', title: 'Em breve', position: 2, lessons: [] },
+            ]}
+            currentLessonId="l2"
+            completedLessonIds={[]}
+            preview
+          />
+        ),
+      },
+    ]);
+    render(<Stub initialEntries={['/previa']} />);
+
+    expect(
+      screen.getByRole('heading', { level: 3, name: /3\. Em breve/ }),
+    ).toHaveTextContent('0 aulas');
+    expect(screen.queryByRole('button', { name: /Em breve/ })).toBeNull();
+  });
 });
