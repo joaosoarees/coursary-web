@@ -69,8 +69,11 @@ export class S3Part {
       xhr.onerror = () => {
         reject(new S3PartError(0, ''));
       };
+      // Aborted by the browser rather than the page: no answer, like a dropped connection.
       xhr.onabort = () => {
-        reject(signal.reason as Error);
+        reject(
+          signal.aborted ? (signal.reason as Error) : new S3PartError(0, ''),
+        );
       };
       // One listener per request, removed when it ends: a file can have a hundred parts.
       xhr.onloadend = () => {
