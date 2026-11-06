@@ -192,19 +192,21 @@ export function LessonView({
           )
         }
       />
-      <ReviewDialog
-        courseId={outline.courseId}
-        courseTitle={outline.title}
-        review={null}
-        finished
-        open={suggestReview}
-        onOpenChange={setSuggestReview}
-        // The box that opened it went away with the last lesson: land on the review button.
-        onCloseAutoFocus={(event) => {
-          event.preventDefault();
-          reviewButton.current?.focus();
-        }}
-      />
+      {!preview && (
+        <ReviewDialog
+          courseId={outline.courseId}
+          courseTitle={outline.title}
+          review={null}
+          finished
+          open={suggestReview}
+          onOpenChange={setSuggestReview}
+          // The box that opened it went away with the last lesson: land on the review button.
+          onCloseAutoFocus={(event) => {
+            event.preventDefault();
+            reviewButton.current?.focus();
+          }}
+        />
+      )}
     </article>
   );
 }
