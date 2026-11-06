@@ -85,6 +85,9 @@ describe('edit lesson', () => {
       screen.getByRole('heading', { level: 1, name: 'Barras ou linhas?' }),
     ).toBeVisible();
     expect(
+      screen.getByRole('link', { name: 'Ver como aluno' }),
+    ).toHaveAttribute('href', '/instrutor/cursos/c1/aulas/l2/previa');
+    expect(
       screen.getByRole('textbox', { name: 'Texto da aula (opcional)' }),
     ).toHaveValue('## A pergunta');
 

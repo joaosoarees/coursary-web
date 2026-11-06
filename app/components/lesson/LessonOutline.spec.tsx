@@ -109,4 +109,58 @@ describe('LessonOutline', () => {
     fireEvent.click(toggle);
     expect(toggle).toHaveAttribute('aria-expanded', 'true');
   });
+
+  it('should show a preview with no progress and its own lesson links', () => {
+    const Stub = createRoutesStub([
+      {
+        path: '/instrutor/cursos/:id/aulas/:aulaId/previa',
+        Component: () => (
+          <LessonOutline
+            courseId="c1"
+            modules={modules}
+            currentLessonId="l2"
+            completedLessonIds={[]}
+            preview
+            lessonPath={(id) => `/instrutor/cursos/c1/aulas/${id}/previa`}
+          />
+        ),
+      },
+    ]);
+    render(<Stub initialEntries={['/instrutor/cursos/c1/aulas/l2/previa']} />);
+
+    expect(
+      screen.getByRole('link', { name: /Seu primeiro notebook/ }),
+    ).toHaveAttribute('href', '/instrutor/cursos/c1/aulas/l2/previa');
+    expect(
+      screen.getByRole('button', { name: /1\. Primeiros passos/ }),
+    ).toHaveTextContent('2 aulas');
+    expect(screen.getByText('3 aulas · 2 módulos')).toBeInTheDocument();
+    expect(screen.queryByText(/concluídas/)).toBeNull();
+  });
+
+  it('should show an empty module in a preview as a heading that does not open', () => {
+    const Stub = createRoutesStub([
+      {
+        path: '/previa',
+        Component: () => (
+          <LessonOutline
+            courseId="c1"
+            modules={[
+              ...modules,
+              { id: 'm3', title: 'Em breve', position: 2, lessons: [] },
+            ]}
+            currentLessonId="l2"
+            completedLessonIds={[]}
+            preview
+          />
+        ),
+      },
+    ]);
+    render(<Stub initialEntries={['/previa']} />);
+
+    expect(
+      screen.getByRole('heading', { level: 3, name: /3\. Em breve/ }),
+    ).toHaveTextContent('0 aulas');
+    expect(screen.queryByRole('button', { name: /Em breve/ })).toBeNull();
+  });
 });

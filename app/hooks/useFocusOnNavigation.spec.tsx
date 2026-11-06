@@ -54,4 +54,22 @@ describe('useFocusOnNavigation', () => {
 
     expect(screen.getByRole('main')).toHaveFocus();
   });
+
+  it('should move focus when a link mounts this shell fresh', async () => {
+    const router = createMemoryRouter(
+      [
+        { path: '/editor', element: <p>editor</p> },
+        {
+          Component: Shell,
+          children: [{ path: '/previa', element: <p>prévia</p> }],
+        },
+      ],
+      { initialEntries: ['/editor'] },
+    );
+    render(<RouterProvider router={router} />);
+
+    await act(() => router.navigate('/previa'));
+
+    expect(screen.getByRole('main')).toHaveFocus();
+  });
 });

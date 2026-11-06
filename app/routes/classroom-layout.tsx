@@ -1,5 +1,11 @@
 import { useEffect } from 'react';
-import { Outlet, useLocation, useNavigate, useParams } from 'react-router';
+import {
+  Outlet,
+  useLocation,
+  useMatch,
+  useNavigate,
+  useParams,
+} from 'react-router';
 
 import { AuthGuard } from '~/auth/AuthGuard';
 import { ErrorState } from '~/components/ErrorState';
@@ -19,14 +25,20 @@ function Classroom({ children }: { children: React.ReactNode }) {
 function ClassroomFrame({ children }: { children: React.ReactNode }) {
   const { id = '' } = useParams();
   const outline = useOutline(id);
+  const preview = useMatch('/instrutor/cursos/:id/aulas/:aulaId/previa');
   // An archived course has no public page; its students reach it from their enrollments.
-  const back =
-    outline.data && outline.data.status !== 'PUBLISHED'
+  const back = preview
+    ? `/instrutor/cursos/${id}/aulas/${preview.params.aulaId ?? ''}`
+    : outline.data && outline.data.status !== 'PUBLISHED'
       ? '/minhas-matriculas'
       : `/cursos/${id}`;
 
   return (
-    <ClassroomShell back={back} courseTitle={outline.data?.title}>
+    <ClassroomShell
+      back={back}
+      backLabel={preview ? 'Voltar ao editor' : undefined}
+      courseTitle={outline.data?.title}
+    >
       {children}
     </ClassroomShell>
   );
