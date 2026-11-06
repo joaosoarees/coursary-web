@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useId, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -60,6 +60,29 @@ export function LessonForm({
   const body = useWatch({ control: form.control, name: 'body' });
   const unsaved = isDirty && !isSubmitting && !readOnly;
   const [tab, setTab] = useState('escrever');
+  const formRef = useRef<HTMLFormElement>(null);
+
+  // Ctrl+S (Cmd+S) saves from anywhere in the form instead of saving the browser's page.
+  useEffect(() => {
+    const element = formRef.current;
+
+    if (!element || readOnly) {
+      return;
+    }
+
+    const saveOnShortcut = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
+        event.preventDefault();
+        element.requestSubmit();
+      }
+    };
+
+    element.addEventListener('keydown', saveOnShortcut);
+
+    return () => {
+      element.removeEventListener('keydown', saveOnShortcut);
+    };
+  }, [readOnly]);
   const bytes = bodyBytes(body);
   const limit =
     bytes > BODY_MAX_BYTES ? 'over' : bytes >= NEAR_LIMIT ? 'near' : 'under';
@@ -96,6 +119,7 @@ export function LessonForm({
 
   return (
     <form
+      ref={formRef}
       noValidate
       onSubmit={(event) => {
         if (form.formState.isSubmitting) {
@@ -211,7 +235,7 @@ export function LessonForm({
             readOnly={readOnly}
             rows={14}
             className={cn(
-              'min-h-80 leading-relaxed md:text-base',
+              'max-h-[70vh] min-h-80 overflow-y-auto leading-relaxed md:text-base',
               readOnly && `${READ_ONLY} resize-none`,
             )}
             {...form.register('body')}
@@ -219,7 +243,7 @@ export function LessonForm({
         </TabsContent>
         <TabsContent
           value="previa"
-          className="min-h-80 max-w-[72ch] rounded-md border bg-background px-5 py-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          className="min-h-80 rounded-md border bg-background px-5 py-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         >
           {body.trim() === '' ? (
             <p className="text-muted-foreground">
@@ -234,7 +258,7 @@ export function LessonForm({
           <div className="flex flex-wrap justify-between gap-3 text-sm text-muted-foreground">
             <span id={`${id}-body-hint`}>
               Markdown: ## títulos, **negrito**, listas, links e blocos de
-              código.
+              código. Ctrl+S salva.
             </span>
             <span
               id={`${id}-body-count`}
