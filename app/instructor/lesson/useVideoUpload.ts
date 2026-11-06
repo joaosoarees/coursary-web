@@ -14,6 +14,7 @@ import {
   MultipartUpload,
   UploadStoppedError,
 } from '~/services/multipart/MultipartUpload';
+import { Retry } from '~/services/multipart/Retry';
 import { type LessonRef, VideoService } from '~/services/VideoService';
 
 const POLL_MS = 1_000;
@@ -24,14 +25,18 @@ export type VideoUploadPhase =
   | { step: 'uploading'; name: string; loaded: number; total: number }
   | { step: 'confirming' };
 
-const wait = (ms: number) =>
-  new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
+// Progress is painted at most this often: four parts report many times a second, and the hook
+// re-renders the whole editor.
+const PAINT_MS = 200;
 
 class VideoUploadSteps {
-  static of(lesson: LessonRef, file: File): MultipartSteps {
+  static of(
+    lesson: LessonRef,
+    file: File,
+    onPartsSent: () => void,
+  ): MultipartSteps {
     return {
+      onPartsSent,
       start: (signal) =>
         VideoService.start(
           lesson,
@@ -85,7 +90,7 @@ export function useVideoUpload(courseId: string, lessonId: string) {
   // The signed address names the file: the new video is in the lesson once its id is in there.
   const waitForVideo = async (fileId: string) => {
     for (let attempt = 0; attempt < POLL_ATTEMPTS; attempt += 1) {
-      await wait(POLL_MS);
+      await Retry.sleep(POLL_MS);
 
       if (gone.current) {
         return false;
@@ -121,13 +126,19 @@ export function useVideoUpload(courseId: string, lessonId: string) {
     const refused = checkVideo(file);
 
     if (refused) {
+      setNotice(undefined);
       setProblem(refused.problem);
       return;
     }
 
     const controller = new AbortController();
-    const steps = VideoUploadSteps.of({ courseId, lessonId }, file);
+    const steps = VideoUploadSteps.of({ courseId, lessonId }, file, () => {
+      if (!controller.signal.aborted) {
+        setPhase({ step: 'confirming' });
+      }
+    });
     const total = file.size;
+    let paintedAt = 0;
 
     running.current = controller;
     setProblem(undefined);
@@ -141,28 +152,30 @@ export function useVideoUpload(courseId: string, lessonId: string) {
         file,
         steps,
         (loaded) => {
-          setPhase({ step: 'uploading', name: file.name, loaded, total });
+          const now = performance.now();
+
+          if (now - paintedAt >= PAINT_MS || loaded === total) {
+            paintedAt = now;
+            setPhase({ step: 'uploading', name: file.name, loaded, total });
+          }
         },
         controller.signal,
       );
     } catch (error) {
-      if (gone.current) {
+      // Cancelled or left: cancel() already showed it, and the abort goes on in the background.
+      if (controller.signal.aborted) {
         return;
       }
 
+      running.current = undefined;
       setPhase({ step: 'idle' });
-
-      if (controller.signal.aborted) {
-        toast.message('Envio cancelado.');
-      } else {
-        console.error(error);
-        setProblem(VideoUploadSteps.problem(error));
-      }
+      console.error(error);
+      setProblem(VideoUploadSteps.problem(error));
 
       return;
-    } finally {
-      running.current = undefined;
     }
+
+    running.current = undefined;
 
     setPhase({ step: 'confirming' });
     const ready = await waitForVideo(fileId);
@@ -182,10 +195,20 @@ export function useVideoUpload(courseId: string, lessonId: string) {
     }
   };
 
+  // The card goes back at once; the parts stop and the API abort runs behind it.
   const cancel = () => {
-    running.current?.abort(
+    const controller = running.current;
+
+    if (!controller) {
+      return;
+    }
+
+    running.current = undefined;
+    controller.abort(
       new DOMException('The upload was cancelled.', 'AbortError'),
     );
+    setPhase({ step: 'idle' });
+    toast.message('Envio cancelado.');
   };
 
   return { phase, problem, notice, uploading, upload, cancel };
