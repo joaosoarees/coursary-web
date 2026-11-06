@@ -134,6 +134,17 @@ describe('S3Part.put', () => {
     await expect(sent).rejects.toEqual(new S3PartError(0, ''));
   });
 
+  it('should count a request the browser aborted as no answer', async () => {
+    const sent = S3Part.put('https://bucket.example/p1', part, {
+      signal: new AbortController().signal,
+      onProgress: vi.fn(),
+    });
+
+    current().abort();
+
+    await expect(sent).rejects.toEqual(new S3PartError(0, ''));
+  });
+
   it('should stop the request when the signal aborts', async () => {
     const stop = new AbortController();
     const sent = S3Part.put('https://bucket.example/p1', part, {
