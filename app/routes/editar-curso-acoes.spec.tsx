@@ -1,11 +1,12 @@
 import { fireEvent, screen, waitFor, within } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import EditCoursePage from '~/routes/editar-curso';
 import {
   InstructorService,
   type ManagedCourse,
 } from '~/services/InstructorService';
+import { LessonService } from '~/services/LessonService';
 import { apiError, Landing, renderRoutes } from '~/test/renderRoutes';
 
 const draft: ManagedCourse = {
@@ -39,6 +40,15 @@ const renderAt = () =>
   );
 
 const dialog = () => screen.getByRole('dialog');
+
+beforeEach(() => {
+  vi.spyOn(LessonService, 'outline').mockResolvedValue({
+    courseId: 'c1',
+    title: 'Curso',
+    status: 'DRAFT',
+    modules: [],
+  });
+});
 
 describe('course actions', () => {
   it('should hold publishing until the draft has a lesson', async () => {
