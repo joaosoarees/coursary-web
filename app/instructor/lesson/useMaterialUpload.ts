@@ -8,7 +8,7 @@ import {
 } from '~/instructor/lesson/materialRules';
 import { lessonQuery } from '~/queries/lesson';
 import { ApiFailure } from '~/services/ApiFailure';
-import { LessonService } from '~/services/LessonService';
+import { type LessonContent, LessonService } from '~/services/LessonService';
 import { MaterialService } from '~/services/MaterialService';
 
 // A file counts as ready when the lesson lists it: the API has no status route for material.
@@ -36,8 +36,24 @@ export function useMaterialUpload(courseId: string, lessonId: string) {
       const content = await LessonService.open({ courseId, lessonId });
       const listed = content.attachments.some((file) => file.id === fileId);
 
+      // Only the new file is taken from the answer: the order on screen may be a move still in
+      // flight, and the rest of the answer (a newly signed video address) would reload the player.
       if (listed) {
-        queryClient.setQueryData(key, content);
+        queryClient.setQueryData<LessonContent>(key, (current) => {
+          if (!current) {
+            return content;
+          }
+
+          const known = new Set(current.attachments.map((file) => file.id));
+
+          return {
+            ...current,
+            attachments: [
+              ...current.attachments,
+              ...content.attachments.filter((file) => !known.has(file.id)),
+            ],
+          };
+        });
       }
 
       return listed ? 'PROCESSED' : 'PENDING';
