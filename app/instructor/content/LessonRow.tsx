@@ -127,7 +127,7 @@ export function LessonRow({
                         id={moveLabelId}
                         className="text-xs font-bold tracking-wide text-muted-foreground uppercase"
                       >
-                        Mover para
+                        Mover para o fim de
                       </DropdownMenuLabel>
                       {otherModules.map((module) => (
                         <DropdownMenuItem
