@@ -5,10 +5,12 @@ import { toast } from 'sonner';
 
 import { BoardIcon } from '~/components/BoardIcon';
 import { CourseFormat } from '~/components/course/CourseFormat';
+import { EmptyState } from '~/components/EmptyState';
 import { ErrorState } from '~/components/ErrorState';
 import { LoadingNote } from '~/components/LoadingNote';
 import { Button } from '~/components/ui/button';
 import { Skeleton } from '~/components/ui/skeleton';
+import { focusLater, focusMark } from '~/instructor/content/contentFocus';
 import { ContentOrder } from '~/instructor/content/ContentOrder';
 import { ModuleCard } from '~/instructor/content/ModuleCard';
 import { ModuleTitleForm } from '~/instructor/content/ModuleTitleForm';
@@ -91,14 +93,34 @@ function ContentEditor({
   const [adding, setAdding] = useState(false);
   // While a drag runs, the order lives here; it is saved once, when the row is dropped.
   const [dragging, setDragging] = useState<Modules | null>(null);
+  // What a move did, for screen readers: the rows change place without a word otherwise.
+  const [announcement, setAnnouncement] = useState('');
   const modules = dragging ?? saved;
 
-  const save = (next: Modules) => {
+  const save = (next: Modules, said?: string, onSaved?: () => void) => {
     setDragging(null);
 
-    if (!ContentOrder.same(next, saved)) {
-      reorder.mutate(next);
+    if (ContentOrder.same(next, saved)) {
+      return;
     }
+
+    if (said) {
+      setAnnouncement(said);
+    }
+
+    reorder.mutate(next, { onSuccess: onSaved });
+  };
+  const lessonPlace = (next: Modules, lessonId: string) => {
+    const module = next.find((each) =>
+      each.lessons.some((lesson) => lesson.id === lessonId),
+    );
+    const index =
+      module?.lessons.findIndex((lesson) => lesson.id === lessonId) ?? -1;
+    const lesson = module?.lessons[index];
+
+    return module && lesson
+      ? `${lesson.title} agora é a aula ${String(index + 1)} de ${module.title}.`
+      : '';
   };
   const finishDrag = () => {
     if (dragging) {
@@ -132,6 +154,7 @@ function ContentEditor({
             onClick={() => {
               setAdding(true);
             }}
+            {...focusMark('content-new-module')}
           >
             <Plus aria-hidden="true" />
             Novo módulo
@@ -145,29 +168,25 @@ function ContentEditor({
         </p>
       )}
       {modules.length === 0 && !adding && (
-        <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed border-input px-6 py-10 text-center">
-          <BoardIcon
-            aria-hidden="true"
-            className="size-8 text-muted-foreground"
-          />
-          <h3 className="font-display text-xl font-bold">
-            Nenhum módulo ainda
-          </h3>
-          <p className="max-w-[52ch] text-muted-foreground">
-            Um curso é feito de módulos, e cada módulo, de aulas. Comece pelo
-            primeiro módulo.
-          </p>
-          {editable && (
-            <Button
-              onClick={() => {
-                setAdding(true);
-              }}
-            >
-              <Plus aria-hidden="true" />
-              Criar o primeiro módulo
-            </Button>
-          )}
-        </div>
+        <EmptyState
+          icon={BoardIcon}
+          headingLevel="h3"
+          title="Nenhum módulo ainda"
+          description="Um curso é feito de módulos, e cada módulo, de aulas. Comece pelo primeiro módulo."
+          action={
+            editable && (
+              <Button
+                onClick={() => {
+                  setAdding(true);
+                }}
+                {...focusMark('content-new-module')}
+              >
+                <Plus aria-hidden="true" />
+                Criar o primeiro módulo
+              </Button>
+            )
+          }
+        />
       )}
       <Reorder.Group
         axis="y"
@@ -190,7 +209,11 @@ function ContentEditor({
               .filter((other) => other.id !== module.id)
               .map(({ id, title }) => ({ id, title }))}
             onMove={(offset) => {
-              save(ContentOrder.moveModule(modules, module.id, offset));
+              const next = ContentOrder.moveModule(modules, module.id, offset);
+              save(
+                next,
+                `${module.title} agora é o módulo ${String(next.indexOf(module) + 1)}.`,
+              );
             }}
             onLessonsReorder={(lessons) => {
               setDragging(
@@ -198,28 +221,42 @@ function ContentEditor({
               );
             }}
             onMoveLesson={(lessonId, offset) => {
-              save(ContentOrder.moveLesson(modules, lessonId, offset));
+              const next = ContentOrder.moveLesson(modules, lessonId, offset);
+              save(next, lessonPlace(next, lessonId));
             }}
             onMoveLessonTo={(lessonId, moduleId) => {
-              save(ContentOrder.moveLessonTo(modules, lessonId, moduleId));
-              toast.success('Aula movida.');
+              const target = modules.find((each) => each.id === moduleId);
+              save(
+                ContentOrder.moveLessonTo(modules, lessonId, moduleId),
+                undefined,
+                () => {
+                  toast.success(
+                    `Aula movida para o fim de ${target?.title ?? 'outro módulo'}.`,
+                  );
+                },
+              );
             }}
             onDragEnd={finishDrag}
           />
         ))}
       </Reorder.Group>
+      <p role="status" className="sr-only">
+        {announcement}
+      </p>
       {adding && (
         <div className="rounded-lg border border-dashed border-input p-4">
           <ModuleTitleForm
             submitLabel="Criar módulo"
             pendingLabel="Criando…"
             onSave={async (title) => {
-              await create.mutateAsync(title);
+              const module = await create.mutateAsync(title);
               setAdding(false);
               toast.success('Módulo criado.');
+              focusLater(`module-add-${module.id}`);
             }}
             onCancel={() => {
               setAdding(false);
+              focusLater('content-new-module');
             }}
           />
         </div>
