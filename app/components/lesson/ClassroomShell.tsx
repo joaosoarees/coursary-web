@@ -7,10 +7,12 @@ import { useFocusOnNavigation } from '~/hooks/useFocusOnNavigation';
 
 export function ClassroomShell({
   back,
+  backLabel = 'Sair da aula',
   courseTitle,
   children,
 }: {
   back: string;
+  backLabel?: string;
   courseTitle: string | undefined;
   children: React.ReactNode;
 }) {
@@ -25,7 +27,7 @@ export function ClassroomShell({
           className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-md pr-3 pl-2 font-bold hover:bg-shell-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chalk-yellow"
         >
           <ChevronLeft aria-hidden="true" className="size-4.5" />
-          Sair da aula
+          {backLabel}
         </Link>
         <span
           aria-hidden="true"

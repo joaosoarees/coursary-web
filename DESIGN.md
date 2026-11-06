@@ -35,6 +35,8 @@ colors:
   chalk-yellow-foreground: "#112019"
   chalk-blue: "#9fd0ee"
   chalk-pink: "#f4a9b8"
+  screen: "#0d1a14"
+  screen-muted: "#c9d8ce"
   background-dark: "#112019"
   foreground-dark: "#eaf0ea"
   card-dark: "#162b22"
@@ -291,6 +293,7 @@ Uma paleta de lousa: verdes profundos e frios como estrutura, giz claro como mar
 - **Verde Grafite** (#47594f): texto de apoio, legendas e cabeçalhos de tabela no claro; no escuro, **Sálvia de Giz** (#a9bfb1).
 - **Sálvia Pálida** (#d9e3db): o fundo de hover de botões fantasma, contornados e itens de menu no claro; no escuro, **Lousa Gasta** (#2a4a3b), que também é o hover do trilho.
 - **Fio de Sálvia** (#cfd9d1): bordas finas de cards, tabelas e divisores; no escuro, **Fio de Lousa** (#2f4c3e).
+- **Tela Apagada** (#0d1a14): o quadro 16:9 do vídeo antes de ele tocar, nos dois temas; o texto sobre ele é Giz Branco e, quando secundário, **Giz Gasto** (#c9d8ce).
 - **Cinza-Musgo** (#7d9186): a borda dos campos e dos controles contornados, a borda do estado vazio e o polegar da barra de rolagem; no escuro, **Musgo Fundo** (#5f7d6d).
 
 ### Named Rules
@@ -386,6 +389,7 @@ Firmes, legíveis e marcados a giz: cada controle tem tamanho de dedo, bordas qu
 - **Celular:** barra de lousa no topo com o botão de menu (40 px), a marca e o avatar, cujo menu abre para baixo. A gaveta de 300 px traz o trilho aberto inteiro, com um botão de fechar de 40 px no canto (hover em Verde Lousa Claro, Lousa Gasta no escuro; foco em Giz Amarelo); seguir um link fecha a gaveta.
 - **Pular para o conteúdo:** primeiro foco da página; aparece em Giz Amarelo com texto preto, cantos de 6 px.
 - **Abas:** sublinhadas, sem caixa; a ativa em negrito com uma barra de 3 px em primário embaixo; hover em Sálvia Pálida.
+- **Modos num cartão:** trocar o modo de um mesmo conteúdo ("Escrever" e "Prévia") usa botões segmentados, não abas: um trilho em Névoa de Giz com cantos de 6 px e a opção ativa em folha, em negrito. As abas sublinhadas ficam para navegar entre seções.
 
 ### Overlays
 - **Menu e select:** folha de popover com borda fina, cantos de 6 px, 4 px de folga e a sombra Erguida. Itens de 40 px, cantos de 4 px, 0.875rem; o destacado ganha fundo Sálvia Pálida e um contorno interno de 2 px na cor do anel. Item destrutivo em Tijolo.

@@ -60,4 +60,26 @@ describe('the classroom', () => {
       '/minhas-matriculas',
     );
   });
+
+  it('should lead a preview back to the lesson editor', async () => {
+    vi.spyOn(LessonService, 'outline').mockResolvedValue(outline('DRAFT'));
+    renderRoutes(
+      [
+        {
+          Component: ClassroomLayout,
+          children: [
+            {
+              path: '/instrutor/cursos/:id/aulas/:aulaId/previa',
+              Component: () => <h1>Prévia</h1>,
+            },
+          ],
+        },
+      ],
+      '/instrutor/cursos/c1/aulas/l1/previa',
+    );
+
+    expect(
+      await screen.findByRole('link', { name: 'Voltar ao editor' }),
+    ).toHaveAttribute('href', '/instrutor/cursos/c1/aulas/l1');
+  });
 });

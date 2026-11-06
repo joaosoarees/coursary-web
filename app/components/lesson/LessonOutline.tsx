@@ -6,18 +6,29 @@ import { CourseProgress } from '~/components/course/CourseProgress';
 import { cn } from '~/lib/utils';
 import type { CourseModule } from '~/services/CourseService';
 
+class OutlineCount {
+  static of(count: number, one: string, many: string): string {
+    return `${String(count)} ${count === 1 ? one : many}`;
+  }
+}
+
 export function LessonOutline({
   courseId,
   modules,
   currentLessonId,
   completedLessonIds,
   footer,
+  preview = false,
+  lessonPath = (lessonId) => `/cursos/${courseId}/aulas/${lessonId}`,
 }: {
   courseId: string;
   modules: CourseModule[];
   currentLessonId: string;
   completedLessonIds: string[];
   footer?: React.ReactNode;
+  // The instructor's look as a student: no progress, since none is kept.
+  preview?: boolean;
+  lessonPath?: (lessonId: string) => string;
 }) {
   const [open, setOpen] = useState(false);
   const [expanded, setExpanded] = useState(
@@ -63,7 +74,9 @@ export function LessonOutline({
       sum + module.lessons.filter((lesson) => completed.has(lesson.id)).length,
     0,
   );
-  const progress = <CourseProgress completed={done} total={total} spelledOut />;
+  const progress = preview ? null : (
+    <CourseProgress completed={done} total={total} spelledOut />
+  );
 
   return (
     <aside
@@ -97,7 +110,14 @@ export function LessonOutline({
             />
           </button>
         </h2>
-        {progress}
+        {preview ? (
+          <span className="text-sm text-muted-foreground">
+            {OutlineCount.of(total, 'aula', 'aulas')} ·{' '}
+            {OutlineCount.of(modules.length, 'módulo', 'módulos')}
+          </span>
+        ) : (
+          progress
+        )}
       </div>
       <ol
         ref={list}
@@ -110,34 +130,53 @@ export function LessonOutline({
         {modules.map((module, index) => (
           <li key={module.id} className="flex flex-col gap-0.5">
             <h3>
-              <button
-                type="button"
-                aria-expanded={expanded.has(module.id)}
-                aria-controls={`${listId}-${module.id}`}
-                onClick={() => {
-                  toggle(module.id);
-                }}
-                className="flex min-h-11 w-full items-center gap-2.5 rounded-md p-2 text-left font-bold hover:bg-accent focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
-              >
-                <span className="min-w-0 flex-1">
-                  {index + 1}. {module.title}
+              {preview && module.lessons.length === 0 ? (
+                // Nothing to open: the instructor sees the module is still empty.
+                <span className="flex min-h-11 w-full items-center gap-2.5 p-2 font-bold">
+                  <span className="min-w-0 flex-1">
+                    {index + 1}. {module.title}
+                  </span>
+                  <span className="shrink-0 text-sm font-normal text-muted-foreground">
+                    {OutlineCount.of(0, 'aula', 'aulas')}
+                  </span>
                 </span>
-                <span className="shrink-0 text-sm font-normal text-muted-foreground">
-                  {
-                    module.lessons.filter((lesson) => completed.has(lesson.id))
-                      .length
-                  }{' '}
-                  de {module.lessons.length}
-                  <span className="sr-only"> concluídas</span>
-                </span>
-                <ChevronDown
-                  aria-hidden="true"
-                  className={cn(
-                    'size-4.5 shrink-0 text-muted-foreground transition-transform motion-reduce:transition-none',
-                    expanded.has(module.id) && 'rotate-180',
-                  )}
-                />
-              </button>
+              ) : (
+                <button
+                  type="button"
+                  aria-expanded={expanded.has(module.id)}
+                  aria-controls={`${listId}-${module.id}`}
+                  onClick={() => {
+                    toggle(module.id);
+                  }}
+                  className="flex min-h-11 w-full items-center gap-2.5 rounded-md p-2 text-left font-bold hover:bg-accent focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
+                >
+                  <span className="min-w-0 flex-1">
+                    {index + 1}. {module.title}
+                  </span>
+                  <span className="shrink-0 text-sm font-normal text-muted-foreground">
+                    {preview ? (
+                      OutlineCount.of(module.lessons.length, 'aula', 'aulas')
+                    ) : (
+                      <>
+                        {
+                          module.lessons.filter((lesson) =>
+                            completed.has(lesson.id),
+                          ).length
+                        }{' '}
+                        de {module.lessons.length}
+                        <span className="sr-only"> concluídas</span>
+                      </>
+                    )}
+                  </span>
+                  <ChevronDown
+                    aria-hidden="true"
+                    className={cn(
+                      'size-4.5 shrink-0 text-muted-foreground transition-transform motion-reduce:transition-none',
+                      expanded.has(module.id) && 'rotate-180',
+                    )}
+                  />
+                </button>
+              )}
             </h3>
             <ol
               id={`${listId}-${module.id}`}
@@ -150,7 +189,7 @@ export function LessonOutline({
                 return (
                   <li key={lesson.id}>
                     <Link
-                      to={`/cursos/${courseId}/aulas/${lesson.id}`}
+                      to={lessonPath(lesson.id)}
                       ref={current ? currentLink : undefined}
                       aria-current={current ? 'page' : undefined}
                       className={cn(

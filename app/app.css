@@ -47,6 +47,8 @@
   --chalk-yellow-foreground: #112019;
   --chalk-blue: #9fd0ee;
   --chalk-pink: #f4a9b8;
+  --screen: #0d1a14;
+  --screen-muted: #c9d8ce;
 }
 
 .dark {
@@ -138,6 +140,8 @@
   --color-chalk-yellow-foreground: var(--chalk-yellow-foreground);
   --color-chalk-blue: var(--chalk-blue);
   --color-chalk-pink: var(--chalk-pink);
+  --color-screen: var(--screen);
+  --color-screen-muted: var(--screen-muted);
 
   --font-sans:
     'Atkinson Hyperlegible Next Variable', ui-sans-serif, system-ui, sans-serif;

@@ -1,0 +1,201 @@
+import { noop } from '@tanstack/react-query';
+import { Archive, ChevronLeft, Eye } from 'lucide-react';
+import { useState } from 'react';
+import { Link } from 'react-router';
+
+import { ErrorState } from '~/components/ErrorState';
+import { LeaveConfirmation } from '~/components/LeaveConfirmation';
+import { LoadingNote } from '~/components/LoadingNote';
+import { Button } from '~/components/ui/button';
+import { Skeleton } from '~/components/ui/skeleton';
+import { ContentOrder } from '~/instructor/content/ContentOrder';
+import { LessonForm } from '~/instructor/lesson/LessonForm';
+import { MaterialCard } from '~/instructor/lesson/MaterialCard';
+import { useVideoUpload } from '~/instructor/lesson/useVideoUpload';
+import { VideoCard } from '~/instructor/lesson/VideoCard';
+import { queryClient } from '~/lib/queryClient';
+import { managedCourseQuery, useManagedCourse } from '~/queries/instructor';
+import {
+  lessonQuery,
+  outlineQuery,
+  useLesson,
+  useOutline,
+} from '~/queries/lesson';
+import { ApiFailure } from '~/services/ApiFailure';
+import type { CourseModule } from '~/services/CourseService';
+import { isSignedIn } from '~/session/session';
+
+import type { Route } from './+types/editar-aula';
+
+const NOT_MINE = new Set([
+  'COURSE_NOT_FOUND',
+  'LESSON_NOT_FOUND',
+  'VALIDATION',
+  'FORBIDDEN',
+]);
+
+export const meta: Route.MetaFunction = () => [
+  { title: 'Editar aula · Coursary' },
+];
+
+export function clientLoader({ params }: Route.ClientLoaderArgs) {
+  if (isSignedIn()) {
+    void queryClient.query(managedCourseQuery(params.id)).catch(noop);
+    void queryClient.query(outlineQuery(params.id)).catch(noop);
+    void queryClient.query(lessonQuery(params.id, params.aulaId)).catch(noop);
+  }
+
+  return null;
+}
+
+class LessonPlace {
+  static find(modules: CourseModule[], lessonId: string) {
+    const firstNumbers = ContentOrder.firstNumbers(modules);
+
+    for (const [index, module] of modules.entries()) {
+      const position = module.lessons.findIndex((each) => each.id === lessonId);
+      const lesson = module.lessons[position];
+
+      if (lesson) {
+        return {
+          module,
+          moduleNumber: index + 1,
+          lesson,
+          number: (firstNumbers[index] ?? 1) + position,
+        };
+      }
+    }
+
+    return undefined;
+  }
+}
+
+export default function EditLessonPage({ params }: Route.ComponentProps) {
+  const course = useManagedCourse(params.id);
+  const outline = useOutline(params.id);
+  const content = useLesson(params.id, params.aulaId);
+  const place = outline.data
+    ? LessonPlace.find(outline.data.modules, params.aulaId)
+    : undefined;
+  const failed = [course, outline, content].find((query) => query.isError);
+  const video = useVideoUpload(params.id, params.aulaId);
+  const [unsaved, setUnsaved] = useState(false);
+
+  return (
+    <section className="flex flex-col gap-6">
+      <LeaveConfirmation when={unsaved} uploading={video.uploading} />
+      <Link
+        to={`/instrutor/cursos/${params.id}`}
+        className="inline-flex min-h-10 items-center gap-1.5 self-start font-bold text-link hover:underline hover:underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      >
+        <ChevronLeft aria-hidden="true" className="size-4" />
+        {course.data?.title ?? 'Voltar ao curso'}
+      </Link>
+      {failed ? (
+        NOT_MINE.has(ApiFailure.codeOf(failed.error) ?? '') ? (
+          <ErrorState
+            title="Aula não encontrada"
+            message="O endereço não corresponde a nenhuma aula de um curso seu."
+            back={{ to: '/instrutor/cursos', label: 'Ir para Meus cursos' }}
+          />
+        ) : (
+          <ErrorState
+            onRetry={() => {
+              void course.refetch();
+              void outline.refetch();
+              void content.refetch();
+            }}
+          />
+        )
+      ) : !course.data || !outline.data || !content.data ? (
+        <LessonSkeleton />
+      ) : !place ? (
+        <ErrorState
+          title="Aula não encontrada"
+          message="A aula foi apagada ou não é deste curso."
+          back={{
+            to: `/instrutor/cursos/${params.id}`,
+            label: 'Voltar ao curso',
+          }}
+        />
+      ) : (
+        <>
+          <header className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
+            <div className="flex min-w-0 flex-[1_1_26rem] flex-col gap-1.5">
+              <h1 className="font-display text-3xl leading-tight font-bold tracking-tight text-balance md:text-4xl">
+                {place.lesson.title}
+              </h1>
+              <p className="text-muted-foreground">
+                Módulo {place.moduleNumber} · Aula {place.number}
+              </p>
+            </div>
+            <Button variant="outline" asChild>
+              <Link
+                to={`/instrutor/cursos/${params.id}/aulas/${params.aulaId}/previa`}
+              >
+                <Eye aria-hidden="true" />
+                Ver como aluno
+              </Link>
+            </Button>
+          </header>
+          {course.data.status === 'ARCHIVED' && (
+            <div
+              role="note"
+              className="flex max-w-prose items-start gap-3 rounded-lg border bg-muted px-5 py-4"
+            >
+              <Archive aria-hidden="true" className="mt-0.5 size-5 shrink-0" />
+              <p>
+                O curso foi arquivado: a aula fica visível para os alunos
+                matriculados, mas não pode mais ser editada.
+              </p>
+            </div>
+          )}
+          <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
+            <LessonForm
+              courseId={params.id}
+              moduleId={place.module.id}
+              lessonId={params.aulaId}
+              readOnly={course.data.status === 'ARCHIVED'}
+              onUnsavedChange={setUnsaved}
+              saved={{
+                title: place.lesson.title,
+                durationMinutes: place.lesson.durationMinutes,
+                body: content.data.body,
+              }}
+            />
+            <div className="flex flex-col gap-6">
+              <VideoCard
+                courseId={params.id}
+                lessonId={params.aulaId}
+                video={content.data.video}
+                readOnly={course.data.status === 'ARCHIVED'}
+                upload={video}
+              />
+              <MaterialCard
+                courseId={params.id}
+                lessonId={params.aulaId}
+                files={content.data.attachments}
+                readOnly={course.data.status === 'ARCHIVED'}
+              />
+            </div>
+          </div>
+        </>
+      )}
+    </section>
+  );
+}
+
+function LessonSkeleton() {
+  return (
+    <>
+      <LoadingNote>Carregando a aula…</LoadingNote>
+      <div aria-hidden="true" className="flex flex-col gap-6">
+        <div className="flex flex-col gap-3">
+          <Skeleton className="h-5 w-40" />
+          <Skeleton className="h-10 w-2/3" />
+        </div>
+        <Skeleton className="h-[34rem]" />
+      </div>
+    </>
+  );
+}

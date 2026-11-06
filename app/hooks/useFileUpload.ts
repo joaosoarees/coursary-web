@@ -7,17 +7,20 @@ import { type PresignedPost, S3Upload } from '~/services/S3Upload';
 const POLL_MS = 2_000;
 const POLL_ATTEMPTS = 10;
 
-export type ImageUploadPhase =
+export type FileUploadPhase =
   | { step: 'idle' }
   | { step: 'uploading'; preview: string; progress: number }
   | { step: 'processing'; preview: string };
 
-export interface ImageUploadSteps {
+export interface FileUploadSteps {
   check: (file: File) => Promise<{ type: string } | { problem: string }>;
-  request: (type: string) => Promise<PresignedPost & { fileId: string }>;
+  request: (
+    type: string,
+    file: File,
+  ) => Promise<PresignedPost & { fileId: string }>;
   requestProblem: (error: unknown) => string;
   readStatus: (fileId: string) => Promise<string>;
-  // Called once the image is processed, or when its record is gone, to show what the owner has now.
+  // Called once the file is processed, or when its record is gone, to show what the owner has now.
   refresh: () => Promise<void>;
   messages: {
     ready: string;
@@ -32,8 +35,8 @@ const wait = (ms: number) =>
     setTimeout(resolve, ms);
   });
 
-export function useImageUpload(steps: ImageUploadSteps) {
-  const [phase, setPhase] = useState<ImageUploadPhase>({ step: 'idle' });
+export function useFileUpload(steps: FileUploadSteps) {
+  const [phase, setPhase] = useState<FileUploadPhase>({ step: 'idle' });
   const [problem, setProblem] = useState<string>();
   const gone = useRef(false);
   const preview = phase.step === 'idle' ? undefined : phase.preview;
@@ -57,7 +60,7 @@ export function useImageUpload(steps: ImageUploadSteps) {
     };
   }, [preview]);
 
-  const waitForImage = async (fileId: string) => {
+  const waitForFile = async (fileId: string) => {
     for (let attempt = 0; attempt < POLL_ATTEMPTS; attempt += 1) {
       await wait(POLL_MS);
 
@@ -110,7 +113,7 @@ export function useImageUpload(steps: ImageUploadSteps) {
     let post;
 
     try {
-      post = await steps.request(checked.type);
+      post = await steps.request(checked.type, file);
     } catch (error) {
       setPhase({ step: 'idle' });
       setProblem(steps.requestProblem(error));
@@ -128,12 +131,12 @@ export function useImageUpload(steps: ImageUploadSteps) {
         return;
       }
 
-      // The browser hides S3's answer behind a network or CORS error: the image may be stored.
+      // The browser hides S3's answer behind a network or CORS error: the file may be stored.
       unconfirmed = true;
     }
 
     setPhase({ step: 'processing', preview: local });
-    const outcome = await waitForImage(post.fileId);
+    const outcome = await waitForFile(post.fileId);
 
     if (outcome === 'gone') {
       return;
