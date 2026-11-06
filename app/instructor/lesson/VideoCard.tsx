@@ -1,5 +1,5 @@
 import { LoaderCircle, Upload, Video } from 'lucide-react';
-import { useId, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import { ConfirmDialog } from '~/components/ConfirmDialog';
@@ -52,9 +52,30 @@ export function VideoCard({
   const { phase, problem } = upload;
   const busy = phase.step !== 'idle';
   const sendMark = `video-send-${lessonId}`;
+  const cancelMark = `video-cancel-${lessonId}`;
   const removeMark = `video-remove-${lessonId}`;
   // Back on Remover when the person stays; on the send button once the video is gone.
   const afterRemove = useRef(removeMark);
+
+  // Each step swaps the buttons, so the one that had the focus is gone: the focus goes to the
+  // step's own control, unless the person has moved it elsewhere. Never on the first render.
+  const previousStep = useRef(phase.step);
+
+  useEffect(() => {
+    const changed = previousStep.current !== phase.step;
+
+    previousStep.current = phase.step;
+
+    if (!changed || document.activeElement !== document.body) {
+      return;
+    }
+
+    if (phase.step === 'uploading') {
+      focusLater(cancelMark);
+    } else if (phase.step === 'idle') {
+      focusLater(sendMark);
+    }
+  }, [phase.step, cancelMark, sendMark]);
 
   return (
     <section
@@ -64,7 +85,7 @@ export function VideoCard({
       <h2 id={titleId} className="font-display text-xl font-bold">
         Vídeo
       </h2>
-      <div className="relative grid aspect-video place-items-center overflow-hidden rounded-md bg-black text-white">
+      <div className="relative grid aspect-video place-items-center overflow-hidden rounded-md bg-screen text-chalk">
         {busy ? (
           <span className="flex flex-col items-center gap-2.5 font-bold">
             <LoaderCircle
@@ -90,7 +111,7 @@ export function VideoCard({
             }}
           />
         ) : (
-          <span className="flex flex-col items-center gap-2 px-4 text-center font-bold text-white/80">
+          <span className="flex flex-col items-center gap-2 px-4 text-center font-bold text-screen-muted">
             <Video aria-hidden="true" className="size-7" />
             {video
               ? 'Não deu para carregar o vídeo. Recarregue a página.'
@@ -158,29 +179,26 @@ export function VideoCard({
               }
             }}
           />
-          <div className="flex flex-wrap gap-3">
-            {phase.step === 'uploading' ? (
+          <div className="flex flex-wrap gap-3 empty:hidden">
+            {phase.step === 'uploading' && (
               <Button
                 variant="destructive-outline"
                 onClick={() => {
                   upload.cancel();
                   focusLater(sendMark);
                 }}
+                {...focusMark(cancelMark)}
               >
                 Cancelar envio
               </Button>
-            ) : (
+            )}
+            {phase.step === 'idle' && (
               <>
-                {/* Not disabled while confirming: the button keeps the focus it had. */}
                 <Button
                   variant="outline"
-                  aria-disabled={busy}
                   aria-describedby={hintId}
-                  className={busy ? 'aria-disabled:cursor-progress' : undefined}
                   onClick={() => {
-                    if (!busy) {
-                      input.current?.click();
-                    }
+                    input.current?.click();
                   }}
                   {...focusMark(sendMark)}
                 >
@@ -190,12 +208,9 @@ export function VideoCard({
                 {video && (
                   <Button
                     variant="destructive-outline"
-                    aria-disabled={busy}
                     onClick={() => {
-                      if (!busy) {
-                        afterRemove.current = removeMark;
-                        setRemoving(true);
-                      }
+                      afterRemove.current = removeMark;
+                      setRemoving(true);
                     }}
                     {...focusMark(removeMark)}
                   >
