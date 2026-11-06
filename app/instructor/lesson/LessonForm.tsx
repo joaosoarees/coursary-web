@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useId } from 'react';
+import { useId, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -29,6 +29,14 @@ const KIB = new Intl.NumberFormat('pt-BR', {
 
 const READ_ONLY = 'border-border bg-muted text-muted-foreground';
 
+// Rounded up, so a text just over the limit never reads as 32,0.
+const kib = (bytes: number) => KIB.format(Math.ceil((bytes / 1024) * 10) / 10);
+
+const NEAR_LIMIT = 0.9 * BODY_MAX_BYTES;
+
+const TAB =
+  'h-9 px-3.5 text-base data-[state=active]:bg-card dark:data-[state=active]:border-transparent dark:data-[state=active]:bg-card';
+
 export function LessonForm({
   courseId,
   moduleId,
@@ -51,25 +59,40 @@ export function LessonForm({
   const { errors, isSubmitting, isDirty } = form.formState;
   const body = useWatch({ control: form.control, name: 'body' });
   const unsaved = isDirty && !isSubmitting && !readOnly;
+  const [tab, setTab] = useState('escrever');
+  const bytes = bodyBytes(body);
+  const limit =
+    bytes > BODY_MAX_BYTES ? 'over' : bytes >= NEAR_LIMIT ? 'near' : 'under';
 
   useUnsavedChangesWarning(unsaved);
 
-  const handleSubmit = form.handleSubmit(async (lesson) => {
-    if (!isDirty) {
-      toast.message('Nenhuma alteração para salvar.');
-      return;
-    }
+  const handleSubmit = form.handleSubmit(
+    async (lesson) => {
+      if (!isDirty) {
+        toast.message('Nenhuma alteração para salvar.');
+        return;
+      }
 
-    try {
-      await update.mutateAsync(lesson);
-      form.reset(lesson);
-      toast.success('Aula salva.');
-    } catch (error) {
-      form.setError('root.server', {
-        message: ApiFailure.message(error, { COURSE_ARCHIVED }),
-      });
-    }
-  });
+      try {
+        await update.mutateAsync(lesson);
+        form.reset(lesson);
+        toast.success('Aula salva.');
+      } catch (error) {
+        form.setError('root.server', {
+          message: ApiFailure.message(error, { COURSE_ARCHIVED }),
+        });
+      }
+    },
+    (invalid) => {
+      // A text over the limit can be refused from the preview, where the field is not mounted.
+      if (invalid.body && !invalid.title && !invalid.durationMinutes) {
+        setTab('escrever');
+        requestAnimationFrame(() => {
+          form.setFocus('body');
+        });
+      }
+    },
+  );
 
   return (
     <form
@@ -126,12 +149,16 @@ export function LessonForm({
               readOnly={readOnly}
               aria-invalid={errors.durationMinutes !== undefined}
               aria-describedby={
-                errors.durationMinutes ? `${id}-duration-error` : undefined
+                errors.durationMinutes
+                  ? `${id}-duration-unit ${id}-duration-error`
+                  : `${id}-duration-unit`
               }
               className={cn('w-24 md:text-base', readOnly && READ_ONLY)}
               {...form.register('durationMinutes', { valueAsNumber: true })}
             />
-            <span className="text-muted-foreground">min</span>
+            <span id={`${id}-duration-unit`} className="text-muted-foreground">
+              minutos
+            </span>
           </div>
           {errors.durationMinutes && (
             <p
@@ -144,7 +171,7 @@ export function LessonForm({
           )}
         </div>
       </div>
-      <Tabs defaultValue="escrever" className="flex flex-col gap-2">
+      <Tabs value={tab} onValueChange={setTab} className="flex flex-col gap-2">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <span id={`${id}-body-label`} className="font-bold">
             Texto da aula{' '}
@@ -152,19 +179,34 @@ export function LessonForm({
               (opcional)
             </span>
           </span>
-          <TabsList variant="default" aria-labelledby={`${id}-body-label`}>
-            <TabsTrigger value="escrever" className="px-3.5 text-base">
+          <TabsList
+            variant="default"
+            aria-labelledby={`${id}-body-label`}
+            className="h-auto rounded-md bg-muted"
+          >
+            <TabsTrigger value="escrever" className={TAB}>
               Escrever
             </TabsTrigger>
-            <TabsTrigger value="previa" className="px-3.5 text-base">
+            <TabsTrigger value="previa" className={TAB}>
               Prévia
             </TabsTrigger>
           </TabsList>
         </div>
-        <TabsContent value="escrever">
+        {/* The field is the stop; the panel around it would be an empty one. */}
+        <TabsContent value="escrever" tabIndex={-1}>
           <Textarea
             aria-labelledby={`${id}-body-label`}
-            aria-describedby={`${id}-body-hint ${id}-body-count`}
+            aria-describedby={
+              readOnly
+                ? undefined
+                : [
+                    `${id}-body-hint`,
+                    `${id}-body-count`,
+                    errors.body ? `${id}-body-error` : '',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')
+            }
             aria-invalid={errors.body !== undefined}
             readOnly={readOnly}
             rows={14}
@@ -177,7 +219,7 @@ export function LessonForm({
         </TabsContent>
         <TabsContent
           value="previa"
-          className="min-h-80 max-w-[72ch] rounded-md border bg-background px-5 py-4"
+          className="min-h-80 max-w-[72ch] rounded-md border bg-background px-5 py-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         >
           {body.trim() === '' ? (
             <p className="text-muted-foreground">
@@ -188,20 +230,34 @@ export function LessonForm({
             <LessonBody markdown={body} />
           )}
         </TabsContent>
-        <div className="flex flex-wrap justify-between gap-3 text-sm text-muted-foreground">
-          <span id={`${id}-body-hint`}>
-            Markdown: **negrito**, listas, links e blocos de código.
-          </span>
-          <span
-            id={`${id}-body-count`}
-            className={cn(errors.body && 'text-destructive')}
-          >
-            {KIB.format(bodyBytes(body) / 1024)} de{' '}
-            {String(BODY_MAX_BYTES / 1024)} KiB
-          </span>
-        </div>
+        {!readOnly && (
+          <div className="flex flex-wrap justify-between gap-3 text-sm text-muted-foreground">
+            <span id={`${id}-body-hint`}>
+              Markdown: ## títulos, **negrito**, listas, links e blocos de
+              código.
+            </span>
+            <span
+              id={`${id}-body-count`}
+              className={cn(limit !== 'under' && 'font-bold text-destructive')}
+            >
+              {kib(bytes)} de {String(BODY_MAX_BYTES / 1024)} KiB
+            </span>
+          </div>
+        )}
+        {/* Said once at each threshold, not on every key. */}
+        <p role="status" className="sr-only">
+          {limit === 'over'
+            ? 'O texto passou do limite de 32 KiB.'
+            : limit === 'near'
+              ? 'O texto está perto do limite de 32 KiB.'
+              : ''}
+        </p>
         {errors.body && (
-          <p role="alert" className="text-sm text-destructive">
+          <p
+            id={`${id}-body-error`}
+            role="alert"
+            className="text-sm text-destructive"
+          >
             {errors.body.message}
           </p>
         )}
