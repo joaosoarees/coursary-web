@@ -26,7 +26,7 @@ class VideoProgress {
 
   // Truncated like the percent, so the two never disagree on the same line.
   static megabytes(loaded: number, total: number): string {
-    return `${WHOLE.format(Math.floor(loaded / MIB))} de ${WHOLE.format(total / MIB)} MB`;
+    return `${WHOLE.format(Math.floor(loaded / MIB))} de ${WHOLE.format(Math.floor(total / MIB))} MB`;
   }
 }
 
@@ -87,7 +87,11 @@ export function VideoCard({
       </h2>
       <div className="relative grid aspect-video place-items-center overflow-hidden rounded-md bg-screen text-chalk">
         {busy ? (
-          <span className="flex flex-col items-center gap-2.5 font-bold">
+          // The status below says the same to a screen reader.
+          <span
+            aria-hidden="true"
+            className="flex flex-col items-center gap-2.5 font-bold"
+          >
             <LoaderCircle
               aria-hidden="true"
               className="size-7 animate-spin motion-reduce:animate-none"
@@ -128,6 +132,7 @@ export function VideoCard({
               aria-valuemin={0}
               aria-valuemax={100}
               aria-valuenow={VideoProgress.percent(phase.loaded, phase.total)}
+              aria-valuetext={`${VideoProgress.megabytes(phase.loaded, phase.total)}, ${String(VideoProgress.percent(phase.loaded, phase.total))}%`}
               className="h-1.5 overflow-hidden rounded-full bg-muted"
             >
               <div
@@ -161,6 +166,11 @@ export function VideoCard({
         )}
       </div>
       {problem && <FormAlert>{problem}</FormAlert>}
+      {upload.notice && (
+        <p role="status" className="text-muted-foreground">
+          {upload.notice}
+        </p>
+      )}
       {!readOnly && (
         <>
           <input
