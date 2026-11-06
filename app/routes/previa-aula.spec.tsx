@@ -90,6 +90,15 @@ describe('the lesson preview', () => {
     ).toBeVisible();
   });
 
+  it('should say when a lesson has no video and no text yet', async () => {
+    vi.spyOn(LessonService, 'open').mockResolvedValue({ ...content, body: '' });
+    renderPreview();
+
+    expect(
+      await screen.findByText('Esta aula ainda não tem vídeo nem texto.'),
+    ).toBeVisible();
+  });
+
   it('should say a lesson that is not in one of your courses is not found', async () => {
     vi.spyOn(LessonService, 'open').mockRejectedValue(
       apiError(403, 'FORBIDDEN'),
