@@ -6,6 +6,12 @@ import { CourseProgress } from '~/components/course/CourseProgress';
 import { cn } from '~/lib/utils';
 import type { CourseModule } from '~/services/CourseService';
 
+class OutlineCount {
+  static of(count: number, one: string, many: string): string {
+    return `${String(count)} ${count === 1 ? one : many}`;
+  }
+}
+
 export function LessonOutline({
   courseId,
   modules,
@@ -106,8 +112,8 @@ export function LessonOutline({
         </h2>
         {preview ? (
           <span className="text-sm text-muted-foreground">
-            {total} {total === 1 ? 'aula' : 'aulas'} · {modules.length}{' '}
-            {modules.length === 1 ? 'módulo' : 'módulos'}
+            {OutlineCount.of(total, 'aula', 'aulas')} ·{' '}
+            {OutlineCount.of(modules.length, 'módulo', 'módulos')}
           </span>
         ) : (
           progress
@@ -138,7 +144,7 @@ export function LessonOutline({
                 </span>
                 <span className="shrink-0 text-sm font-normal text-muted-foreground">
                   {preview ? (
-                    `${String(module.lessons.length)} ${module.lessons.length === 1 ? 'aula' : 'aulas'}`
+                    OutlineCount.of(module.lessons.length, 'aula', 'aulas')
                   ) : (
                     <>
                       {
