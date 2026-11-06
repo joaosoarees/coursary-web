@@ -143,7 +143,10 @@ export const useReorderOutline = (courseId: string) => {
         queryClient.setQueryData(key, context.before);
       }
 
-      toast.error('Não deu para salvar a nova ordem. Ela voltou ao que era.');
+      // One id, so quick moves that all fail leave one notice, not a stack of the same one.
+      toast.error('Não deu para salvar a nova ordem. Ela voltou ao que era.', {
+        id: 'outline-order-failed',
+      });
     },
     onSuccess: (modules) => {
       if (queryClient.isMutating({ mutationKey }) === 1) {
