@@ -149,7 +149,22 @@ export const useReorderOutline = (courseId: string) => {
       });
     },
     onSuccess: (modules) => {
-      if (queryClient.isMutating({ mutationKey }) === 1) {
+      if (queryClient.isMutating({ mutationKey }) !== 1) {
+        return;
+      }
+
+      // A module or lesson created while this request ran is not in its answer: ask again then.
+      const ids = (list: Modules) =>
+        list.flatMap((module) => [
+          module.id,
+          ...module.lessons.map((lesson) => lesson.id),
+        ]);
+      const answered = new Set(ids(modules));
+      const cached = queryClient.getQueryData<CourseOutline>(key);
+
+      if (cached && ids(cached.modules).some((id) => !answered.has(id))) {
+        void queryClient.invalidateQueries({ queryKey: key });
+      } else {
         write(() => modules);
       }
     },
