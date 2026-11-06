@@ -8,6 +8,7 @@ import {
 } from '~/services/InstructorService';
 import { LessonService } from '~/services/LessonService';
 import { OutlineService } from '~/services/OutlineService';
+import { VideoService } from '~/services/VideoService';
 import { apiError, Landing, renderRoutes } from '~/test/renderRoutes';
 
 const course: ManagedCourse = {
@@ -164,6 +165,38 @@ describe('edit lesson', () => {
     await waitFor(() => {
       expect(back).toHaveFocus();
     });
+  });
+
+  it('should warn that leaving cancels a video upload in flight', async () => {
+    vi.spyOn(InstructorService, 'get').mockResolvedValue(course);
+    vi.spyOn(VideoService, 'start').mockImplementation(
+      () => new Promise(() => undefined),
+    );
+    const { container } = renderAt();
+
+    await screen.findByRole('button', { name: 'Enviar vídeo' });
+    const picker = container.querySelector('input[accept*="mp4"]');
+
+    if (!picker) {
+      throw new Error('No video input.');
+    }
+    fireEvent.change(picker, {
+      target: {
+        files: [new File(['x'], 'aula.mp4', { type: 'video/mp4' })],
+      },
+    });
+    await screen.findByRole('button', { name: 'Cancelar envio' });
+    fireEvent.click(await screen.findByRole('link', { name: 'Gráficos' }));
+
+    const dialog = await screen.findByRole('dialog', {
+      name: 'Sair e cancelar o envio?',
+    });
+    expect(dialog).toHaveTextContent('Sair cancela o envio');
+    fireEvent.click(screen.getByRole('button', { name: 'Sair e cancelar' }));
+
+    expect(
+      await screen.findByRole('heading', { name: 'Editar curso' }),
+    ).toBeVisible();
   });
 
   it('should show an archived course lesson read-only', async () => {

@@ -35,6 +35,8 @@ colors:
   chalk-yellow-foreground: "#112019"
   chalk-blue: "#9fd0ee"
   chalk-pink: "#f4a9b8"
+  screen: "#0d1a14"
+  screen-muted: "#c9d8ce"
   background-dark: "#112019"
   foreground-dark: "#eaf0ea"
   card-dark: "#162b22"
@@ -291,6 +293,7 @@ Uma paleta de lousa: verdes profundos e frios como estrutura, giz claro como mar
 - **Verde Grafite** (#47594f): texto de apoio, legendas e cabeçalhos de tabela no claro; no escuro, **Sálvia de Giz** (#a9bfb1).
 - **Sálvia Pálida** (#d9e3db): o fundo de hover de botões fantasma, contornados e itens de menu no claro; no escuro, **Lousa Gasta** (#2a4a3b), que também é o hover do trilho.
 - **Fio de Sálvia** (#cfd9d1): bordas finas de cards, tabelas e divisores; no escuro, **Fio de Lousa** (#2f4c3e).
+- **Tela Apagada** (#0d1a14): o quadro 16:9 do vídeo antes de ele tocar, nos dois temas; o texto sobre ele é Giz Branco e, quando secundário, **Giz Gasto** (#c9d8ce).
 - **Cinza-Musgo** (#7d9186): a borda dos campos e dos controles contornados, a borda do estado vazio e o polegar da barra de rolagem; no escuro, **Musgo Fundo** (#5f7d6d).
 
 ### Named Rules

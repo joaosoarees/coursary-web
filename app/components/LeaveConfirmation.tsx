@@ -17,12 +17,20 @@ export const DISCARDING = { discarding: true };
 const discards = (state: unknown) =>
   typeof state === 'object' && state !== null && 'discarding' in state;
 
-// Holds back a navigation inside the app while there are unsaved changes.
-export function LeaveConfirmation({ when }: { when: boolean }) {
+// Holds back a navigation inside the app while there are unsaved changes (`when`) or a video
+// going up.
+export function LeaveConfirmation({
+  when,
+  uploading = false,
+}: {
+  when: boolean;
+  uploading?: boolean;
+}) {
+  const holds = when || uploading;
   // The link that started the navigation keeps the focus when the person stays.
   const origin = useRef<HTMLElement | null>(null);
   const blocker = useBlocker(({ nextLocation }) => {
-    const blocks = when && !discards(nextLocation.state);
+    const blocks = holds && !discards(nextLocation.state);
 
     // Taken here, before the dialog moves the focus into itself.
     if (blocks && document.activeElement instanceof HTMLElement) {
@@ -33,16 +41,16 @@ export function LeaveConfirmation({ when }: { when: boolean }) {
   });
   const blocked = blocker.state === 'blocked';
 
-  // Saved while a navigation was held back: nothing is left to lose, let it through.
+  // Saved or sent while a navigation was held back: nothing is left to lose, let it through.
   useEffect(() => {
-    if (blocker.state === 'blocked' && !when) {
+    if (blocker.state === 'blocked' && !holds) {
       blocker.proceed();
     }
-  }, [blocker, when]);
+  }, [blocker, holds]);
 
   return (
     <Dialog
-      open={blocked && when}
+      open={blocked && holds}
       onOpenChange={(open) => {
         if (!open && blocker.state === 'blocked') {
           blocker.reset();
@@ -60,10 +68,14 @@ export function LeaveConfirmation({ when }: { when: boolean }) {
         }}
       >
         <DialogHeader className="gap-4 text-left">
-          <DialogTitle>Sair sem salvar?</DialogTitle>
+          <DialogTitle>
+            {uploading ? 'Sair e cancelar o envio?' : 'Sair sem salvar?'}
+          </DialogTitle>
           <DialogDescription className="text-base">
-            As alterações que você fez nesta página ainda não foram salvas e
-            serão perdidas.
+            {uploading
+              ? 'O vídeo ainda está sendo enviado. Sair cancela o envio e descarta o que já chegou.'
+              : 'As alterações que você fez nesta página ainda não foram salvas e serão perdidas.'}
+            {uploading && when && ' As alterações não salvas também se perdem.'}
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
@@ -73,7 +85,7 @@ export function LeaveConfirmation({ when }: { when: boolean }) {
               blocker.reset?.();
             }}
           >
-            Continuar editando
+            {uploading ? 'Continuar aqui' : 'Continuar editando'}
           </Button>
           <Button
             variant="destructive"
@@ -81,7 +93,7 @@ export function LeaveConfirmation({ when }: { when: boolean }) {
               blocker.proceed?.();
             }}
           >
-            Sair sem salvar
+            {uploading ? 'Sair e cancelar' : 'Sair sem salvar'}
           </Button>
         </DialogFooter>
       </DialogContent>

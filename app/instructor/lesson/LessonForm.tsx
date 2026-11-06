@@ -3,7 +3,6 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import { LeaveConfirmation } from '~/components/LeaveConfirmation';
 import { LessonBody } from '~/components/lesson/LessonBody';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
@@ -43,12 +42,15 @@ export function LessonForm({
   lessonId,
   saved,
   readOnly,
+  onUnsavedChange,
 }: {
   courseId: string;
   moduleId: string;
   lessonId: string;
   saved: LessonValues;
   readOnly: boolean;
+  // The page holds the in-app blocker: a router takes one, and the video upload needs it too.
+  onUnsavedChange: (unsaved: boolean) => void;
 }) {
   const id = useId();
   const update = useUpdateLesson(courseId, moduleId, lessonId);
@@ -88,6 +90,17 @@ export function LessonForm({
     bytes > BODY_MAX_BYTES ? 'over' : bytes >= NEAR_LIMIT ? 'near' : 'under';
 
   useUnsavedChangesWarning(unsaved);
+
+  useEffect(() => {
+    onUnsavedChange(unsaved);
+  }, [onUnsavedChange, unsaved]);
+
+  useEffect(
+    () => () => {
+      onUnsavedChange(false);
+    },
+    [onUnsavedChange],
+  );
 
   const handleSubmit = form.handleSubmit(
     async (lesson) => {
@@ -132,7 +145,6 @@ export function LessonForm({
       aria-labelledby={`${id}-heading`}
       className="flex flex-col gap-5 rounded-lg border bg-card p-5 text-card-foreground shadow-sm md:p-7"
     >
-      <LeaveConfirmation when={unsaved} />
       <h2 id={`${id}-heading`} className="font-display text-xl font-bold">
         Aula
       </h2>

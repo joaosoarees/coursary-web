@@ -52,7 +52,7 @@ export function MaterialCard({
     phase.step === 'uploading' ? Math.round(phase.progress * 100) : 100;
 
   // Reloading or closing the tab while a file goes up loses it. The page holds one in-app blocker
-  // already (the lesson form's), and a router takes only one.
+  // already (for the form and the video), and a router takes only one.
   useUnsavedChangesWarning(busy);
 
   return (
