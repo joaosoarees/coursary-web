@@ -5,6 +5,13 @@ import { toast } from 'sonner';
 
 import { CourseFormat } from '~/components/course/CourseFormat';
 import { Button } from '~/components/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '~/components/ui/tooltip';
+import { focusLater, focusMark } from '~/instructor/content/contentFocus';
 import { DragHandle } from '~/instructor/content/DragHandle';
 import { LessonRow } from '~/instructor/content/LessonRow';
 import { ModuleTitleForm } from '~/instructor/content/ModuleTitleForm';
@@ -78,6 +85,7 @@ export function ModuleCard({
       dragListener={false}
       dragControls={controls}
       onDragEnd={onDragEnd}
+      tabIndex={-1}
       aria-labelledby={titleId}
       className="relative rounded-lg border bg-card text-card-foreground shadow-sm"
     >
@@ -94,22 +102,25 @@ export function ModuleCard({
               onSave={async (title) => {
                 await rename.mutateAsync(title);
                 setRenaming(false);
+                focusLater(`module-rename-${module.id}`);
               }}
               onCancel={() => {
                 setRenaming(false);
+                focusLater(`module-rename-${module.id}`);
               }}
             />
           </div>
         ) : (
           <>
-            <div className="flex min-w-0 flex-[1_1_15rem] flex-col">
-              <span className="text-sm text-muted-foreground">
-                Módulo {number}
+            <h3
+              id={titleId}
+              className="min-w-0 flex-[1_1_15rem] text-lg leading-snug font-bold"
+            >
+              <span className="font-normal text-muted-foreground">
+                Módulo {number} ·{' '}
               </span>
-              <h3 id={titleId} className="text-lg leading-snug font-bold">
-                {module.title}
-              </h3>
-            </div>
+              {module.title}
+            </h3>
             <span className="text-muted-foreground">
               {ModuleFacts.of(module)}
             </span>
@@ -129,6 +140,7 @@ export function ModuleCard({
                   variant="ghost"
                   size="icon"
                   aria-label={`Renomear ${what}`}
+                  {...focusMark(`module-rename-${module.id}`)}
                   onClick={() => {
                     setRenaming(true);
                   }}
@@ -136,30 +148,42 @@ export function ModuleCard({
                   <Pencil aria-hidden="true" />
                 </Button>
                 {deletable && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    aria-label={`Apagar ${what}`}
-                    aria-disabled={hasLessons || remove.isPending}
-                    aria-describedby={hasLessons ? hintId : undefined}
-                    className="text-destructive"
-                    onClick={() => {
-                      if (hasLessons || remove.isPending) {
-                        return;
-                      }
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label={`Apagar ${what}`}
+                          aria-disabled={hasLessons || remove.isPending}
+                          aria-describedby={hasLessons ? hintId : undefined}
+                          className="text-destructive aria-disabled:text-muted-foreground"
+                          onClick={() => {
+                            if (hasLessons || remove.isPending) {
+                              return;
+                            }
 
-                      remove.mutate(undefined, {
-                        onSuccess: () => {
-                          toast.success('Módulo apagado.');
-                        },
-                        onError: (error) => {
-                          toast.error(ApiFailure.message(error));
-                        },
-                      });
-                    }}
-                  >
-                    <Trash2 aria-hidden="true" />
-                  </Button>
+                            remove.mutate(undefined, {
+                              onSuccess: () => {
+                                toast.success('Módulo apagado.');
+                                focusLater('content-new-module');
+                              },
+                              onError: (error) => {
+                                toast.error(ApiFailure.message(error));
+                              },
+                            });
+                          }}
+                        >
+                          <Trash2 aria-hidden="true" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        {hasLessons
+                          ? 'Tire as aulas do módulo para apagá-lo.'
+                          : `Apagar ${what}`}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 )}
               </div>
             )}
@@ -208,6 +232,7 @@ export function ModuleCard({
             onClick={() => {
               setAdding(true);
             }}
+            {...focusMark(`module-add-${module.id}`)}
           >
             <Plus aria-hidden="true" />
             Nova aula
@@ -218,6 +243,10 @@ export function ModuleCard({
             moduleTitle={module.title}
             open={adding}
             onOpenChange={setAdding}
+            onCloseAutoFocus={(event) => {
+              event.preventDefault();
+              focusLater(`module-add-${module.id}`);
+            }}
           />
         </div>
       )}

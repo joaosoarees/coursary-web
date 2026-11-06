@@ -137,7 +137,7 @@ describe('CourseContent', () => {
     renderContent();
 
     const module = (
-      await screen.findByRole('heading', { name: 'Escrevendo o título' })
+      await screen.findByRole('heading', { name: /Escrevendo o título/ })
     ).closest('li');
     fireEvent.click(
       within(module as HTMLElement).getByRole('button', { name: 'Nova aula' }),

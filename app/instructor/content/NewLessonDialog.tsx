@@ -27,16 +27,22 @@ export function NewLessonDialog({
   moduleTitle,
   open,
   onOpenChange,
+  onCloseAutoFocus,
 }: {
   courseId: string;
   moduleId: string;
   moduleTitle: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onCloseAutoFocus: (event: Event) => void;
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent showCloseButton={false} className="sm:max-w-[32rem]">
+      <DialogContent
+        showCloseButton={false}
+        className="sm:max-w-[32rem]"
+        onCloseAutoFocus={onCloseAutoFocus}
+      >
         {open && (
           <NewLessonForm
             courseId={courseId}
