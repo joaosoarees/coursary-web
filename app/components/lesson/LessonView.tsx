@@ -101,6 +101,11 @@ export function LessonView({
     });
   };
 
+  // A preview of a course's only lesson has nothing to put in the strip.
+  const hasStrip =
+    !preview ||
+    lessons[index - 1] !== undefined ||
+    lessons[index + 1] !== undefined;
   const strip = (
     <LessonStrip
       lessonPath={lessonPath}
@@ -151,7 +156,7 @@ export function LessonView({
                 onEnded={preview ? undefined : completeLesson}
               />
             </div>
-            <div className="border-t">{strip}</div>
+            {hasStrip && <div className="border-t">{strip}</div>}
           </div>
         )}
         {content.body.trim() !== '' && (
@@ -166,7 +171,7 @@ export function LessonView({
             attachments={content.attachments}
           />
         )}
-        {!content.video && (
+        {!content.video && hasStrip && (
           <div className="rounded-md border bg-card shadow-sm">{strip}</div>
         )}
       </div>
