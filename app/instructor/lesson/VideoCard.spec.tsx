@@ -28,6 +28,7 @@ const uploadIn = (
 ): ReturnType<typeof useVideoUpload> => ({
   phase,
   problem,
+  notice: undefined,
   uploading: phase.step === 'uploading',
   upload: vi.fn(() => Promise.resolve()),
   cancel: vi.fn(),

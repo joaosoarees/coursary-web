@@ -64,6 +64,8 @@ export function useVideoUpload(courseId: string, lessonId: string) {
   const queryClient = useQueryClient();
   const [phase, setPhase] = useState<VideoUploadPhase>({ step: 'idle' });
   const [problem, setProblem] = useState<string>();
+  // Not a failure: the upload went through and the video is still on its way.
+  const [notice, setNotice] = useState<string>();
   const running = useRef<AbortController>(undefined);
   const gone = useRef(false);
   const uploading = phase.step === 'uploading';
@@ -111,6 +113,11 @@ export function useVideoUpload(courseId: string, lessonId: string) {
   };
 
   const upload = async (file: File) => {
+    // One video per lesson: a second pick while one goes up would leave the first uncancellable.
+    if (running.current) {
+      return;
+    }
+
     const refused = checkVideo(file);
 
     if (refused) {
@@ -124,6 +131,7 @@ export function useVideoUpload(courseId: string, lessonId: string) {
 
     running.current = controller;
     setProblem(undefined);
+    setNotice(undefined);
     setPhase({ step: 'uploading', name: file.name, loaded: 0, total });
 
     let fileId: string;
@@ -168,7 +176,7 @@ export function useVideoUpload(courseId: string, lessonId: string) {
     if (ready) {
       toast.success('Vídeo enviado.');
     } else {
-      setProblem(
+      setNotice(
         'O vídeo foi enviado, mas ainda não apareceu. Recarregue a página em instantes.',
       );
     }
@@ -180,5 +188,5 @@ export function useVideoUpload(courseId: string, lessonId: string) {
     );
   };
 
-  return { phase, problem, uploading, upload, cancel };
+  return { phase, problem, notice, uploading, upload, cancel };
 }
