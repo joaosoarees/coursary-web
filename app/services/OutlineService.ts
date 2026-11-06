@@ -18,9 +18,12 @@ const createdLessonSchema = z.object({
   position: z.number(),
 });
 
+const savedLessonSchema = createdLessonSchema.extend({ body: z.string() });
+
 const reorderedSchema = z.object({ modules: z.array(moduleSchema) });
 
 export type CreatedLesson = z.infer<typeof createdLessonSchema>;
+export type SavedLesson = z.infer<typeof savedLessonSchema>;
 
 export interface OutlineOrder {
   modules: { id: string; lessonIds: string[] }[];
@@ -63,6 +66,20 @@ export class OutlineService {
     );
 
     return createdLessonSchema.parse(data);
+  }
+
+  static async updateLesson(
+    courseId: string,
+    moduleId: string,
+    lessonId: string,
+    lesson: { title: string; body: string; durationMinutes: number },
+  ): Promise<SavedLesson> {
+    const { data } = await httpClient.patch<unknown>(
+      `${moduleUrl(courseId, moduleId)}/lessons/${encodeURIComponent(lessonId)}`,
+      lesson,
+    );
+
+    return savedLessonSchema.parse(data);
   }
 
   static async deleteLesson(
