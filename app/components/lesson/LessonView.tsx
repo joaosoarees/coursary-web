@@ -247,7 +247,7 @@ function LessonStrip({
       {(previous ?? next) && (
         <nav
           aria-label="Aulas"
-          className="grid grid-cols-[auto_minmax(0,1fr)] gap-3 sm:flex sm:flex-wrap sm:items-center sm:gap-2"
+          className="grid grid-cols-[auto_minmax(0,1fr)] gap-3 max-[22.5rem]:grid-cols-1 sm:flex sm:flex-wrap sm:items-center sm:gap-2"
         >
           {previous && (
             <Button variant="ghost" asChild>
@@ -263,7 +263,7 @@ function LessonStrip({
           {next && (
             <Button
               variant={done ? 'default' : 'outline'}
-              className="col-start-2 h-auto min-h-13 justify-between gap-3 py-1.5 pr-3.5 pl-4 text-left whitespace-normal"
+              className="col-start-2 h-auto min-h-13 justify-between gap-3 py-1.5 pr-3.5 pl-4 text-left whitespace-normal max-[22.5rem]:col-start-1"
               asChild
             >
               <Link
