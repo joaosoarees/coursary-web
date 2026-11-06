@@ -159,6 +159,11 @@ export function LessonView({
             {hasStrip && <div className="border-t">{strip}</div>}
           </div>
         )}
+        {preview && !content.video && content.body.trim() === '' && (
+          <p className="text-muted-foreground">
+            Esta aula ainda não tem vídeo nem texto.
+          </p>
+        )}
         {content.body.trim() !== '' && (
           <section aria-label="Texto da aula">
             <LessonBody markdown={content.body} />
