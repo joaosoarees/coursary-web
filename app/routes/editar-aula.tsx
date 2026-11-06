@@ -5,6 +5,7 @@ import { Link } from 'react-router';
 import { ErrorState } from '~/components/ErrorState';
 import { LoadingNote } from '~/components/LoadingNote';
 import { Skeleton } from '~/components/ui/skeleton';
+import { ContentOrder } from '~/instructor/content/ContentOrder';
 import { LessonForm } from '~/instructor/lesson/LessonForm';
 import { queryClient } from '~/lib/queryClient';
 import { managedCourseQuery, useManagedCourse } from '~/queries/instructor';
@@ -20,7 +21,12 @@ import { isSignedIn } from '~/session/session';
 
 import type { Route } from './+types/editar-aula';
 
-const NOT_MINE = new Set(['COURSE_NOT_FOUND', 'VALIDATION', 'FORBIDDEN']);
+const NOT_MINE = new Set([
+  'COURSE_NOT_FOUND',
+  'LESSON_NOT_FOUND',
+  'VALIDATION',
+  'FORBIDDEN',
+]);
 
 export const meta: Route.MetaFunction = () => [
   { title: 'Editar aula · Coursary' },
@@ -38,15 +44,19 @@ export function clientLoader({ params }: Route.ClientLoaderArgs) {
 
 class LessonPlace {
   static find(modules: CourseModule[], lessonId: string) {
-    let number = 0;
+    const firstNumbers = ContentOrder.firstNumbers(modules);
 
     for (const [index, module] of modules.entries()) {
-      for (const lesson of module.lessons) {
-        number += 1;
+      const position = module.lessons.findIndex((each) => each.id === lessonId);
+      const lesson = module.lessons[position];
 
-        if (lesson.id === lessonId) {
-          return { module, moduleNumber: index + 1, lesson, number };
-        }
+      if (lesson) {
+        return {
+          module,
+          moduleNumber: index + 1,
+          lesson,
+          number: (firstNumbers[index] ?? 1) + position,
+        };
       }
     }
 
