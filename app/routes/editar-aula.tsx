@@ -1,11 +1,12 @@
 import { noop } from '@tanstack/react-query';
-import { Archive, ChevronLeft } from 'lucide-react';
+import { Archive, ChevronLeft, Eye } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router';
 
 import { ErrorState } from '~/components/ErrorState';
 import { LeaveConfirmation } from '~/components/LeaveConfirmation';
 import { LoadingNote } from '~/components/LoadingNote';
+import { Button } from '~/components/ui/button';
 import { Skeleton } from '~/components/ui/skeleton';
 import { ContentOrder } from '~/instructor/content/ContentOrder';
 import { LessonForm } from '~/instructor/lesson/LessonForm';
@@ -119,13 +120,23 @@ export default function EditLessonPage({ params }: Route.ComponentProps) {
         />
       ) : (
         <>
-          <header className="flex flex-col gap-1.5">
-            <h1 className="font-display text-3xl leading-tight font-bold tracking-tight text-balance md:text-4xl">
-              {place.lesson.title}
-            </h1>
-            <p className="text-muted-foreground">
-              Módulo {place.moduleNumber} · Aula {place.number}
-            </p>
+          <header className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
+            <div className="flex min-w-0 flex-[1_1_26rem] flex-col gap-1.5">
+              <h1 className="font-display text-3xl leading-tight font-bold tracking-tight text-balance md:text-4xl">
+                {place.lesson.title}
+              </h1>
+              <p className="text-muted-foreground">
+                Módulo {place.moduleNumber} · Aula {place.number}
+              </p>
+            </div>
+            <Button variant="outline" asChild>
+              <Link
+                to={`/instrutor/cursos/${params.id}/aulas/${params.aulaId}/previa`}
+              >
+                <Eye aria-hidden="true" />
+                Ver como aluno
+              </Link>
+            </Button>
           </header>
           {course.data.status === 'ARCHIVED' && (
             <div
