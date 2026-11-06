@@ -2,13 +2,14 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 
 import { useFileUpload } from '~/hooks/useFileUpload';
-import { checkMaterial } from '~/instructor/lesson/materialRules';
+import {
+  checkMaterial,
+  MATERIAL_FULL,
+} from '~/instructor/lesson/materialRules';
 import { lessonQuery } from '~/queries/lesson';
 import { ApiFailure } from '~/services/ApiFailure';
 import { LessonService } from '~/services/LessonService';
 import { MaterialService } from '~/services/MaterialService';
-
-const FULL = 'A aula já tem 20 arquivos. Apague um para enviar outro.';
 
 // A file counts as ready when the lesson lists it: the API has no status route for material.
 export function useMaterialUpload(courseId: string, lessonId: string) {
@@ -28,7 +29,7 @@ export function useMaterialUpload(courseId: string, lessonId: string) {
     },
     requestProblem: (error) =>
       ApiFailure.message(error, {
-        ATTACHMENT_LIMIT: FULL,
+        ATTACHMENT_LIMIT: MATERIAL_FULL,
         COURSE_ARCHIVED: 'O curso foi arquivado e não pode mais ser editado.',
       }),
     readStatus: async (fileId) => {
@@ -47,7 +48,7 @@ export function useMaterialUpload(courseId: string, lessonId: string) {
       refused:
         'O arquivo foi recusado. Confira o tipo e o tamanho e envie de novo.',
       notReady:
-        'O arquivo ainda não apareceu na aula. Se não aparecer, envie de novo.',
+        'O arquivo ainda está sendo confirmado e deve aparecer sozinho. Recarregue a página antes de enviar de novo.',
       unconfirmed:
         'Não deu para confirmar o envio. Se o arquivo não aparecer em instantes, envie de novo.',
     },
