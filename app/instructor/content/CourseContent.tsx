@@ -95,7 +95,9 @@ function ContentEditor({
   const [dragging, setDragging] = useState<Modules | null>(null);
   // What a move did, for screen readers: the rows change place without a word otherwise.
   const [announcement, setAnnouncement] = useState('');
-  const modules = dragging ?? saved;
+  // Until the optimistic write lands, the order just sent is the one to show, not the saved one.
+  const modules =
+    dragging ?? (reorder.isPending ? reorder.variables : undefined) ?? saved;
 
   const save = (next: Modules, said?: string, onSaved?: () => void) => {
     setDragging(null);
