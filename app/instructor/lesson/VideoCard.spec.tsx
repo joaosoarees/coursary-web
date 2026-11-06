@@ -86,6 +86,21 @@ describe('VideoCard', () => {
     expect(upload.upload).toHaveBeenCalledWith(file);
   });
 
+  it('should show the progress on the frame while the first video goes up', () => {
+    renderCard({
+      current: null,
+      upload: uploadIn({
+        step: 'uploading',
+        name: 'aula-02.mp4',
+        loaded: 312 * MIB,
+        total: 840 * MIB,
+      }),
+    });
+
+    expect(screen.getByText('Enviando… 37%')).toBeVisible();
+    expect(screen.queryByText(/o atual continua no ar/)).toBeNull();
+  });
+
   it('should show the progress of a replacement and let it be cancelled', () => {
     const upload = uploadIn({
       step: 'uploading',
@@ -93,12 +108,13 @@ describe('VideoCard', () => {
       loaded: 312 * MIB,
       total: 840 * MIB,
     });
-    renderCard({ upload });
+    const { container } = renderCard({ upload });
 
     expect(
       screen.getByRole('progressbar', { name: 'Envio do vídeo' }),
     ).toHaveAttribute('aria-valuenow', '37');
-    expect(screen.getByText('Enviando… 37%')).toBeVisible();
+    expect(container.querySelector('video')).toHaveAttribute('src', video.url);
+    expect(screen.queryByText('Enviando… 37%')).toBeNull();
     expect(screen.getByText('312 de 840 MB · 37%')).toBeVisible();
     expect(
       screen.getByText(/o atual continua no ar até ele ficar pronto/),

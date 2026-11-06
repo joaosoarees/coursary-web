@@ -86,7 +86,8 @@ export function VideoCard({
         Vídeo
       </h2>
       <div className="relative grid aspect-video place-items-center overflow-hidden rounded-md bg-screen text-chalk">
-        {busy ? (
+        {/* A replacement keeps the current video playable: it stays live until the new one is in. */}
+        {busy && !video ? (
           // The status below says the same to a screen reader.
           <span
             aria-hidden="true"
