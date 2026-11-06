@@ -16,6 +16,9 @@ export const MATERIAL_ACCEPT = Object.keys(TYPES)
 
 export const MATERIAL_MAX_FILES = 20;
 
+export const MATERIAL_FULL =
+  'A aula já tem 20 arquivos. Apague um para enviar outro.';
+
 export const MATERIAL_HINT =
   'PDF, ZIP, texto, Markdown, Word, PowerPoint ou Excel, até 50 MB cada.';
 
