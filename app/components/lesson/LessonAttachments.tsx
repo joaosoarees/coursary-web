@@ -1,11 +1,9 @@
 import { Download, File } from 'lucide-react';
-import { useState } from 'react';
-import { toast } from 'sonner';
 
 import { AttachmentFormat } from '~/components/lesson/AttachmentFormat';
 import { Button } from '~/components/ui/button';
-import { ApiFailure } from '~/services/ApiFailure';
-import { type Attachment, LessonService } from '~/services/LessonService';
+import { useAttachmentDownload } from '~/hooks/useAttachmentDownload';
+import type { Attachment } from '~/services/LessonService';
 
 export function LessonAttachments({
   courseId,
@@ -44,29 +42,11 @@ function AttachmentRow({
   lessonId: string;
   attachment: Attachment;
 }) {
-  const [pending, setPending] = useState(false);
-
-  // The signed address lasts five minutes, so it is asked for only when the reader clicks.
-  async function download() {
-    if (pending) {
-      return;
-    }
-
-    setPending(true);
-
-    try {
-      const { url } = await LessonService.attachmentDownload({
-        courseId,
-        lessonId,
-        fileId: attachment.id,
-      });
-      window.location.assign(url);
-    } catch (error) {
-      toast.error(ApiFailure.message(error));
-    } finally {
-      setPending(false);
-    }
-  }
+  const { pending, download } = useAttachmentDownload({
+    courseId,
+    lessonId,
+    fileId: attachment.id,
+  });
 
   return (
     <li className="flex items-center gap-3 py-2.5 pr-1.5 pl-3.5 sm:gap-3.5 sm:pr-2.5 sm:pl-4">
