@@ -2,7 +2,7 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import { checkAvatar } from '~/account/avatarRules';
 import { TOO_MANY_REQUESTS } from '~/auth/authMessages';
-import { useImageUpload } from '~/hooks/useImageUpload';
+import { useFileUpload } from '~/hooks/useFileUpload';
 import { meQuery } from '~/queries/me';
 import { AccountService } from '~/services/AccountService';
 import { ApiFailure } from '~/services/ApiFailure';
@@ -10,7 +10,7 @@ import { ApiFailure } from '~/services/ApiFailure';
 export function useAvatarUpload() {
   const queryClient = useQueryClient();
 
-  return useImageUpload({
+  return useFileUpload({
     check: checkAvatar,
     request: (type) => AccountService.requestAvatarUpload(type),
     requestProblem: (error) => ApiFailure.message(error, { TOO_MANY_REQUESTS }),

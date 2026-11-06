@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 
-import { useImageUpload } from '~/hooks/useImageUpload';
+import { useFileUpload } from '~/hooks/useFileUpload';
 import { checkCover } from '~/instructor/coverRules';
 import { COURSE_ARCHIVED } from '~/instructor/instructorMessages';
 import { storeManagedCourse } from '~/mutations/instructor';
@@ -11,7 +11,7 @@ import { InstructorService } from '~/services/InstructorService';
 export function useCoverUpload(courseId: string) {
   const queryClient = useQueryClient();
 
-  return useImageUpload({
+  return useFileUpload({
     check: checkCover,
     request: (type) => InstructorService.requestCoverUpload(courseId, type),
     requestProblem: (error) => ApiFailure.message(error, { COURSE_ARCHIVED }),
