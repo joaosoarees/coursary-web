@@ -134,6 +134,7 @@ describe('LessonOutline', () => {
     expect(
       screen.getByRole('button', { name: /1\. Primeiros passos/ }),
     ).toHaveTextContent('2 aulas');
+    expect(screen.getByText('3 aulas · 2 módulos')).toBeInTheDocument();
     expect(screen.queryByText(/concluídas/)).toBeNull();
   });
 });
