@@ -16,6 +16,10 @@ const swap = <T>(items: T[], index: number, offset: -1 | 1): T[] => {
 };
 
 export class ContentOrder {
+  static swap<T>(items: T[], index: number, offset: -1 | 1): T[] {
+    return swap(items, index, offset);
+  }
+
   static moveModule(modules: Modules, moduleId: string, offset: -1 | 1) {
     return swap(
       modules,
