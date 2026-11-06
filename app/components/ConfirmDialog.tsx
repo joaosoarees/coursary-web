@@ -26,7 +26,7 @@ export function ConfirmDialog({
 }: {
   open: boolean;
   onClose: () => void;
-  onCloseAutoFocus: (event: Event) => void;
+  onCloseAutoFocus?: (event: Event) => void;
   consequence?: string;
   pending: boolean;
   error: string | null;
