@@ -24,8 +24,9 @@ class VideoProgress {
     return total === 0 ? 0 : Math.floor((loaded / total) * 100);
   }
 
+  // Truncated like the percent, so the two never disagree on the same line.
   static megabytes(loaded: number, total: number): string {
-    return `${WHOLE.format(loaded / MIB)} de ${WHOLE.format(total / MIB)} MB`;
+    return `${WHOLE.format(Math.floor(loaded / MIB))} de ${WHOLE.format(total / MIB)} MB`;
   }
 }
 
