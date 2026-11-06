@@ -1,13 +1,17 @@
 import { noop } from '@tanstack/react-query';
 import { Archive, ChevronLeft } from 'lucide-react';
+import { useState } from 'react';
 import { Link } from 'react-router';
 
 import { ErrorState } from '~/components/ErrorState';
+import { LeaveConfirmation } from '~/components/LeaveConfirmation';
 import { LoadingNote } from '~/components/LoadingNote';
 import { Skeleton } from '~/components/ui/skeleton';
 import { ContentOrder } from '~/instructor/content/ContentOrder';
 import { LessonForm } from '~/instructor/lesson/LessonForm';
 import { MaterialCard } from '~/instructor/lesson/MaterialCard';
+import { useVideoUpload } from '~/instructor/lesson/useVideoUpload';
+import { VideoCard } from '~/instructor/lesson/VideoCard';
 import { queryClient } from '~/lib/queryClient';
 import { managedCourseQuery, useManagedCourse } from '~/queries/instructor';
 import {
@@ -73,9 +77,12 @@ export default function EditLessonPage({ params }: Route.ComponentProps) {
     ? LessonPlace.find(outline.data.modules, params.aulaId)
     : undefined;
   const failed = [course, outline, content].find((query) => query.isError);
+  const video = useVideoUpload(params.id, params.aulaId);
+  const [unsaved, setUnsaved] = useState(false);
 
   return (
     <section className="flex flex-col gap-6">
+      <LeaveConfirmation when={unsaved} uploading={video.uploading} />
       <Link
         to={`/instrutor/cursos/${params.id}`}
         className="inline-flex min-h-10 items-center gap-1.5 self-start font-bold text-link hover:underline hover:underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
@@ -138,6 +145,7 @@ export default function EditLessonPage({ params }: Route.ComponentProps) {
               moduleId={place.module.id}
               lessonId={params.aulaId}
               readOnly={course.data.status === 'ARCHIVED'}
+              onUnsavedChange={setUnsaved}
               saved={{
                 title: place.lesson.title,
                 durationMinutes: place.lesson.durationMinutes,
@@ -145,6 +153,13 @@ export default function EditLessonPage({ params }: Route.ComponentProps) {
               }}
             />
             <div className="flex flex-col gap-6">
+              <VideoCard
+                courseId={params.id}
+                lessonId={params.aulaId}
+                video={content.data.video}
+                readOnly={course.data.status === 'ARCHIVED'}
+                upload={video}
+              />
               <MaterialCard
                 courseId={params.id}
                 lessonId={params.aulaId}
