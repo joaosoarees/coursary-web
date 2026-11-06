@@ -180,6 +180,39 @@ describe('MultipartUpload.send', () => {
     expect(steps.abort).not.toHaveBeenCalled();
   });
 
+  it('should abort when the retry after a lost answer is refused as invalid', async () => {
+    const lost = Object.assign(new Error('Network Error'), {
+      isAxiosError: true,
+    });
+    const invalid = Object.assign(new Error('Bad request'), {
+      isAxiosError: true,
+      response: { status: 400 },
+    });
+    const complete = vi
+      .fn(() => Promise.resolve())
+      .mockRejectedValueOnce(lost)
+      .mockRejectedValueOnce(invalid);
+    const steps = stepsWith(echo, { complete });
+
+    await expect(send(steps)).rejects.toBe(invalid);
+    expect(steps.abort).toHaveBeenCalledWith('f1');
+  });
+
+  it('should say when every part is sent, before completing', async () => {
+    const order: string[] = [];
+    const steps = stepsWith(echo, {
+      onPartsSent: () => order.push('sent'),
+      complete: vi.fn(() => {
+        order.push('complete');
+        return Promise.resolve();
+      }),
+    });
+
+    await send(steps);
+
+    expect(order).toEqual(['sent', 'complete']);
+  });
+
   it('should abort when the API refuses the parts', async () => {
     const refused = Object.assign(new Error('Bad request'), {
       isAxiosError: true,
