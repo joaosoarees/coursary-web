@@ -4,8 +4,6 @@ export const focusMark = (name: string) => ({ 'data-focus': name });
 
 export const focusLater = (name: string) => {
   requestAnimationFrame(() => {
-    document
-      .querySelector<HTMLElement>(`[data-focus="${CSS.escape(name)}"]`)
-      ?.focus();
+    document.querySelector<HTMLElement>(`[data-focus="${name}"]`)?.focus();
   });
 };
