@@ -130,15 +130,7 @@ function ContentEditor({
     }
   };
 
-  const firstNumbers = modules.reduce<number[]>(
-    (starts, module, index) => [
-      ...starts,
-      index === 0
-        ? 1
-        : (starts[index - 1] ?? 1) + (modules[index - 1]?.lessons.length ?? 0),
-    ],
-    [],
-  );
+  const firstNumbers = ContentOrder.firstNumbers(modules);
 
   return (
     <>

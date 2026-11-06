@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useBlocker } from 'react-router';
 
 import { Button } from '~/components/ui/button';
@@ -19,9 +19,18 @@ const discards = (state: unknown) =>
 
 // Holds back a navigation inside the app while there are unsaved changes.
 export function LeaveConfirmation({ when }: { when: boolean }) {
-  const blocker = useBlocker(
-    ({ nextLocation }) => when && !discards(nextLocation.state),
-  );
+  // The link that started the navigation keeps the focus when the person stays.
+  const origin = useRef<HTMLElement | null>(null);
+  const blocker = useBlocker(({ nextLocation }) => {
+    const blocks = when && !discards(nextLocation.state);
+
+    // Taken here, before the dialog moves the focus into itself.
+    if (blocks && document.activeElement instanceof HTMLElement) {
+      origin.current = document.activeElement;
+    }
+
+    return blocks;
+  });
   const blocked = blocker.state === 'blocked';
 
   // Saved while a navigation was held back: nothing is left to lose, let it through.
@@ -40,7 +49,16 @@ export function LeaveConfirmation({ when }: { when: boolean }) {
         }
       }}
     >
-      <DialogContent showCloseButton={false} className="sm:max-w-[32rem]">
+      <DialogContent
+        showCloseButton={false}
+        className="sm:max-w-[32rem]"
+        onCloseAutoFocus={(event) => {
+          if (origin.current?.isConnected) {
+            event.preventDefault();
+            origin.current.focus();
+          }
+        }}
+      >
         <DialogHeader className="gap-4 text-left">
           <DialogTitle>Sair sem salvar?</DialogTitle>
           <DialogDescription className="text-base">

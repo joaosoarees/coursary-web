@@ -386,6 +386,7 @@ Firmes, legíveis e marcados a giz: cada controle tem tamanho de dedo, bordas qu
 - **Celular:** barra de lousa no topo com o botão de menu (40 px), a marca e o avatar, cujo menu abre para baixo. A gaveta de 300 px traz o trilho aberto inteiro, com um botão de fechar de 40 px no canto (hover em Verde Lousa Claro, Lousa Gasta no escuro; foco em Giz Amarelo); seguir um link fecha a gaveta.
 - **Pular para o conteúdo:** primeiro foco da página; aparece em Giz Amarelo com texto preto, cantos de 6 px.
 - **Abas:** sublinhadas, sem caixa; a ativa em negrito com uma barra de 3 px em primário embaixo; hover em Sálvia Pálida.
+- **Modos num cartão:** trocar o modo de um mesmo conteúdo ("Escrever" e "Prévia") usa botões segmentados, não abas: um trilho em Névoa de Giz com cantos de 6 px e a opção ativa em folha, em negrito. As abas sublinhadas ficam para navegar entre seções.
 
 ### Overlays
 - **Menu e select:** folha de popover com borda fina, cantos de 6 px, 4 px de folga e a sombra Erguida. Itens de 40 px, cantos de 4 px, 0.875rem; o destacado ganha fundo Sálvia Pálida e um contorno interno de 2 px na cor do anel. Item destrutivo em Tijolo.

@@ -65,6 +65,20 @@ export class ContentOrder {
     );
   }
 
+  // The number of each module's first lesson: lessons are numbered across the whole course.
+  static firstNumbers(modules: Modules): number[] {
+    return modules.reduce<number[]>(
+      (starts, module, index) => [
+        ...starts,
+        index === 0
+          ? 1
+          : (starts[index - 1] ?? 1) +
+            (modules[index - 1]?.lessons.length ?? 0),
+      ],
+      [],
+    );
+  }
+
   static same(left: Modules, right: Modules) {
     const ids = (modules: Modules) =>
       modules

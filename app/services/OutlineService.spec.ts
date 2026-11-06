@@ -77,6 +77,37 @@ describe('OutlineService', () => {
     ]);
   });
 
+  it('should save a lesson with its body', async () => {
+    const saved = {
+      id: 'l1',
+      moduleId: 'm1',
+      title: 'Barras',
+      body: '## Título',
+      durationMinutes: 12,
+      position: 0,
+    };
+    answer(saved);
+
+    await expect(
+      OutlineService.updateLesson('c1', 'm1', 'l1', {
+        title: 'Barras',
+        body: '## Título',
+        durationMinutes: 12,
+      }),
+    ).resolves.toEqual(saved);
+    expect(calls()).toEqual([
+      [
+        'patch',
+        '/courses/c1/modules/m1/lessons/l1',
+        JSON.stringify({
+          title: 'Barras',
+          body: '## Título',
+          durationMinutes: 12,
+        }),
+      ],
+    ]);
+  });
+
   it('should send the whole order and read the outline back', async () => {
     const modules = [
       {
