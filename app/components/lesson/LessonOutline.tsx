@@ -12,12 +12,17 @@ export function LessonOutline({
   currentLessonId,
   completedLessonIds,
   footer,
+  preview = false,
+  lessonPath = (lessonId) => `/cursos/${courseId}/aulas/${lessonId}`,
 }: {
   courseId: string;
   modules: CourseModule[];
   currentLessonId: string;
   completedLessonIds: string[];
   footer?: React.ReactNode;
+  // The instructor's look as a student: no progress, since none is kept.
+  preview?: boolean;
+  lessonPath?: (lessonId: string) => string;
 }) {
   const [open, setOpen] = useState(false);
   const [expanded, setExpanded] = useState(
@@ -63,7 +68,9 @@ export function LessonOutline({
       sum + module.lessons.filter((lesson) => completed.has(lesson.id)).length,
     0,
   );
-  const progress = <CourseProgress completed={done} total={total} spelledOut />;
+  const progress = preview ? null : (
+    <CourseProgress completed={done} total={total} spelledOut />
+  );
 
   return (
     <aside
@@ -123,12 +130,19 @@ export function LessonOutline({
                   {index + 1}. {module.title}
                 </span>
                 <span className="shrink-0 text-sm font-normal text-muted-foreground">
-                  {
-                    module.lessons.filter((lesson) => completed.has(lesson.id))
-                      .length
-                  }{' '}
-                  de {module.lessons.length}
-                  <span className="sr-only"> concluídas</span>
+                  {preview ? (
+                    `${String(module.lessons.length)} ${module.lessons.length === 1 ? 'aula' : 'aulas'}`
+                  ) : (
+                    <>
+                      {
+                        module.lessons.filter((lesson) =>
+                          completed.has(lesson.id),
+                        ).length
+                      }{' '}
+                      de {module.lessons.length}
+                      <span className="sr-only"> concluídas</span>
+                    </>
+                  )}
                 </span>
                 <ChevronDown
                   aria-hidden="true"
@@ -150,7 +164,7 @@ export function LessonOutline({
                 return (
                   <li key={lesson.id}>
                     <Link
-                      to={`/cursos/${courseId}/aulas/${lesson.id}`}
+                      to={lessonPath(lesson.id)}
                       ref={current ? currentLink : undefined}
                       aria-current={current ? 'page' : undefined}
                       className={cn(
