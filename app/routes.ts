@@ -15,6 +15,13 @@ export default [
   ]),
   layout('routes/classroom-layout.tsx', [
     route('cursos/:id/aulas/:aulaId', 'routes/aula.tsx'),
+    // The teaching guard again, under its own id: a route file can be a layout twice only so.
+    layout('routes/teaching-layout.tsx', { id: 'teaching-classroom' }, [
+      route(
+        'instrutor/cursos/:id/aulas/:aulaId/previa',
+        'routes/previa-aula.tsx',
+      ),
+    ]),
   ]),
   layout('routes/layout.tsx', [
     index('routes/home.tsx'),
