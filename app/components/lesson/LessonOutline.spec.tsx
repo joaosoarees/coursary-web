@@ -109,4 +109,31 @@ describe('LessonOutline', () => {
     fireEvent.click(toggle);
     expect(toggle).toHaveAttribute('aria-expanded', 'true');
   });
+
+  it('should show a preview with no progress and its own lesson links', () => {
+    const Stub = createRoutesStub([
+      {
+        path: '/instrutor/cursos/:id/aulas/:aulaId/previa',
+        Component: () => (
+          <LessonOutline
+            courseId="c1"
+            modules={modules}
+            currentLessonId="l2"
+            completedLessonIds={[]}
+            preview
+            lessonPath={(id) => `/instrutor/cursos/c1/aulas/${id}/previa`}
+          />
+        ),
+      },
+    ]);
+    render(<Stub initialEntries={['/instrutor/cursos/c1/aulas/l2/previa']} />);
+
+    expect(
+      screen.getByRole('link', { name: /Seu primeiro notebook/ }),
+    ).toHaveAttribute('href', '/instrutor/cursos/c1/aulas/l2/previa');
+    expect(
+      screen.getByRole('button', { name: /1\. Primeiros passos/ }),
+    ).toHaveTextContent('2 aulas');
+    expect(screen.queryByText(/concluídas/)).toBeNull();
+  });
 });
