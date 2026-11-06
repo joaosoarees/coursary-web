@@ -1,3 +1,5 @@
+import { isAxiosError } from 'axios';
+
 import { PartUrls } from '~/services/multipart/PartUrls';
 import { Retry, type RetryOptions } from '~/services/multipart/Retry';
 import { S3Part, S3PartError } from '~/services/multipart/S3Part';
@@ -16,6 +18,8 @@ export interface MultipartSteps {
   ) => Promise<PartUrl[]>;
   complete: (fileId: string, parts: SentPart[]) => Promise<void>;
   abort: (fileId: string) => Promise<void>;
+  // Every part is in S3: from here a cancel no longer stops the upload.
+  onPartsSent?: () => void;
   putPart?: typeof S3Part.put;
   retry?: Omit<RetryOptions, 'signal'>;
 }
@@ -148,6 +152,7 @@ export class MultipartUpload {
       throw failed?.error;
     }
 
+    steps.onPartsSent?.();
     await MultipartUpload.complete(steps, fileId, done);
 
     return fileId;
@@ -173,7 +178,10 @@ export class MultipartUpload {
         }
       }, steps.retry);
     } catch (error) {
-      if (answer.lost) {
+      // A 400 says the parts do not make the file, whatever the first answer was.
+      const refused = isAxiosError(error) && error.response?.status === 400;
+
+      if (answer.lost && !refused) {
         return;
       }
 
