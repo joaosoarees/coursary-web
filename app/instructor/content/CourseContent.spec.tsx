@@ -163,18 +163,31 @@ describe('CourseContent', () => {
   it('should hold deleting a module that still has lessons', async () => {
     renderContent();
 
-    const full = await screen.findByRole('button', {
-      name: 'Apagar o módulo Escolhendo o gráfico',
+    const open = (name: string) => {
+      fireEvent.pointerDown(screen.getByRole('button', { name }), {
+        button: 0,
+        pointerType: 'mouse',
+      });
+    };
+
+    await screen.findByRole('button', {
+      name: 'Mais ações do módulo Escolhendo o gráfico',
+    });
+    open('Mais ações do módulo Escolhendo o gráfico');
+    const full = await screen.findByRole('menuitem', {
+      name: /Apagar o módulo/,
     });
 
     expect(full).toHaveAttribute('aria-disabled', 'true');
     expect(full).toHaveAccessibleDescription(
       'Tire as aulas do módulo para apagá-lo.',
     );
+
+    fireEvent.keyDown(full, { key: 'Escape' });
+    open('Mais ações do módulo Escrevendo o título');
+
     expect(
-      screen.getByRole('button', {
-        name: 'Apagar o módulo Escrevendo o título',
-      }),
+      await screen.findByRole('menuitem', { name: 'Apagar o módulo' }),
     ).not.toHaveAttribute('aria-disabled', 'true');
   });
 

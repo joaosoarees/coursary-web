@@ -1,4 +1,4 @@
-import { Pencil, Plus, Trash2 } from 'lucide-react';
+import { Ellipsis, Plus } from 'lucide-react';
 import { Reorder, useDragControls } from 'motion/react';
 import { useId, useState } from 'react';
 import { toast } from 'sonner';
@@ -6,11 +6,11 @@ import { toast } from 'sonner';
 import { CourseFormat } from '~/components/course/CourseFormat';
 import { Button } from '~/components/ui/button';
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '~/components/ui/tooltip';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '~/components/ui/dropdown-menu';
 import { focusLater, focusMark } from '~/instructor/content/contentFocus';
 import { DragHandle } from '~/instructor/content/DragHandle';
 import { LessonRow } from '~/instructor/content/LessonRow';
@@ -102,11 +102,11 @@ export function ModuleCard({
               onSave={async (title) => {
                 await rename.mutateAsync(title);
                 setRenaming(false);
-                focusLater(`module-rename-${module.id}`);
+                focusLater(`module-menu-${module.id}`);
               }}
               onCancel={() => {
                 setRenaming(false);
-                focusLater(`module-rename-${module.id}`);
+                focusLater(`module-menu-${module.id}`);
               }}
             />
           </div>
@@ -136,33 +136,32 @@ export function ModuleCard({
                   last={last}
                   onMove={onMove}
                 />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  aria-label={`Renomear ${what}`}
-                  {...focusMark(`module-rename-${module.id}`)}
-                  onClick={() => {
-                    setRenaming(true);
-                  }}
-                >
-                  <Pencil aria-hidden="true" />
-                </Button>
-                {deletable && (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          aria-label={`Apagar ${what}`}
-                          aria-disabled={hasLessons || remove.isPending}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      aria-label={`Mais ações do módulo ${module.title}`}
+                      {...focusMark(`module-menu-${module.id}`)}
+                    >
+                      <Ellipsis aria-hidden="true" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-64">
+                    <DropdownMenuItem
+                      onSelect={() => {
+                        setRenaming(true);
+                      }}
+                    >
+                      Renomear o módulo
+                    </DropdownMenuItem>
+                    {deletable && (
+                      <>
+                        <DropdownMenuItem
+                          variant="destructive"
+                          disabled={hasLessons || remove.isPending}
                           aria-describedby={hasLessons ? hintId : undefined}
-                          className="text-destructive aria-disabled:text-muted-foreground"
-                          onClick={() => {
-                            if (hasLessons || remove.isPending) {
-                              return;
-                            }
-
+                          onSelect={() => {
                             remove.mutate(undefined, {
                               onSuccess: () => {
                                 toast.success('Módulo apagado.');
@@ -174,23 +173,22 @@ export function ModuleCard({
                             });
                           }}
                         >
-                          <Trash2 aria-hidden="true" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        {hasLessons
-                          ? 'Tire as aulas do módulo para apagá-lo.'
-                          : `Apagar ${what}`}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                )}
+                          Apagar o módulo
+                        </DropdownMenuItem>
+                        {/* Outside the item: a disabled item is drawn at half opacity. */}
+                        {hasLessons && (
+                          <p
+                            id={hintId}
+                            className="px-2 pb-1.5 text-xs text-muted-foreground"
+                          >
+                            Tire as aulas do módulo para apagá-lo.
+                          </p>
+                        )}
+                      </>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
-            )}
-            {editable && deletable && hasLessons && (
-              <span id={hintId} className="sr-only">
-                Tire as aulas do módulo para apagá-lo.
-              </span>
             )}
           </>
         )}
