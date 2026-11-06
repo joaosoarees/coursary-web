@@ -1,4 +1,4 @@
-import { fireEvent, screen } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import EditLessonPage from '~/routes/editar-aula';
@@ -134,11 +134,18 @@ describe('edit lesson', () => {
     fireEvent.change(await screen.findByLabelText('Título'), {
       target: { value: 'Mudado' },
     });
-    fireEvent.click(screen.getByRole('link', { name: 'Gráficos' }));
+    const back = screen.getByRole('link', { name: 'Gráficos' });
+    back.focus();
+    fireEvent.click(back);
 
     expect(
       await screen.findByRole('dialog', { name: 'Sair sem salvar?' }),
     ).toBeVisible();
+    fireEvent.click(screen.getByRole('button', { name: 'Continuar editando' }));
+
+    await waitFor(() => {
+      expect(back).toHaveFocus();
+    });
   });
 
   it('should show an archived course lesson read-only', async () => {
@@ -149,6 +156,9 @@ describe('edit lesson', () => {
     renderAt();
 
     expect(await screen.findByLabelText('Título')).toHaveAttribute('readonly');
+    expect(screen.getByRole('note')).toHaveTextContent(
+      'não pode mais ser editada',
+    );
     expect(
       screen.queryByRole('button', { name: 'Salvar alterações' }),
     ).toBeNull();
