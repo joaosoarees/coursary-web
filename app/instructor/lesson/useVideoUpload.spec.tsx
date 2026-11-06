@@ -140,6 +140,43 @@ describe('useVideoUpload', () => {
     );
   });
 
+  it('should go back at once on cancel, without waiting for the abort', async () => {
+    vi.spyOn(S3Part, 'put').mockImplementation(
+      (_url, _part, { signal }) =>
+        new Promise((_resolve, reject) => {
+          signal.addEventListener('abort', () => {
+            reject(signal.reason as Error);
+          });
+        }),
+    );
+    spies.abort.mockImplementation(() => new Promise(() => undefined));
+    const { result } = renderUpload();
+
+    await act(async () => {
+      void result.current.upload(mp4);
+      await vi.advanceTimersByTimeAsync(0);
+    });
+    act(() => {
+      result.current.cancel();
+    });
+
+    expect(result.current.phase).toEqual({ step: 'idle' });
+  });
+
+  it('should stop offering cancel once every part is in S3', async () => {
+    vi.spyOn(S3Part, 'put').mockResolvedValue('"etag"');
+    spies.complete.mockImplementation(() => new Promise(() => undefined));
+    const { result } = renderUpload();
+
+    await act(async () => {
+      void result.current.upload(mp4);
+      await vi.advanceTimersByTimeAsync(0);
+    });
+
+    expect(result.current.phase).toEqual({ step: 'confirming' });
+    expect(result.current.uploading).toBe(false);
+  });
+
   it('should ignore a second file while one goes up', async () => {
     vi.spyOn(S3Part, 'put').mockImplementation(
       () => new Promise(() => undefined),
