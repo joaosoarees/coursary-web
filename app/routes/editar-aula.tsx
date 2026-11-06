@@ -7,6 +7,7 @@ import { LoadingNote } from '~/components/LoadingNote';
 import { Skeleton } from '~/components/ui/skeleton';
 import { ContentOrder } from '~/instructor/content/ContentOrder';
 import { LessonForm } from '~/instructor/lesson/LessonForm';
+import { MaterialCard } from '~/instructor/lesson/MaterialCard';
 import { queryClient } from '~/lib/queryClient';
 import { managedCourseQuery, useManagedCourse } from '~/queries/instructor';
 import {
@@ -131,17 +132,27 @@ export default function EditLessonPage({ params }: Route.ComponentProps) {
               </p>
             </div>
           )}
-          <LessonForm
-            courseId={params.id}
-            moduleId={place.module.id}
-            lessonId={params.aulaId}
-            readOnly={course.data.status === 'ARCHIVED'}
-            saved={{
-              title: place.lesson.title,
-              durationMinutes: place.lesson.durationMinutes,
-              body: content.data.body,
-            }}
-          />
+          <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
+            <LessonForm
+              courseId={params.id}
+              moduleId={place.module.id}
+              lessonId={params.aulaId}
+              readOnly={course.data.status === 'ARCHIVED'}
+              saved={{
+                title: place.lesson.title,
+                durationMinutes: place.lesson.durationMinutes,
+                body: content.data.body,
+              }}
+            />
+            <div className="flex flex-col gap-6">
+              <MaterialCard
+                courseId={params.id}
+                lessonId={params.aulaId}
+                files={content.data.attachments}
+                readOnly={course.data.status === 'ARCHIVED'}
+              />
+            </div>
+          </div>
         </>
       )}
     </section>
