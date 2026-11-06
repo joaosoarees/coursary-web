@@ -52,6 +52,9 @@ export function VideoCard({
   const { phase, problem } = upload;
   const busy = phase.step !== 'idle';
   const sendMark = `video-send-${lessonId}`;
+  const removeMark = `video-remove-${lessonId}`;
+  // Back on Remover when the person stays; on the send button once the video is gone.
+  const afterRemove = useRef(removeMark);
 
   return (
     <section
@@ -190,9 +193,11 @@ export function VideoCard({
                     aria-disabled={busy}
                     onClick={() => {
                       if (!busy) {
+                        afterRemove.current = removeMark;
                         setRemoving(true);
                       }
                     }}
+                    {...focusMark(removeMark)}
                   >
                     Remover vídeo
                   </Button>
@@ -212,7 +217,7 @@ export function VideoCard({
         }}
         onCloseAutoFocus={(event) => {
           event.preventDefault();
-          focusLater(sendMark);
+          focusLater(afterRemove.current);
         }}
         pending={remove.isPending}
         error={remove.error && ApiFailure.message(remove.error)}
@@ -227,6 +232,7 @@ export function VideoCard({
         onConfirm={() => {
           remove.mutate(undefined, {
             onSuccess: () => {
+              afterRemove.current = sendMark;
               setRemoving(false);
               toast.success('Vídeo removido.');
             },
