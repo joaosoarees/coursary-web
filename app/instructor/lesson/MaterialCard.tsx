@@ -6,11 +6,13 @@ import { ConfirmDialog } from '~/components/ConfirmDialog';
 import { AttachmentFormat } from '~/components/lesson/AttachmentFormat';
 import { Button } from '~/components/ui/button';
 import { FormAlert } from '~/components/visitor/FormMessage';
+import { useUnsavedChangesWarning } from '~/hooks/useUnsavedChangesWarning';
 import { focusLater, focusMark } from '~/instructor/content/contentFocus';
 import { ContentOrder } from '~/instructor/content/ContentOrder';
 import { MoveButtons } from '~/instructor/content/MoveButtons';
 import {
   MATERIAL_ACCEPT,
+  MATERIAL_FULL,
   MATERIAL_HINT,
   MATERIAL_MAX_FILES,
 } from '~/instructor/lesson/materialRules';
@@ -40,10 +42,17 @@ export function MaterialCard({
   const reorder = useReorderMaterial(courseId, lessonId);
   const [deleting, setDeleting] = useState<Attachment>();
   const remove = useDeleteMaterial(courseId, lessonId);
+  // Where the focus goes once the delete dialog closes: the row's own button when it stays.
+  const afterDelete = useRef(`material-delete-${lessonId}`);
+  const [announcement, setAnnouncement] = useState('');
   const busy = phase.step !== 'idle';
   const full = files.length >= MATERIAL_MAX_FILES;
   const percent =
     phase.step === 'uploading' ? Math.round(phase.progress * 100) : 100;
+
+  // Reloading or closing the tab while a file goes up loses it. The page holds one in-app blocker
+  // already (the lesson form's), and a router takes only one.
+  useUnsavedChangesWarning(busy);
 
   return (
     <section
@@ -54,31 +63,37 @@ export function MaterialCard({
         <h2 id={titleId} className="font-display text-xl font-bold">
           Material
         </h2>
-        <span className="text-muted-foreground">
-          {files.length} de {MATERIAL_MAX_FILES}
-        </span>
+        {!readOnly && (
+          <span className="text-muted-foreground">
+            {files.length} de {MATERIAL_MAX_FILES} arquivos
+          </span>
+        )}
       </div>
       {files.length === 0 && !busy && (
         <p className="text-muted-foreground">
           Nenhum arquivo. O aluno baixa o material na própria aula.
         </p>
       )}
-      {files.length > 0 && (
+      {(files.length > 0 || busy) && (
         <ol className="flex flex-col">
           {files.map((file, index) => (
             <li
               key={file.id}
-              className="flex min-h-13 items-center gap-2.5 border-t first:border-t-0"
+              className="flex min-h-13 items-center gap-2.5 border-t py-1.5"
             >
               <File
                 aria-hidden="true"
                 className="size-5 shrink-0 text-muted-foreground"
               />
               <span className="flex min-w-0 flex-1 flex-col leading-snug">
-                <span className="font-semibold break-words">{file.name}</span>
+                <span className="font-semibold [overflow-wrap:anywhere]">
+                  {file.name}
+                </span>
                 <span className="text-sm text-muted-foreground">
                   {AttachmentFormat.kind(file.contentType)} ·{' '}
-                  {AttachmentFormat.size(file.size)}
+                  <span className="whitespace-nowrap">
+                    {AttachmentFormat.size(file.size)}
+                  </span>
                 </span>
               </span>
               {!readOnly && (
@@ -93,6 +108,9 @@ export function MaterialCard({
                     last={index === files.length - 1}
                     onMove={(offset) => {
                       reorder.mutate(ContentOrder.swap(files, index, offset));
+                      setAnnouncement(
+                        `${file.name} agora é o ${String(index + offset + 1)}º de ${String(files.length)}.`,
+                      );
                     }}
                   />
                   <Button
@@ -101,8 +119,10 @@ export function MaterialCard({
                     aria-label={`Apagar ${file.name}`}
                     className="text-destructive"
                     onClick={() => {
+                      afterDelete.current = `material-delete-${file.id}`;
                       setDeleting(file);
                     }}
+                    {...focusMark(`material-delete-${file.id}`)}
                   >
                     <Trash2 aria-hidden="true" />
                   </Button>
@@ -110,37 +130,30 @@ export function MaterialCard({
               )}
             </li>
           ))}
+          {busy && (
+            <li className="flex min-h-13 items-center gap-2.5 border-t py-1.5">
+              <File
+                aria-hidden="true"
+                className="size-5 shrink-0 text-muted-foreground"
+              />
+              <span className="flex min-w-0 flex-1 flex-col leading-snug">
+                <span className="font-semibold [overflow-wrap:anywhere]">
+                  {name}
+                </span>
+                <span role="status" className="text-sm text-muted-foreground">
+                  {phase.step === 'uploading' ? 'Enviando…' : 'Confirmando…'}
+                  {phase.step === 'uploading' && (
+                    <span aria-hidden="true"> {percent}%</span>
+                  )}
+                </span>
+              </span>
+            </li>
+          )}
         </ol>
       )}
-      <div role="status" className="flex flex-col gap-1.5">
-        {busy && (
-          <>
-            {phase.step === 'uploading' && (
-              <div
-                role="progressbar"
-                aria-label={`Envio de ${name}`}
-                aria-valuemin={0}
-                aria-valuemax={100}
-                aria-valuenow={percent}
-                className="h-1.5 overflow-hidden rounded-full bg-muted"
-              >
-                <div
-                  className="h-full bg-primary transition-[width]"
-                  style={{ width: `${String(percent)}%` }}
-                />
-              </div>
-            )}
-            <span className="text-sm text-muted-foreground">
-              {phase.step === 'uploading'
-                ? `Enviando ${name}…`
-                : `Confirmando ${name}…`}
-              {phase.step === 'uploading' && (
-                <span aria-hidden="true"> {percent}%</span>
-              )}
-            </span>
-          </>
-        )}
-      </div>
+      <p role="status" className="sr-only">
+        {announcement}
+      </p>
       {problem && <FormAlert>{problem}</FormAlert>}
       {!readOnly && (
         <>
@@ -166,7 +179,7 @@ export function MaterialCard({
               variant="outline"
               aria-disabled={busy || full}
               aria-describedby={hintId}
-              className="aria-disabled:cursor-progress"
+              className={busy ? 'aria-disabled:cursor-progress' : undefined}
               onClick={() => {
                 if (!busy && !full) {
                   input.current?.click();
@@ -178,9 +191,7 @@ export function MaterialCard({
               Enviar arquivo
             </Button>
             <p id={hintId} className="text-sm text-muted-foreground">
-              {full
-                ? 'A aula já tem 20 arquivos. Apague um para enviar outro.'
-                : MATERIAL_HINT}
+              {full ? MATERIAL_FULL : MATERIAL_HINT}
             </p>
           </div>
         </>
@@ -192,7 +203,7 @@ export function MaterialCard({
         }}
         onCloseAutoFocus={(event) => {
           event.preventDefault();
-          focusLater(`material-send-${lessonId}`);
+          focusLater(afterDelete.current);
         }}
         pending={remove.isPending}
         error={remove.error && ApiFailure.message(remove.error)}
@@ -215,10 +226,16 @@ export function MaterialCard({
             return;
           }
 
+          const index = files.findIndex((file) => file.id === deleting.id);
+          const neighbour = files[index + 1] ?? files[index - 1];
+
           remove.mutate(deleting.id, {
             onSuccess: () => {
+              afterDelete.current = neighbour
+                ? `material-delete-${neighbour.id}`
+                : `material-send-${lessonId}`;
               setDeleting(undefined);
-              toast.success('Arquivo apagado.');
+              toast.success(`${deleting.name} apagado.`);
             },
           });
         }}

@@ -39,9 +39,13 @@ describe('MaterialCard', () => {
   it('should list the files with their kind, size and count', () => {
     renderCard();
 
-    expect(screen.getByText('2 de 20')).toBeVisible();
-    expect(screen.getByText('PDF · 1,1 MB')).toBeVisible();
-    expect(screen.getByText('Planilha do Excel · 180 KB')).toBeVisible();
+    expect(screen.getByText('2 de 20 arquivos')).toBeVisible();
+    expect(screen.getByText('1,1 MB').parentElement).toHaveTextContent(
+      'PDF · 1,1 MB',
+    );
+    expect(screen.getByText('180 KB').parentElement).toHaveTextContent(
+      'Planilha do Excel · 180 KB',
+    );
   });
 
   it('should send the new order when a file moves', async () => {
