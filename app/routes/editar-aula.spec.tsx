@@ -8,7 +8,7 @@ import {
 } from '~/services/InstructorService';
 import { LessonService } from '~/services/LessonService';
 import { OutlineService } from '~/services/OutlineService';
-import { Landing, renderRoutes } from '~/test/renderRoutes';
+import { apiError, Landing, renderRoutes } from '~/test/renderRoutes';
 
 const course: ManagedCourse = {
   id: 'c1',
@@ -184,6 +184,9 @@ describe('edit lesson', () => {
 
   it('should say a lesson that is not in the course is not found', async () => {
     vi.spyOn(InstructorService, 'get').mockResolvedValue(course);
+    vi.spyOn(LessonService, 'open').mockRejectedValue(
+      apiError(404, 'LESSON_NOT_FOUND'),
+    );
     renderAt('l9');
 
     expect(
