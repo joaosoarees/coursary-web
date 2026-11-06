@@ -140,6 +140,21 @@ describe('useVideoUpload', () => {
     );
   });
 
+  it('should ignore a second file while one goes up', async () => {
+    vi.spyOn(S3Part, 'put').mockImplementation(
+      () => new Promise(() => undefined),
+    );
+    const { result } = renderUpload();
+
+    await act(async () => {
+      void result.current.upload(mp4);
+      await vi.advanceTimersByTimeAsync(0);
+      await result.current.upload(mp4);
+    });
+
+    expect(spies.start).toHaveBeenCalledTimes(1);
+  });
+
   it('should refuse a file that is not an MP4 before sending anything', async () => {
     const { result } = renderUpload();
 
@@ -164,7 +179,8 @@ describe('useVideoUpload', () => {
       await done;
     });
 
-    expect(result.current.problem).toBe(
+    expect(result.current.problem).toBeUndefined();
+    expect(result.current.notice).toBe(
       'O vídeo foi enviado, mas ainda não apareceu. Recarregue a página em instantes.',
     );
     expect(open).toHaveBeenCalledTimes(20);
