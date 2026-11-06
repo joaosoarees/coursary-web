@@ -10,6 +10,7 @@ import { MyCourseFacts } from '~/components/instructor/MyCourseCard';
 import { LoadingNote } from '~/components/LoadingNote';
 import { Skeleton } from '~/components/ui/skeleton';
 import { BackToMyCourses } from '~/instructor/BackToMyCourses';
+import { CourseContent } from '~/instructor/content/CourseContent';
 import { CourseActions } from '~/instructor/CourseActions';
 import { CourseInfoForm } from '~/instructor/CourseInfoForm';
 import { CoverCard } from '~/instructor/CoverCard';
@@ -128,6 +129,7 @@ function CourseEditor({ course }: { course: ManagedCourse }) {
         </section>
         <CoverCard course={course} readOnly={archived} />
       </div>
+      <CourseContent course={course} />
     </>
   );
 }
