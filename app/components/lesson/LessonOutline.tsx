@@ -104,7 +104,14 @@ export function LessonOutline({
             />
           </button>
         </h2>
-        {progress}
+        {preview ? (
+          <span className="text-sm text-muted-foreground">
+            {total} {total === 1 ? 'aula' : 'aulas'} · {modules.length}{' '}
+            {modules.length === 1 ? 'módulo' : 'módulos'}
+          </span>
+        ) : (
+          progress
+        )}
       </div>
       <ol
         ref={list}
