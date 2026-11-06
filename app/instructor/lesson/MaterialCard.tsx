@@ -6,6 +6,7 @@ import { ConfirmDialog } from '~/components/ConfirmDialog';
 import { AttachmentFormat } from '~/components/lesson/AttachmentFormat';
 import { Button } from '~/components/ui/button';
 import { FormAlert } from '~/components/visitor/FormMessage';
+import { useAttachmentDownload } from '~/hooks/useAttachmentDownload';
 import { useUnsavedChangesWarning } from '~/hooks/useUnsavedChangesWarning';
 import { focusLater, focusMark } from '~/instructor/content/contentFocus';
 import { ContentOrder } from '~/instructor/content/ContentOrder';
@@ -19,7 +20,7 @@ import {
 import { useMaterialUpload } from '~/instructor/lesson/useMaterialUpload';
 import { useDeleteMaterial, useReorderMaterial } from '~/mutations/material';
 import { ApiFailure } from '~/services/ApiFailure';
-import { type Attachment, LessonService } from '~/services/LessonService';
+import type { Attachment } from '~/services/LessonService';
 
 export function MaterialCard({
   courseId,
@@ -247,7 +248,6 @@ export function MaterialCard({
   );
 }
 
-// The signed address lasts five minutes, so it is asked for only when the instructor clicks.
 function MaterialDownload({
   courseId,
   lessonId,
@@ -257,7 +257,11 @@ function MaterialDownload({
   lessonId: string;
   file: Attachment;
 }) {
-  const [pending, setPending] = useState(false);
+  const { pending, download } = useAttachmentDownload({
+    courseId,
+    lessonId,
+    fileId: file.id,
+  });
 
   return (
     <button
@@ -265,27 +269,7 @@ function MaterialDownload({
       aria-label={`Baixar ${file.name}`}
       aria-busy={pending}
       className="self-start text-left font-semibold [overflow-wrap:anywhere] hover:underline hover:underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-      onClick={() => {
-        if (pending) {
-          return;
-        }
-
-        setPending(true);
-        LessonService.attachmentDownload({
-          courseId,
-          lessonId,
-          fileId: file.id,
-        })
-          .then(({ url }) => {
-            window.location.assign(url);
-          })
-          .catch((error: unknown) => {
-            toast.error(ApiFailure.message(error));
-          })
-          .finally(() => {
-            setPending(false);
-          });
-      }}
+      onClick={() => void download()}
     >
       {file.name}
     </button>
