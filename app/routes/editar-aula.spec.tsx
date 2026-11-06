@@ -108,6 +108,24 @@ describe('edit lesson', () => {
     });
   });
 
+  it('should save with Ctrl+S from the text', async () => {
+    vi.spyOn(InstructorService, 'get').mockResolvedValue(course);
+    const update = vi
+      .spyOn(OutlineService, 'updateLesson')
+      .mockImplementation(() => new Promise(() => undefined));
+    renderAt();
+
+    const text = await screen.findByRole('textbox', {
+      name: 'Texto da aula (opcional)',
+    });
+    fireEvent.change(text, { target: { value: '## Outra pergunta' } });
+    fireEvent.keyDown(text, { key: 's', ctrlKey: true });
+
+    await waitFor(() => {
+      expect(update).toHaveBeenCalled();
+    });
+  });
+
   it('should refuse a body over 32 KiB counted in bytes', async () => {
     vi.spyOn(InstructorService, 'get').mockResolvedValue(course);
     const update = vi.spyOn(OutlineService, 'updateLesson');
