@@ -41,6 +41,10 @@ describe('ContentOrder', () => {
     ]);
   });
 
+  it('should number the lessons across the course', () => {
+    expect(ContentOrder.firstNumbers(modules)).toEqual([1, 3]);
+  });
+
   it('should tell two orders apart by their ids', () => {
     expect(ContentOrder.same(modules, [...modules])).toBe(true);
     expect(
