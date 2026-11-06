@@ -1,11 +1,12 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import EditCoursePage from '~/routes/editar-curso';
 import {
   InstructorService,
   type ManagedCourse,
 } from '~/services/InstructorService';
+import { LessonService } from '~/services/LessonService';
 import { apiError, Landing, renderRoutes } from '~/test/renderRoutes';
 
 const draft: ManagedCourse = {
@@ -30,6 +31,15 @@ const renderAt = () =>
     ],
     '/instrutor/cursos/c1',
   );
+
+beforeEach(() => {
+  vi.spyOn(LessonService, 'outline').mockResolvedValue({
+    courseId: 'c1',
+    title: 'Curso',
+    status: 'DRAFT',
+    modules: [],
+  });
+});
 
 describe('edit course', () => {
   it('should save a changed title and show it as saved', async () => {
