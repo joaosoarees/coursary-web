@@ -2,9 +2,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 import { managedCourseQuery } from '~/queries/instructor';
-import { outlineQuery } from '~/queries/lesson';
+import { lessonQuery, outlineQuery } from '~/queries/lesson';
 import type { CourseModule } from '~/services/CourseService';
-import type { CourseOutline } from '~/services/LessonService';
+import type { CourseOutline, LessonContent } from '~/services/LessonService';
 import { OutlineService } from '~/services/OutlineService';
 
 type Modules = CourseModule[];
@@ -93,6 +93,44 @@ export const useCreateLesson = (courseId: string, moduleId: string) => {
         ),
       );
       countChanged();
+    },
+  });
+};
+
+export const useUpdateLesson = (
+  courseId: string,
+  moduleId: string,
+  lessonId: string,
+) => {
+  const { queryClient, write } = useOutlineWriter(courseId);
+
+  return useMutation({
+    mutationFn: (lesson: {
+      title: string;
+      body: string;
+      durationMinutes: number;
+    }) => OutlineService.updateLesson(courseId, moduleId, lessonId, lesson),
+    onSuccess: ({ title, body, durationMinutes }) => {
+      // The course page and the classroom show the title and the duration too. Marked before the
+      // writes below, so the two queries written here are not marked with them.
+      void queryClient.invalidateQueries({
+        queryKey: ['courses'],
+        refetchType: 'none',
+      });
+      write((modules) =>
+        modules.map((module) => ({
+          ...module,
+          lessons: module.lessons.map((lesson) =>
+            lesson.id === lessonId
+              ? { ...lesson, title, durationMinutes }
+              : lesson,
+          ),
+        })),
+      );
+      queryClient.setQueryData<LessonContent>(
+        lessonQuery(courseId, lessonId).queryKey,
+        (content) => (content ? { ...content, body } : content),
+      );
     },
   });
 };
