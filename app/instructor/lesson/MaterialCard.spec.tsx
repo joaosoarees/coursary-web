@@ -9,7 +9,7 @@ import {
 import { describe, expect, it, vi } from 'vitest';
 
 import { MaterialCard } from '~/instructor/lesson/MaterialCard';
-import type { Attachment } from '~/services/LessonService';
+import { type Attachment, LessonService } from '~/services/LessonService';
 import { MaterialService } from '~/services/MaterialService';
 
 const files: Attachment[] = [
@@ -100,10 +100,34 @@ describe('MaterialCard', () => {
     expect(request).not.toHaveBeenCalled();
   });
 
+  it('should download a file from its name', async () => {
+    const download = vi
+      .spyOn(LessonService, 'attachmentDownload')
+      .mockResolvedValue({
+        url: 'https://bucket.example/guia.pdf',
+        expiresIn: 300,
+      });
+    const assign = vi.fn();
+    vi.stubGlobal('location', { href: window.location.href, assign });
+    renderCard();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Baixar guia.pdf' }));
+
+    await waitFor(() => {
+      expect(assign).toHaveBeenCalledWith('https://bucket.example/guia.pdf');
+    });
+    expect(download).toHaveBeenCalledWith({
+      courseId: 'c1',
+      lessonId: 'l1',
+      fileId: 'f1',
+    });
+  });
+
   it('should only list the files of an archived course', () => {
     renderCard(true);
 
-    expect(screen.getByText('guia.pdf')).toBeVisible();
-    expect(screen.queryByRole('button')).toBeNull();
+    expect(
+      screen.getAllByRole('button').map((b) => b.getAttribute('aria-label')),
+    ).toEqual(['Baixar guia.pdf', 'Baixar exercicio.xlsx']);
   });
 });

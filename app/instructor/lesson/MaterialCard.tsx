@@ -19,7 +19,7 @@ import {
 import { useMaterialUpload } from '~/instructor/lesson/useMaterialUpload';
 import { useDeleteMaterial, useReorderMaterial } from '~/mutations/material';
 import { ApiFailure } from '~/services/ApiFailure';
-import type { Attachment } from '~/services/LessonService';
+import { type Attachment, LessonService } from '~/services/LessonService';
 
 export function MaterialCard({
   courseId,
@@ -79,16 +79,18 @@ export function MaterialCard({
           {files.map((file, index) => (
             <li
               key={file.id}
-              className="flex min-h-13 items-center gap-2.5 border-t py-1.5"
+              className="flex min-h-13 flex-wrap items-center gap-x-2.5 border-t py-1.5 sm:flex-nowrap"
             >
               <File
                 aria-hidden="true"
                 className="size-5 shrink-0 text-muted-foreground"
               />
               <span className="flex min-w-0 flex-1 flex-col leading-snug">
-                <span className="font-semibold [overflow-wrap:anywhere]">
-                  {file.name}
-                </span>
+                <MaterialDownload
+                  courseId={courseId}
+                  lessonId={lessonId}
+                  file={file}
+                />
                 <span className="text-sm text-muted-foreground">
                   {AttachmentFormat.kind(file.contentType)} ·{' '}
                   <span className="whitespace-nowrap">
@@ -97,10 +99,11 @@ export function MaterialCard({
                 </span>
               </span>
               {!readOnly && (
+                // On a phone the controls take a second line, so the name keeps its width.
                 <span
                   role="group"
                   aria-label={`Ações de ${file.name}`}
-                  className="flex shrink-0 gap-1"
+                  className="flex w-full shrink-0 justify-end gap-1 sm:w-auto"
                 >
                   <MoveButtons
                     what={file.name}
@@ -241,5 +244,50 @@ export function MaterialCard({
         }}
       />
     </section>
+  );
+}
+
+// The signed address lasts five minutes, so it is asked for only when the instructor clicks.
+function MaterialDownload({
+  courseId,
+  lessonId,
+  file,
+}: {
+  courseId: string;
+  lessonId: string;
+  file: Attachment;
+}) {
+  const [pending, setPending] = useState(false);
+
+  return (
+    <button
+      type="button"
+      aria-label={`Baixar ${file.name}`}
+      aria-busy={pending}
+      className="self-start text-left font-semibold [overflow-wrap:anywhere] hover:underline hover:underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      onClick={() => {
+        if (pending) {
+          return;
+        }
+
+        setPending(true);
+        LessonService.attachmentDownload({
+          courseId,
+          lessonId,
+          fileId: file.id,
+        })
+          .then(({ url }) => {
+            window.location.assign(url);
+          })
+          .catch((error: unknown) => {
+            toast.error(ApiFailure.message(error));
+          })
+          .finally(() => {
+            setPending(false);
+          });
+      }}
+    >
+      {file.name}
+    </button>
   );
 }
