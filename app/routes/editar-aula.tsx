@@ -1,5 +1,5 @@
 import { noop } from '@tanstack/react-query';
-import { ChevronLeft } from 'lucide-react';
+import { Archive, ChevronLeft } from 'lucide-react';
 import { Link } from 'react-router';
 
 import { ErrorState } from '~/components/ErrorState';
@@ -102,13 +102,25 @@ export default function EditLessonPage({ params }: Route.ComponentProps) {
       ) : (
         <>
           <header className="flex flex-col gap-1.5">
-            <span className="text-muted-foreground">
-              Módulo {place.moduleNumber} · Aula {place.number}
-            </span>
             <h1 className="font-display text-3xl leading-tight font-bold tracking-tight text-balance md:text-4xl">
               {place.lesson.title}
             </h1>
+            <p className="text-muted-foreground">
+              Módulo {place.moduleNumber} · Aula {place.number}
+            </p>
           </header>
+          {course.data.status === 'ARCHIVED' && (
+            <div
+              role="note"
+              className="flex max-w-prose items-start gap-3 rounded-lg border bg-muted px-5 py-4"
+            >
+              <Archive aria-hidden="true" className="mt-0.5 size-5 shrink-0" />
+              <p>
+                O curso foi arquivado: a aula fica visível para os alunos
+                matriculados, mas não pode mais ser editada.
+              </p>
+            </div>
+          )}
           <LessonForm
             courseId={params.id}
             moduleId={place.module.id}
