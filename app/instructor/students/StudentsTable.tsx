@@ -36,8 +36,8 @@ const studentColumns = (lessonCount: number) =>
           <span className="font-bold [overflow-wrap:anywhere] whitespace-normal">
             {row.original.studentName}
           </span>
-          <span className="text-sm text-muted-foreground sm:hidden">
-            Matriculado em{' '}
+          <span className="text-muted-foreground sm:hidden">
+            Matrícula em{' '}
             <span className="whitespace-nowrap">
               {CourseFormat.date(row.original.enrolledAt)}
             </span>
@@ -57,7 +57,7 @@ const studentColumns = (lessonCount: number) =>
             }}
             className="-ml-2.5 inline-flex min-h-10 items-center gap-1.5 rounded-md px-2.5 font-bold text-foreground uppercase hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           >
-            Matriculado em
+            Matrícula
             {sorted === 'asc' ? (
               <ArrowUp aria-hidden="true" className="size-4" />
             ) : (
@@ -85,6 +85,7 @@ const studentColumns = (lessonCount: number) =>
         <CourseProgress
           completed={Math.min(getValue(), lessonCount)}
           total={lessonCount}
+          notStarted="Não começou"
         />
       ),
     }),
@@ -128,47 +129,75 @@ export function StudentsTable({
   });
 
   return (
-    <Table className={cn('text-base transition-opacity', busy && 'opacity-75')}>
-      <TableHeader>
-        {table.getHeaderGroups().map((headerGroup) => (
-          <TableRow key={headerGroup.id}>
-            {headerGroup.headers.map((header) => {
-              const sorted = header.column.getIsSorted();
+    <>
+      {/* The date column, and its sort, are hidden on a phone. */}
+      <div className="border-b px-4 py-2 sm:hidden">
+        <button
+          type="button"
+          onClick={() => {
+            onSort(order === 'desc' ? 'asc' : 'desc');
+          }}
+          className="-ml-2.5 inline-flex min-h-10 items-center gap-1.5 rounded-md px-2.5 text-sm font-bold hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        >
+          {order === 'desc'
+            ? 'Mais recentes primeiro'
+            : 'Mais antigos primeiro'}
+          {order === 'desc' ? (
+            <ArrowDown aria-hidden="true" className="size-4" />
+          ) : (
+            <ArrowUp aria-hidden="true" className="size-4" />
+          )}
+          <span className="sr-only">
+            {order === 'desc'
+              ? ', mostrar os mais antigos primeiro'
+              : ', mostrar os mais recentes primeiro'}
+          </span>
+        </button>
+      </div>
+      <Table className={cn('transition-opacity', busy && 'opacity-75')}>
+        <TableHeader>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => {
+                const sorted = header.column.getIsSorted();
 
-              return (
-                <TableHead
-                  key={header.id}
-                  colSpan={header.colSpan}
-                  aria-sort={sorted ? ARIA_SORT[sorted] : undefined}
+                return (
+                  <TableHead
+                    key={header.id}
+                    colSpan={header.colSpan}
+                    aria-sort={sorted ? ARIA_SORT[sorted] : undefined}
+                    className={cn(
+                      'h-12 px-4 text-sm tracking-[0.04em] sm:px-5',
+                      COLUMN_CLASS[header.column.id],
+                    )}
+                  >
+                    {header.isPlaceholder ? null : (
+                      <FlexRender header={header} />
+                    )}
+                  </TableHead>
+                );
+              })}
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows.map((row) => (
+            <TableRow key={row.id}>
+              {row.getAllCells().map((cell) => (
+                <TableCell
+                  key={cell.id}
                   className={cn(
-                    'h-12 px-4 text-sm tracking-[0.04em] sm:px-5',
-                    COLUMN_CLASS[header.column.id],
+                    'px-4 py-3 whitespace-normal sm:px-5',
+                    COLUMN_CLASS[cell.column.id],
                   )}
                 >
-                  {header.isPlaceholder ? null : <FlexRender header={header} />}
-                </TableHead>
-              );
-            })}
-          </TableRow>
-        ))}
-      </TableHeader>
-      <TableBody>
-        {table.getRowModel().rows.map((row) => (
-          <TableRow key={row.id}>
-            {row.getAllCells().map((cell) => (
-              <TableCell
-                key={cell.id}
-                className={cn(
-                  'px-4 py-3 whitespace-normal sm:px-5',
-                  COLUMN_CLASS[cell.column.id],
-                )}
-              >
-                <FlexRender cell={cell} />
-              </TableCell>
-            ))}
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+                  <FlexRender cell={cell} />
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </>
   );
 }

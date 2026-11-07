@@ -84,9 +84,7 @@ describe('course students', () => {
   it('should ask for the oldest first from the first page', async () => {
     renderPage();
 
-    fireEvent.click(
-      await screen.findByRole('button', { name: /Matriculado em/ }),
-    );
+    fireEvent.click(await screen.findByRole('button', { name: /^Matrícula/ }));
 
     expect(await screen.findByText('Página 1 de 2')).toBeVisible();
     expect(list).toHaveBeenLastCalledWith(

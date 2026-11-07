@@ -55,7 +55,7 @@ describe('StudentsTable', () => {
     renderTable();
 
     expect(
-      screen.getByRole('columnheader', { name: /Matriculado em/ }),
+      screen.getByRole('columnheader', { name: /Matrícula/ }),
     ).toHaveAttribute('aria-sort', 'descending');
     expect(
       screen.getByRole('columnheader', { name: 'Aluno' }),
@@ -66,17 +66,48 @@ describe('StudentsTable', () => {
     const onSortDesc = renderTable('desc');
     fireEvent.click(
       screen.getByRole('button', {
-        name: /Matriculado em, mostrar os mais antigos/,
+        name: /Matrícula, mostrar os mais antigos/,
       }),
     );
     expect(onSortDesc).toHaveBeenCalledWith('asc');
+  });
+
+  it('should say a student who never started', () => {
+    render(
+      <StudentsTable
+        students={[
+          {
+            accountId: 'a3',
+            studentName: 'Rita Prates',
+            enrolledAt: '2026-11-01T12:00:00.000Z',
+            completedLessons: 0,
+          },
+        ]}
+        lessonCount={12}
+        order="desc"
+        onSort={vi.fn()}
+        busy={false}
+      />,
+    );
+
+    expect(screen.getByText('Não começou')).toBeVisible();
+  });
+
+  it('should let a phone switch the order too', () => {
+    const onSort = renderTable('desc');
+
+    fireEvent.click(
+      screen.getByRole('button', { name: /^Mais recentes primeiro/ }),
+    );
+
+    expect(onSort).toHaveBeenCalledWith('asc');
   });
 
   it('should ask for the newest first when the oldest are on screen', () => {
     const onSort = renderTable('asc');
     fireEvent.click(
       screen.getByRole('button', {
-        name: /Matriculado em, mostrar os mais recentes/,
+        name: /Matrícula, mostrar os mais recentes/,
       }),
     );
     expect(onSort).toHaveBeenCalledWith('desc');
