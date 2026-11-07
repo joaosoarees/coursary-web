@@ -101,11 +101,13 @@ function CourseStudents({ course }: { course: ManagedCourse }) {
         <h1 className="font-display text-3xl leading-tight font-bold tracking-tight md:text-4xl">
           Alunos
         </h1>
-        <p className="text-muted-foreground">
-          {course.enrollmentCount === 0
-            ? 'Nenhum aluno matriculado'
-            : `${CourseFormat.count(course.enrollmentCount, 'aluno matriculado', 'alunos matriculados')} · ${CourseFormat.count(course.lessonCount, 'aula', 'aulas')}`}
-        </p>
+        {!empty && (
+          <p className="text-muted-foreground">
+            {course.enrollmentCount > 0 &&
+              `${CourseFormat.count(course.enrollmentCount, 'aluno matriculado', 'alunos matriculados')} · `}
+            {CourseFormat.count(course.lessonCount, 'aula', 'aulas')}
+          </p>
+        )}
       </header>
       {students.isLoading ? (
         <TableSkeleton />
@@ -124,6 +126,7 @@ function CourseStudents({ course }: { course: ManagedCourse }) {
           icon={Users}
           title="Ninguém se matriculou ainda"
           description={EMPTY_DESCRIPTION[course.status]}
+          action={<EmptyAction course={course} />}
         />
       ) : (
         students.data && (
@@ -157,6 +160,15 @@ function CourseStudents({ course }: { course: ManagedCourse }) {
       )}
     </>
   );
+}
+
+// A draft needs no action here: "Voltar ao curso" above already leads to publishing it.
+function EmptyAction({ course }: { course: ManagedCourse }) {
+  return course.status === 'PUBLISHED' ? (
+    <Button variant="outline" asChild>
+      <Link to={`/cursos/${course.id}`}>Ver a página do curso</Link>
+    </Button>
+  ) : null;
 }
 
 function StudentsSkeleton() {
