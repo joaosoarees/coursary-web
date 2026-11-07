@@ -37,7 +37,7 @@ export function StudentsPager({
   return (
     <nav
       aria-label="Páginas de alunos"
-      className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t px-5 py-3.5"
+      className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t px-4 py-3.5 sm:px-5"
     >
       <span className="text-muted-foreground">{range.text}</span>
       <span className="flex items-center gap-3">
