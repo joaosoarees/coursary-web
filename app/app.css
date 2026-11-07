@@ -208,7 +208,7 @@
   --ease-chalk: cubic-bezier(0.16, 1, 0.3, 1);
   --animate-navigation-progress: navigation-progress 1.4s ease-in-out infinite;
   --animate-chalk-draw: chalk-draw 450ms var(--ease-chalk) both;
-  --animate-check-draw: chalk-draw 300ms var(--ease-chalk) 80ms both;
+  --animate-check-draw: chalk-draw 300ms var(--ease-chalk) both;
   --animate-dust-sweep: dust-sweep 1.6s ease-in-out infinite;
   --animate-content-in: content-in 150ms var(--ease-chalk) backwards;
 
