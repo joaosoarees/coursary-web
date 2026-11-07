@@ -11,7 +11,8 @@ const EXPIRY_MARGIN_MS = 10_000;
 export const EXPORT_MESSAGES = {
   pending:
     'Um CSV deste curso já está sendo preparado. Tente de novo em alguns minutos.',
-  slow: 'O CSV ainda está sendo preparado. Tente de novo em alguns minutos.',
+  slow: 'O CSV ainda está sendo preparado. Clique em Exportar CSV de novo para conferir.',
+  expired: 'O link expirou. Exporte de novo.',
   failed: 'Não deu para preparar o CSV. Tente exportar de novo.',
 };
 
@@ -57,6 +58,7 @@ export function useStudentExport(courseId: string) {
     const timer = setTimeout(
       () => {
         setPhase({ step: 'idle' });
+        setNotice(EXPORT_MESSAGES.expired);
       },
       Math.max(expiresAt - Date.now(), 0),
     );
@@ -165,6 +167,7 @@ export function useStudentExport(courseId: string) {
 
   const expire = () => {
     setPhase({ step: 'idle' });
+    setNotice(EXPORT_MESSAGES.expired);
   };
 
   return { phase, notice, problem, start, expire };
