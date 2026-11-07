@@ -14,7 +14,6 @@ export function LessonCompletion({
   onComplete: () => void;
 }) {
   const id = useId();
-  // The check draws itself only when the student completes the lesson here, not on every visit.
   const [wasDone, setWasDone] = useState(done);
   const [justDone, setJustDone] = useState(false);
 
@@ -82,7 +81,7 @@ function Box({
   );
 }
 
-// Lucide's circle-check, with the tick drawn after the circle appears.
+// Lucide's circle-check redrawn by hand: its paths need pathLength to be drawn.
 function DrawnCheck() {
   return (
     <svg
