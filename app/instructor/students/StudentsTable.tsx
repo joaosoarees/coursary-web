@@ -50,25 +50,14 @@ const studentColumns = (lessonCount: number) =>
         const sorted = column.getIsSorted();
 
         return (
-          <button
-            type="button"
-            onClick={() => {
+          <SortButton
+            label="Matrícula"
+            order={sorted === 'asc' ? 'asc' : 'desc'}
+            className="uppercase"
+            onToggle={() => {
               column.toggleSorting(sorted !== 'desc');
             }}
-            className="-ml-2.5 inline-flex min-h-10 items-center gap-1.5 rounded-md px-2.5 font-bold text-foreground uppercase hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-          >
-            Matrícula
-            {sorted === 'asc' ? (
-              <ArrowUp aria-hidden="true" className="size-4" />
-            ) : (
-              <ArrowDown aria-hidden="true" className="size-4" />
-            )}
-            <span className="sr-only">
-              {sorted === 'desc'
-                ? ', mostrar os mais antigos primeiro'
-                : ', mostrar os mais recentes primeiro'}
-            </span>
-          </button>
+          />
         );
       },
       cell: ({ getValue }) => (
@@ -96,6 +85,41 @@ const COLUMN_CLASS: Partial<Record<string, string>> = {
   enrolledAt: 'hidden sm:table-cell sm:w-55',
   completedLessons: 'w-32 sm:w-65',
 };
+
+function SortButton({
+  label,
+  order,
+  className,
+  onToggle,
+}: {
+  label: string;
+  order: StudentOrder;
+  className: string;
+  onToggle: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      className={cn(
+        '-ml-2.5 inline-flex min-h-10 items-center gap-1.5 rounded-md px-2.5 font-bold text-foreground hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring',
+        className,
+      )}
+    >
+      {label}
+      {order === 'asc' ? (
+        <ArrowUp aria-hidden="true" className="size-4" />
+      ) : (
+        <ArrowDown aria-hidden="true" className="size-4" />
+      )}
+      <span className="sr-only">
+        {order === 'desc'
+          ? ', mostrar os mais antigos primeiro'
+          : ', mostrar os mais recentes primeiro'}
+      </span>
+    </button>
+  );
+}
 
 const ARIA_SORT = { asc: 'ascending', desc: 'descending' } as const;
 
@@ -132,27 +156,18 @@ export function StudentsTable({
     <>
       {/* The date column, and its sort, are hidden on a phone. */}
       <div className="border-b px-4 py-2 sm:hidden">
-        <button
-          type="button"
-          onClick={() => {
+        <SortButton
+          label={
+            order === 'desc'
+              ? 'Mais recentes primeiro'
+              : 'Mais antigos primeiro'
+          }
+          order={order}
+          className="text-sm"
+          onToggle={() => {
             onSort(order === 'desc' ? 'asc' : 'desc');
           }}
-          className="-ml-2.5 inline-flex min-h-10 items-center gap-1.5 rounded-md px-2.5 text-sm font-bold hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-        >
-          {order === 'desc'
-            ? 'Mais recentes primeiro'
-            : 'Mais antigos primeiro'}
-          {order === 'desc' ? (
-            <ArrowDown aria-hidden="true" className="size-4" />
-          ) : (
-            <ArrowUp aria-hidden="true" className="size-4" />
-          )}
-          <span className="sr-only">
-            {order === 'desc'
-              ? ', mostrar os mais antigos primeiro'
-              : ', mostrar os mais recentes primeiro'}
-          </span>
-        </button>
+        />
       </div>
       <Table className={cn('transition-opacity', busy && 'opacity-75')}>
         <TableHeader>
