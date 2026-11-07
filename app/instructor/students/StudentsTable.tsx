@@ -37,7 +37,10 @@ const studentColumns = (lessonCount: number) =>
             {row.original.studentName}
           </span>
           <span className="text-sm text-muted-foreground sm:hidden">
-            Matriculado em {CourseFormat.date(row.original.enrolledAt)}
+            Matriculado em{' '}
+            <span className="whitespace-nowrap">
+              {CourseFormat.date(row.original.enrolledAt)}
+            </span>
           </span>
         </span>
       ),
@@ -61,9 +64,9 @@ const studentColumns = (lessonCount: number) =>
               <ArrowDown aria-hidden="true" className="size-4" />
             )}
             <span className="sr-only">
-              {sorted === 'asc'
-                ? ', mais antigos primeiro'
-                : ', mais recentes primeiro'}
+              {sorted === 'desc'
+                ? ', mostrar os mais antigos primeiro'
+                : ', mostrar os mais recentes primeiro'}
             </span>
           </button>
         );
@@ -89,8 +92,8 @@ const studentColumns = (lessonCount: number) =>
 
 // On a phone the date moves under the name, and the progress keeps a narrow column.
 const COLUMN_CLASS: Partial<Record<string, string>> = {
-  enrolledAt: 'hidden sm:table-cell',
-  completedLessons: 'w-36 sm:w-72',
+  enrolledAt: 'hidden sm:table-cell sm:w-55',
+  completedLessons: 'w-32 sm:w-65',
 };
 
 const ARIA_SORT = { asc: 'ascending', desc: 'descending' } as const;
@@ -125,10 +128,7 @@ export function StudentsTable({
   });
 
   return (
-    <Table
-      aria-busy={busy}
-      className={cn('text-base transition-opacity', busy && 'opacity-60')}
-    >
+    <Table className={cn('text-base transition-opacity', busy && 'opacity-75')}>
       <TableHeader>
         {table.getHeaderGroups().map((headerGroup) => (
           <TableRow key={headerGroup.id}>
@@ -141,7 +141,7 @@ export function StudentsTable({
                   colSpan={header.colSpan}
                   aria-sort={sorted ? ARIA_SORT[sorted] : undefined}
                   className={cn(
-                    'h-12 px-4 text-sm tracking-wide sm:px-5',
+                    'h-12 px-4 text-sm tracking-[0.04em] sm:px-5',
                     COLUMN_CLASS[header.column.id],
                   )}
                 >

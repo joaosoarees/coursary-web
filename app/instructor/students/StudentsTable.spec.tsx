@@ -65,7 +65,9 @@ describe('StudentsTable', () => {
   it('should ask for the oldest first, then the newest first', () => {
     const onSortDesc = renderTable('desc');
     fireEvent.click(
-      screen.getByRole('button', { name: /Matriculado em, mais recentes/ }),
+      screen.getByRole('button', {
+        name: /Matriculado em, mostrar os mais antigos/,
+      }),
     );
     expect(onSortDesc).toHaveBeenCalledWith('asc');
   });
@@ -73,7 +75,9 @@ describe('StudentsTable', () => {
   it('should ask for the newest first when the oldest are on screen', () => {
     const onSort = renderTable('asc');
     fireEvent.click(
-      screen.getByRole('button', { name: /Matriculado em, mais antigos/ }),
+      screen.getByRole('button', {
+        name: /Matriculado em, mostrar os mais recentes/,
+      }),
     );
     expect(onSort).toHaveBeenCalledWith('desc');
   });
