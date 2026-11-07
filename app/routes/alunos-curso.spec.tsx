@@ -47,8 +47,8 @@ beforeEach(() => {
         cursor
           ? { items: [student(21)], nextCursor: null }
           : {
-              items: order === 'asc' ? [student(21)] : firstPage,
-              nextCursor: order === 'asc' ? null : 'n2',
+              items: order === 'asc' ? firstPage.toReversed() : firstPage,
+              nextCursor: 'n2',
             },
       ),
     );
@@ -86,8 +86,9 @@ describe('course students', () => {
 
     fireEvent.click(await screen.findByRole('button', { name: /^Matrícula/ }));
 
-    expect(await screen.findByText('Página 1 de 2')).toBeVisible();
-    expect(list).toHaveBeenLastCalledWith(
+    expect(await screen.findByText('Mostrando 1–20 de 21')).toBeVisible();
+    expect(screen.getAllByRole('row')[1]).toHaveTextContent('Aluno 20');
+    expect(list).toHaveBeenCalledWith(
       'c1',
       { cursor: undefined, order: 'asc', limit: 20 },
       expect.anything(),
