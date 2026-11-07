@@ -19,6 +19,13 @@ import { isSignedIn } from '~/session/session';
 
 import type { Route } from './+types/alunos-curso';
 
+const EMPTY_DESCRIPTION: Record<ManagedCourse['status'], string> = {
+  DRAFT:
+    'O curso recebe matrículas depois de publicado. Os alunos aparecem aqui, com o progresso de cada um.',
+  PUBLISHED: 'Os alunos aparecem aqui, com o progresso de cada um.',
+  ARCHIVED: 'O curso foi arquivado sem alunos e não recebe matrículas novas.',
+};
+
 const NOT_MINE = new Set(['COURSE_NOT_FOUND', 'VALIDATION', 'FORBIDDEN']);
 
 export const meta: Route.MetaFunction = ({ loaderData }) => [
@@ -107,11 +114,7 @@ function CourseStudents({ course }: { course: ManagedCourse }) {
         <EmptyState
           icon={Users}
           title="Ninguém se matriculou ainda"
-          description={
-            course.status === 'DRAFT'
-              ? 'O curso recebe matrículas depois de publicado. Os alunos aparecem aqui, com o progresso de cada um.'
-              : 'Os alunos aparecem aqui, com o progresso de cada um.'
-          }
+          description={EMPTY_DESCRIPTION[course.status]}
         />
       ) : (
         students.data && (
