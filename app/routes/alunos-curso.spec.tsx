@@ -69,6 +69,7 @@ describe('course students', () => {
     ).toBeVisible();
     expect(await screen.findByText('Aluno 1')).toBeVisible();
     expect(screen.getByText('Mostrando 1–20 de 21')).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Exportar CSV' })).toBeVisible();
 
     fireEvent.click(screen.getByRole('button', { name: 'Próxima página' }));
 
@@ -110,6 +111,7 @@ describe('course students', () => {
       }),
     ).toBeVisible();
     expect(screen.getByText(/depois de publicado/)).toBeVisible();
+    expect(screen.queryByRole('button', { name: 'Exportar CSV' })).toBeNull();
     expect(screen.queryByText(/aulas$/)).toBeNull();
   });
 

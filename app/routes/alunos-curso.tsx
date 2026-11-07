@@ -8,8 +8,13 @@ import { ErrorState } from '~/components/ErrorState';
 import { LoadingNote } from '~/components/LoadingNote';
 import { Button } from '~/components/ui/button';
 import { Skeleton } from '~/components/ui/skeleton';
+import {
+  StudentsExportButton,
+  StudentsExportStatus,
+} from '~/instructor/students/StudentsExport';
 import { StudentsPager } from '~/instructor/students/StudentsPager';
 import { StudentsTable } from '~/instructor/students/StudentsTable';
+import { useStudentExport } from '~/instructor/students/useStudentExport';
 import { useStudentPages } from '~/instructor/students/useStudentPages';
 import { queryClient } from '~/lib/queryClient';
 import { managedCourseQuery, useManagedCourse } from '~/queries/instructor';
@@ -94,24 +99,33 @@ function CourseStudents({ course }: { course: ManagedCourse }) {
   });
   const nextCursor = students.data?.nextCursor;
   const empty = students.data?.items.length === 0 && pages.index === 0;
+  const csv = useStudentExport(course.id);
 
   return (
     <>
-      <header className="flex flex-col gap-1">
-        <span className="text-sm font-bold text-muted-foreground">
-          {course.title}
-        </span>
-        <h1 className="font-display text-3xl leading-tight font-bold tracking-tight md:text-4xl">
-          Alunos
-        </h1>
-        {!empty && (
-          <p className="text-muted-foreground">
-            {course.enrollmentCount > 0 &&
-              `${CourseFormat.count(course.enrollmentCount, 'aluno matriculado', 'alunos matriculados')} · `}
-            {CourseFormat.count(course.lessonCount, 'aula', 'aulas')}
-          </p>
-        )}
+      <header className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
+        <div className="flex min-w-0 flex-[1_1_26rem] flex-col gap-1">
+          <span className="text-sm font-bold text-muted-foreground">
+            {course.title}
+          </span>
+          <h1 className="font-display text-3xl leading-tight font-bold tracking-tight md:text-4xl">
+            Alunos
+          </h1>
+          {!empty && (
+            <p className="text-muted-foreground">
+              {course.enrollmentCount > 0 &&
+                `${CourseFormat.count(course.enrollmentCount, 'aluno matriculado', 'alunos matriculados')} · `}
+              {CourseFormat.count(course.lessonCount, 'aula', 'aulas')}
+            </p>
+          )}
+        </div>
+        {/* Kept once started: a list that reloads must not take the download link with it. */}
+        {!empty &&
+          (students.data !== undefined || csv.phase.step !== 'idle') && (
+            <StudentsExportButton csv={csv} />
+          )}
       </header>
+      <StudentsExportStatus csv={csv} />
       {students.isLoading ? (
         <TableSkeleton />
       ) : students.isError && !students.data ? (
