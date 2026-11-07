@@ -92,7 +92,10 @@ export function AppSidebar() {
                       />
                       <span className={`relative ${FADES}`}>
                         {label}
-                        <ChalkStroke className="absolute top-full left-0 hidden w-16 text-chalk-yellow group-aria-[current]/nav:block" />
+                        <ChalkStroke
+                          draw
+                          className="absolute top-full left-0 hidden w-16 text-chalk-yellow group-aria-[current]/nav:block"
+                        />
                       </span>
                     </Link>
                   </SidebarMenuButton>

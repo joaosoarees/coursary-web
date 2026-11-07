@@ -6,11 +6,13 @@ import bodyFont from '@fontsource-variable/atkinson-hyperlegible-next/files/atki
 import displayFont from '@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-wght-normal.woff2?url';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { MotionConfig } from 'motion/react';
 import { useEffect } from 'react';
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router';
 
 import { AuthProvider } from '~/auth/AuthProvider';
 import { ErrorState } from '~/components/ErrorState';
+import { NavigationProgress } from '~/components/NavigationProgress';
 import { Toaster } from '~/components/ui/sonner';
 import { queryClient } from '~/lib/queryClient';
 import { installAuthInterceptors } from '~/services/authInterceptors';
@@ -80,12 +82,16 @@ export const shouldRevalidate = () => false;
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <AuthProvider>
-          <Outlet />
-        </AuthProvider>
-        <Toaster position="top-right" containerAriaLabel="Notificações" />
-      </ThemeProvider>
+      {/* Motion animates outside CSS: the drag-to-reorder lists follow reduced motion only so. */}
+      <MotionConfig reducedMotion="user">
+        <ThemeProvider>
+          <NavigationProgress />
+          <AuthProvider>
+            <Outlet />
+          </AuthProvider>
+          <Toaster position="top-right" containerAriaLabel="Notificações" />
+        </ThemeProvider>
+      </MotionConfig>
       <ReactQueryDevtools />
     </QueryClientProvider>
   );

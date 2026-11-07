@@ -45,7 +45,8 @@ const readSearch = (params: URLSearchParams) => {
 const searchHref = (query: string, page: number) =>
   `/cursos?${new URLSearchParams({ busca: query, pagina: String(page) }).toString()}`;
 
-export async function clientLoader({ request }: Route.ClientLoaderArgs) {
+// Starts the read and lets the page open on its skeleton; waiting here held the old page.
+export function clientLoader({ request }: Route.ClientLoaderArgs) {
   if (!isSignedIn()) {
     return null;
   }
@@ -53,9 +54,9 @@ export async function clientLoader({ request }: Route.ClientLoaderArgs) {
   const { query, page } = readSearch(new URL(request.url).searchParams);
 
   if (query) {
-    await queryClient.query(searchQuery({ query, page: page - 1 })).catch(noop);
+    void queryClient.query(searchQuery({ query, page: page - 1 })).catch(noop);
   } else {
-    await queryClient.infiniteQuery(catalogQuery).catch(noop);
+    void queryClient.infiniteQuery(catalogQuery).catch(noop);
   }
 
   return null;

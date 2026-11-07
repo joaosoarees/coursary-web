@@ -56,6 +56,7 @@ describe('edit course', () => {
       }),
     ).toBeVisible();
     expect(screen.getByRole('button', { name: /Enviar capa/ })).toBeVisible();
+    expect(document.title).toBe('Gráficos que contam uma história · Coursary');
 
     fireEvent.change(screen.getByLabelText('Título'), {
       target: { value: 'Gráficos com propósito' },

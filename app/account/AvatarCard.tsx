@@ -37,7 +37,10 @@ export function AvatarCard({ profile }: { profile: Profile }) {
         </Avatar>
         {busy && (
           <div className="absolute inset-0 grid place-items-center rounded-full bg-black/45 text-white">
-            <LoaderCircle aria-hidden="true" className="size-8 animate-spin" />
+            <LoaderCircle
+              aria-hidden="true"
+              className="size-8 animate-spin motion-reduce:animate-none"
+            />
           </div>
         )}
       </div>
@@ -52,8 +55,8 @@ export function AvatarCard({ profile }: { profile: Profile }) {
             className="h-1.5 overflow-hidden rounded-full bg-muted"
           >
             <div
-              className="h-full bg-primary transition-[width]"
-              style={{ width: `${String(percent)}%` }}
+              className="h-full origin-left bg-primary transition-transform duration-300 ease-chalk motion-reduce:transition-none"
+              style={{ transform: `scaleX(${String(percent / 100)})` }}
             />
           </div>
           <p role="status" className="text-sm text-muted-foreground">

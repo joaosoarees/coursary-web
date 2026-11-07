@@ -13,7 +13,12 @@ export function SubmitButton({
 }) {
   return (
     <Button type="submit" disabled={pending}>
-      {pending && <LoaderCircle aria-hidden="true" className="animate-spin" />}
+      {pending && (
+        <LoaderCircle
+          aria-hidden="true"
+          className="animate-spin motion-reduce:animate-none"
+        />
+      )}
       {pending ? pendingLabel : label}
     </Button>
   );

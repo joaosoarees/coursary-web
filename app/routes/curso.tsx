@@ -28,21 +28,18 @@ import type { Route } from './+types/curso';
 // A malformed id is refused as a validation error before the API looks for the course.
 const NOT_FOUND = new Set(['COURSE_NOT_FOUND', 'VALIDATION']);
 
-export const meta: Route.MetaFunction = ({ loaderData }) => [
-  { title: `${loaderData?.title ?? 'Curso'} · Coursary` },
-];
+// The course's own title is rendered by the page once it loads: the loader does not wait for it.
+export const meta: Route.MetaFunction = () => [{ title: 'Curso · Coursary' }];
 
-export async function clientLoader({ params }: Route.ClientLoaderArgs) {
-  if (!isSignedIn()) {
-    return null;
+export function clientLoader({ params }: Route.ClientLoaderArgs) {
+  if (isSignedIn()) {
+    void queryClient.query(courseQuery(params.id)).catch(noop);
+    void queryClient.query(enrollmentQuery(params.id)).catch(noop);
+    void queryClient.query(myReviewQuery(params.id)).catch(noop);
+    void queryClient.infiniteQuery(reviewsQuery(params.id)).catch(noop);
   }
 
-  void queryClient.query(enrollmentQuery(params.id)).catch(noop);
-  void queryClient.query(myReviewQuery(params.id)).catch(noop);
-  void queryClient.infiniteQuery(reviewsQuery(params.id)).catch(noop);
-  const course = await queryClient.query(courseQuery(params.id)).catch(noop);
-
-  return { title: course?.title };
+  return null;
 }
 
 export default function CoursePageRoute({ params }: Route.ComponentProps) {
@@ -84,7 +81,8 @@ function CourseDetails({ course }: { course: CoursePage }) {
   const enrollment = useEnrollment(course.id);
 
   return (
-    <article className="flex flex-col gap-8">
+    <article className="flex animate-content-in flex-col gap-8">
+      <title>{`${course.title} · Coursary`}</title>
       <Link
         to="/cursos"
         className="inline-flex min-h-10 items-center gap-1.5 self-start rounded-md font-bold text-link underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"

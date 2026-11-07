@@ -34,27 +34,20 @@ const EMPTY_DESCRIPTION: Record<ManagedCourse['status'], string> = {
 
 const NOT_MINE = new Set(['COURSE_NOT_FOUND', 'VALIDATION', 'FORBIDDEN']);
 
-export const meta: Route.MetaFunction = ({ loaderData }) => [
-  {
-    title: loaderData?.title
-      ? `Alunos · ${loaderData.title} · Coursary`
-      : 'Alunos · Coursary',
-  },
-];
+// The course's own title is rendered by the page once it loads: the loader does not wait for it.
+export const meta: Route.MetaFunction = () => [{ title: 'Alunos · Coursary' }];
 
-export async function clientLoader({ params }: Route.ClientLoaderArgs) {
-  if (!isSignedIn()) {
-    return null;
+export function clientLoader({ params }: Route.ClientLoaderArgs) {
+  if (isSignedIn()) {
+    void queryClient.query(managedCourseQuery(params.id)).catch(noop);
+    void queryClient
+      .query(
+        courseStudentsQuery(params.id, { cursor: undefined, order: 'desc' }),
+      )
+      .catch(noop);
   }
 
-  void queryClient
-    .query(courseStudentsQuery(params.id, { cursor: undefined, order: 'desc' }))
-    .catch(noop);
-  const course = await queryClient
-    .query(managedCourseQuery(params.id))
-    .catch(noop);
-
-  return { title: course?.title };
+  return null;
 }
 
 export default function CourseStudentsPage({ params }: Route.ComponentProps) {
@@ -103,6 +96,7 @@ function CourseStudents({ course }: { course: ManagedCourse }) {
 
   return (
     <>
+      <title>{`Alunos · ${course.title} · Coursary`}</title>
       <header className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
         <div className="flex min-w-0 flex-[1_1_26rem] flex-col gap-1">
           <span className="text-sm font-bold text-muted-foreground">
@@ -150,7 +144,7 @@ function CourseStudents({ course }: { course: ManagedCourse }) {
           <section
             aria-label="Lista de alunos"
             aria-busy={students.isPlaceholderData}
-            className="overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm"
+            className="animate-content-in overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm"
           >
             <StudentsTable
               students={students.data.items}

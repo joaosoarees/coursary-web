@@ -31,6 +31,7 @@
   --highlight: #fcf3d4;
   --highlight-foreground: #13241b;
   --highlight-border: #b8952a;
+  --progress: #a08a2e;
   --star: #8a6d12;
   --link: #2b6b52;
   --border: #cfd9d1;
@@ -76,6 +77,7 @@
   --highlight: #2c3418;
   --highlight-foreground: #eaf0ea;
   --highlight-border: #a08a2e;
+  --progress: #f2c94c;
   --star: #c9a443;
   --link: #f2c94c;
   --border: #2f4c3e;
@@ -113,6 +115,7 @@
   --color-highlight: var(--highlight);
   --color-highlight-foreground: var(--highlight-foreground);
   --color-highlight-border: var(--highlight-border);
+  --color-progress: var(--progress);
   --color-star: var(--star);
   --color-link: var(--link);
   --color-border: var(--border);
@@ -178,13 +181,20 @@
     cursor: pointer;
   }
 
+  /* Only tw-animate's movement is neutralised here: every other spatial or looping animation must
+     opt out with motion-reduce: where it is used, or it keeps running. */
   @media (prefers-reduced-motion: reduce) {
     *,
     ::before,
     ::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
+      --tw-enter-scale: 1 !important;
+      --tw-exit-scale: 1 !important;
+      --tw-enter-translate-x: 0 !important;
+      --tw-enter-translate-y: 0 !important;
+      --tw-exit-translate-x: 0 !important;
+      --tw-exit-translate-y: 0 !important;
+      --tw-enter-rotate: 0 !important;
+      --tw-exit-rotate: 0 !important;
       scroll-behavior: auto !important;
     }
   }
@@ -192,4 +202,61 @@
   ::selection {
     @apply bg-chalk-yellow text-chalk-yellow-foreground;
   }
+}
+
+@theme {
+  --ease-chalk: cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-navigation-progress: navigation-progress 1.4s ease-in-out infinite;
+  --animate-chalk-draw: chalk-draw 450ms var(--ease-chalk) both;
+  --animate-check-draw: chalk-draw 300ms var(--ease-chalk) both;
+  --animate-dust-sweep: dust-sweep 1.6s ease-in-out infinite;
+  --animate-content-in: content-in 150ms var(--ease-chalk) backwards;
+
+  /* The drawn paths set pathLength="1". */
+  @keyframes chalk-draw {
+    from {
+      stroke-dashoffset: 1;
+    }
+
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes dust-sweep {
+    from {
+      transform: translateX(-100%);
+    }
+
+    to {
+      transform: translateX(100%);
+    }
+  }
+
+  @keyframes content-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes navigation-progress {
+    from {
+      transform: translateX(-100%);
+    }
+
+    to {
+      transform: translateX(300%);
+    }
+  }
+}
+
+/* Sonner appends its own stylesheet after this one: these need the extra specificity to win. */
+[data-sonner-toaster] [data-sonner-toast] {
+  transition-duration: 200ms;
+  transition-timing-function: var(--ease-chalk);
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-removed='true'] {
+  transition-duration: 140ms;
+  transition-timing-function: var(--ease-chalk);
 }

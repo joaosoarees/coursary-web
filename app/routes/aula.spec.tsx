@@ -79,6 +79,7 @@ describe('the lesson page', () => {
     expect(
       await screen.findByRole('heading', { level: 1, name: 'Filtrando' }),
     ).toBeVisible();
+    expect(document.title).toBe('Filtrando · Coursary');
     expect(
       screen.getByText((_, element) =>
         element?.tagName === 'P'

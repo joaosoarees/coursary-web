@@ -35,9 +35,9 @@ export function AccountMenu({
   if (me.isPending) {
     return (
       <div className="flex items-center gap-3 p-0.5" aria-hidden="true">
-        <Skeleton className="size-9 shrink-0 rounded-full bg-shell-hover" />
+        <Skeleton className="size-9 shrink-0 rounded-full bg-shell-hover after:via-chalk/10" />
         {!compact && (
-          <Skeleton className="h-4 w-28 bg-shell-hover transition-opacity duration-200 group-data-[collapsible=icon]:opacity-0" />
+          <Skeleton className="h-4 w-28 bg-shell-hover transition-opacity duration-200 group-data-[collapsible=icon]:opacity-0 after:via-chalk/10" />
         )}
       </div>
     );
