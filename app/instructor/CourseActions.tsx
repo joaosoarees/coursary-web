@@ -1,3 +1,4 @@
+import { Users } from 'lucide-react';
 import { useId, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
@@ -57,6 +58,12 @@ export function CourseActions({
   return (
     <div className="flex flex-col items-start gap-2 md:items-end">
       <div className="flex flex-wrap gap-3">
+        <Button variant="outline" asChild>
+          <Link to={`/instrutor/cursos/${course.id}/alunos`}>
+            <Users aria-hidden="true" />
+            Alunos ({CourseFormat.integer(course.enrollmentCount)})
+          </Link>
+        </Button>
         {course.status === 'DRAFT' && (
           <>
             <Button
