@@ -26,26 +26,18 @@ import type { Route } from './+types/aula';
 const COURSE_NOT_FOUND = new Set(['COURSE_NOT_FOUND', 'VALIDATION']);
 const LESSON_NOT_FOUND = new Set(['LESSON_NOT_FOUND', 'VALIDATION']);
 
-export const meta: Route.MetaFunction = ({ loaderData }) => [
-  { title: `${loaderData?.title ?? 'Aula'} · Coursary` },
-];
+// The lesson's own title is rendered by the page once it loads: the loader does not wait for it.
+export const meta: Route.MetaFunction = () => [{ title: 'Aula · Coursary' }];
 
-export async function clientLoader({ params }: Route.ClientLoaderArgs) {
-  if (!isSignedIn()) {
-    return null;
+export function clientLoader({ params }: Route.ClientLoaderArgs) {
+  if (isSignedIn()) {
+    void queryClient.query(outlineQuery(params.id)).catch(noop);
+    void queryClient.query(enrollmentQuery(params.id)).catch(noop);
+    void queryClient.query(lessonQuery(params.id, params.aulaId)).catch(noop);
+    void queryClient.query(myReviewQuery(params.id)).catch(noop);
   }
 
-  const [outline] = await Promise.all([
-    queryClient.query(outlineQuery(params.id)).catch(noop),
-    queryClient.query(enrollmentQuery(params.id)).catch(noop),
-    queryClient.query(lessonQuery(params.id, params.aulaId)).catch(noop),
-  ]);
-  void queryClient.query(myReviewQuery(params.id)).catch(noop);
-  const lesson = outline
-    ? lessonsOf(outline).find(({ id }) => id === params.aulaId)
-    : undefined;
-
-  return { title: lesson?.title };
+  return null;
 }
 
 export default function LessonRoute({ params }: Route.ComponentProps) {
@@ -117,16 +109,19 @@ export default function LessonRoute({ params }: Route.ComponentProps) {
   }
 
   return (
-    <LessonView
-      key={params.aulaId}
-      outline={outline.data}
-      progress={enrollment.data}
-      content={lesson.data}
-      lessons={lessons}
-      index={index}
-      onVideoExpired={lesson.refetch}
-      lessonPath={(id) => `/cursos/${params.id}/aulas/${id}`}
-    />
+    <>
+      <title>{`${lessons[index]?.title ?? 'Aula'} · Coursary`}</title>
+      <LessonView
+        key={params.aulaId}
+        outline={outline.data}
+        progress={enrollment.data}
+        content={lesson.data}
+        lessons={lessons}
+        index={index}
+        onVideoExpired={lesson.refetch}
+        lessonPath={(id) => `/cursos/${params.id}/aulas/${id}`}
+      />
+    </>
   );
 }
 
