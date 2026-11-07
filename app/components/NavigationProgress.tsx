@@ -33,7 +33,7 @@ export function NavigationProgress() {
       aria-label="Carregando a página"
       className="pointer-events-none fixed inset-x-0 top-0 z-[100] h-0.75 overflow-hidden"
     >
-      <div className="h-full w-1/3 animate-navigation-progress bg-primary motion-reduce:w-full motion-reduce:animate-none" />
+      <div className="h-full w-1/3 animate-navigation-progress bg-progress motion-reduce:w-full motion-reduce:animate-none" />
     </div>
   );
 }
