@@ -37,8 +37,6 @@ export function CourseProgress({
 }) {
   const done = segmentsDone(completed, total);
   const finished = done === SEGMENTS;
-  // Only segments completed while the page is open draw themselves; the ones done before it
-  // opened are simply there.
   const [shown, setShown] = useState(done);
   const [drawFrom, setDrawFrom] = useState(done);
 
