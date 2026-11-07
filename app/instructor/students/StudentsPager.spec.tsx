@@ -47,4 +47,21 @@ describe('StudentsPager', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Próxima página' }));
     expect(onNext).toHaveBeenCalled();
   });
+
+  it('should only count the students when they fit in one page', () => {
+    render(
+      <StudentsPager
+        index={0}
+        shown={1}
+        total={1}
+        canNext={false}
+        busy={false}
+        onPrevious={vi.fn()}
+        onNext={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText('1 aluno')).toBeVisible();
+    expect(screen.queryByRole('navigation')).toBeNull();
+  });
 });
