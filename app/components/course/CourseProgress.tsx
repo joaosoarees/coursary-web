@@ -26,10 +26,13 @@ export function CourseProgress({
   completed,
   total,
   spelledOut = false,
+  notStarted,
 }: {
   completed: number;
   total: number;
   spelledOut?: boolean;
+  /** Said instead of "0 de N aulas", where a student who never started must stand out. */
+  notStarted?: string;
 }) {
   const done = segmentsDone(completed, total);
   const finished = done === SEGMENTS;
@@ -56,6 +59,8 @@ export function CourseProgress({
           <CircleCheck aria-hidden="true" className="size-4" />
           Concluído
         </span>
+      ) : notStarted && completed === 0 ? (
+        <span className="text-sm text-muted-foreground">{notStarted}</span>
       ) : (
         <span className="text-sm text-muted-foreground">
           {completed} de {total} aulas
