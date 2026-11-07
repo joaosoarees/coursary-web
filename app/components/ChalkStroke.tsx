@@ -12,7 +12,6 @@ export function ChalkStroke({
 }: {
   className?: string;
   dashed?: boolean;
-  /** Draws the stroke from left to right each time it appears. */
   draw?: boolean;
 }) {
   // A mask draws the stroke: its own dashes would fight a moving dash offset.
