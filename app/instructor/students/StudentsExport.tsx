@@ -1,4 +1,4 @@
-import { Clock, Download, LoaderCircle } from 'lucide-react';
+import { ArrowDownToLine, Clock, LoaderCircle } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 
 import { CourseFormat } from '~/components/course/CourseFormat';
@@ -10,20 +10,43 @@ type StudentExport = ReturnType<typeof useStudentExport>;
 
 export function StudentsExportButton({ csv }: { csv: StudentExport }) {
   const link = useRef<HTMLAnchorElement>(null);
+  const control = useRef<HTMLButtonElement>(null);
   const { phase } = csv;
+  const previousStep = useRef(phase.step);
 
-  // The button becomes a link when the file is ready: the focus moves to it instead of the page.
+  // The control changes element between button and link: the focus follows it, unless the
+  // person moved it elsewhere. Never on the first render.
   useEffect(() => {
-    if (phase.step === 'ready' && document.activeElement === document.body) {
+    const before = previousStep.current;
+
+    previousStep.current = phase.step;
+
+    if (before === phase.step || document.activeElement !== document.body) {
+      return;
+    }
+
+    if (phase.step === 'ready') {
       link.current?.focus();
+    } else if (before === 'ready') {
+      control.current?.focus();
     }
   }, [phase.step]);
 
   if (phase.step === 'ready') {
     return (
       <Button asChild>
-        <a ref={link} href={phase.url} download>
-          <Download aria-hidden="true" />
+        <a
+          ref={link}
+          href={phase.url}
+          download
+          onClick={(event) => {
+            if (Date.now() >= phase.expiresAt) {
+              event.preventDefault();
+              csv.expire();
+            }
+          }}
+        >
+          <ArrowDownToLine aria-hidden="true" />
           Baixar CSV
         </a>
       </Button>
@@ -35,8 +58,10 @@ export function StudentsExportButton({ csv }: { csv: StudentExport }) {
   // aria-disabled, not disabled: the button keeps the focus while the file is prepared.
   return (
     <Button
+      ref={control}
       variant="outline"
       aria-disabled={preparing}
+      className="aria-disabled:border-border aria-disabled:text-muted-foreground aria-disabled:opacity-100"
       onClick={() => {
         if (!preparing) {
           void csv.start();
@@ -49,7 +74,7 @@ export function StudentsExportButton({ csv }: { csv: StudentExport }) {
           className="animate-spin motion-reduce:animate-none"
         />
       ) : (
-        <Download aria-hidden="true" />
+        <ArrowDownToLine aria-hidden="true" />
       )}
       {preparing ? 'Preparando o CSV…' : 'Exportar CSV'}
     </Button>
@@ -61,11 +86,17 @@ export function StudentsExportStatus({ csv }: { csv: StudentExport }) {
 
   return (
     <>
-      <div role="status" className="empty:hidden">
+      {/* Always in the tree: a live region that appears with its text is often not read. */}
+      <div role="status" className="not-has-[p]:sr-only">
+        {phase.step === 'preparing' && (
+          <span className="sr-only">Preparando o CSV…</span>
+        )}
         {phase.step === 'ready' && (
           <p className="text-muted-foreground">
-            O CSV de {CourseFormat.count(phase.rowCount, 'aluno', 'alunos')}{' '}
-            está pronto. O link vale por{' '}
+            {phase.rowCount === null
+              ? 'O CSV está pronto.'
+              : `O CSV de ${CourseFormat.count(phase.rowCount, 'aluno', 'alunos')} está pronto.`}{' '}
+            O link vale por{' '}
             {CourseFormat.count(
               Math.round(phase.expiresIn / 60),
               'minuto',
@@ -81,7 +112,11 @@ export function StudentsExportStatus({ csv }: { csv: StudentExport }) {
           </p>
         )}
       </div>
-      {problem && <FormAlert>{problem}</FormAlert>}
+      {problem && (
+        <div className="max-w-prose">
+          <FormAlert>{problem}</FormAlert>
+        </div>
+      )}
     </>
   );
 }

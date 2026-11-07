@@ -18,6 +18,7 @@ const csvIn = (
   notice: extra.notice,
   problem: extra.problem,
   start: vi.fn(() => Promise.resolve()),
+  expire: vi.fn(),
 });
 
 describe('StudentsExportButton', () => {
@@ -47,6 +48,7 @@ describe('StudentsExportButton', () => {
           url: 'https://bucket.example/e1.csv',
           rowCount: 47,
           expiresIn: 300,
+          expiresAt: Date.now() + 290_000,
         })}
       />,
     );
@@ -55,6 +57,26 @@ describe('StudentsExportButton', () => {
       'href',
       'https://bucket.example/e1.csv',
     );
+  });
+});
+
+describe('StudentsExportButton with an expired address', () => {
+  it('should not follow a link whose address has expired', () => {
+    const csv = csvIn({
+      step: 'ready',
+      url: 'https://bucket.example/e1.csv',
+      rowCount: 47,
+      expiresIn: 300,
+      expiresAt: Date.now() - 1,
+    });
+    render(<StudentsExportButton csv={csv} />);
+
+    const followed = fireEvent.click(
+      screen.getByRole('link', { name: 'Baixar CSV' }),
+    );
+
+    expect(followed).toBe(false);
+    expect(csv.expire).toHaveBeenCalled();
   });
 });
 
@@ -67,6 +89,7 @@ describe('StudentsExportStatus', () => {
           url: 'https://bucket.example/e1.csv',
           rowCount: 47,
           expiresIn: 300,
+          expiresAt: Date.now() + 290_000,
         })}
       />,
     );

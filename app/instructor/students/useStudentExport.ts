@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { ApiFailure } from '~/services/ApiFailure';
-import { ExportService } from '~/services/ExportService';
+import { ExportService, type StudentExport } from '~/services/ExportService';
 
 const POLL_MS = 2_000;
 const POLL_ATTEMPTS = 30;
@@ -18,7 +18,14 @@ export const EXPORT_MESSAGES = {
 export type StudentExportPhase =
   | { step: 'idle' }
   | { step: 'preparing' }
-  | { step: 'ready'; url: string; rowCount: number; expiresIn: number };
+  | {
+      step: 'ready';
+      url: string;
+      rowCount: number | null;
+      expiresIn: number;
+      // A timer stops while the laptop sleeps; the link checks the clock before it is followed.
+      expiresAt: number;
+    };
 
 const wait = (ms: number) =>
   new Promise((resolve) => {
@@ -30,7 +37,9 @@ export function useStudentExport(courseId: string) {
   const [notice, setNotice] = useState<string>();
   const [problem, setProblem] = useState<string>();
   const gone = useRef(false);
-  const expiresIn = phase.step === 'ready' ? phase.expiresIn : undefined;
+  // Kept after the wait runs out, so the next click picks up this export instead of a 409.
+  const waiting = useRef<string>(undefined);
+  const expiresAt = phase.step === 'ready' ? phase.expiresAt : undefined;
 
   useEffect(() => {
     gone.current = false;
@@ -41,7 +50,7 @@ export function useStudentExport(courseId: string) {
   }, []);
 
   useEffect(() => {
-    if (expiresIn === undefined) {
+    if (expiresAt === undefined) {
       return;
     }
 
@@ -49,13 +58,13 @@ export function useStudentExport(courseId: string) {
       () => {
         setPhase({ step: 'idle' });
       },
-      Math.max(expiresIn * 1000 - EXPIRY_MARGIN_MS, 0),
+      Math.max(expiresAt - Date.now(), 0),
     );
 
     return () => {
       clearTimeout(timer);
     };
-  }, [expiresIn]);
+  }, [expiresAt]);
 
   const waitForFile = async (exportId: string) => {
     for (let attempt = 0; attempt < POLL_ATTEMPTS; attempt += 1) {
@@ -76,10 +85,63 @@ export function useStudentExport(courseId: string) {
     return 'slow' as const;
   };
 
+  const finish = (outcome: StudentExport | 'slow' | undefined) => {
+    if (outcome === undefined) {
+      return;
+    }
+
+    if (outcome === 'slow') {
+      setPhase({ step: 'idle' });
+      setNotice(EXPORT_MESSAGES.slow);
+      return;
+    }
+
+    waiting.current = undefined;
+
+    if (
+      outcome.status === 'READY' &&
+      outcome.downloadUrl &&
+      outcome.expiresIn !== undefined
+    ) {
+      setPhase({
+        step: 'ready',
+        url: outcome.downloadUrl,
+        rowCount: outcome.rowCount,
+        expiresIn: outcome.expiresIn,
+        expiresAt: Date.now() + outcome.expiresIn * 1000 - EXPIRY_MARGIN_MS,
+      });
+    } else {
+      setPhase({ step: 'idle' });
+      setProblem(EXPORT_MESSAGES.failed);
+    }
+  };
+
+  const resume = async (exportId: string) => {
+    const found = await ExportService.get(exportId).catch(() => undefined);
+
+    if (found?.status === 'READY') {
+      finish(found);
+      return true;
+    }
+
+    if (found?.status === 'PENDING') {
+      finish(await waitForFile(exportId));
+      return true;
+    }
+
+    waiting.current = undefined;
+
+    return false;
+  };
+
   const start = async () => {
     setNotice(undefined);
     setProblem(undefined);
     setPhase({ step: 'preparing' });
+
+    if (waiting.current && (await resume(waiting.current))) {
+      return;
+    }
 
     let requested;
 
@@ -97,27 +159,13 @@ export function useStudentExport(courseId: string) {
       return;
     }
 
-    const outcome = await waitForFile(requested.id);
-
-    if (outcome === undefined) {
-      return;
-    }
-
-    if (outcome === 'slow') {
-      setPhase({ step: 'idle' });
-      setNotice(EXPORT_MESSAGES.slow);
-    } else if (outcome.status === 'READY' && outcome.downloadUrl) {
-      setPhase({
-        step: 'ready',
-        url: outcome.downloadUrl,
-        rowCount: outcome.rowCount ?? 0,
-        expiresIn: outcome.expiresIn ?? 0,
-      });
-    } else {
-      setPhase({ step: 'idle' });
-      setProblem(EXPORT_MESSAGES.failed);
-    }
+    waiting.current = requested.id;
+    finish(await waitForFile(requested.id));
   };
 
-  return { phase, notice, problem, start };
+  const expire = () => {
+    setPhase({ step: 'idle' });
+  };
+
+  return { phase, notice, problem, start, expire };
 }

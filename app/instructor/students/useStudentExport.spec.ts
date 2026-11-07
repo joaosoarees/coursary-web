@@ -56,7 +56,7 @@ describe('useStudentExport', () => {
     await act(() => vi.advanceTimersByTimeAsync(4_000));
     await finish();
 
-    expect(hook.result.current.phase).toEqual({
+    expect(hook.result.current.phase).toMatchObject({
       step: 'ready',
       url: ready.downloadUrl,
       rowCount: 47,
@@ -111,5 +111,37 @@ describe('useStudentExport', () => {
       phase: { step: 'idle' },
       notice: EXPORT_MESSAGES.slow,
     });
+  });
+
+  it('should pick up its own export after it stopped waiting', async () => {
+    const request = vi
+      .spyOn(ExportService, 'request')
+      .mockResolvedValue(pending);
+    const get = vi.spyOn(ExportService, 'get').mockResolvedValue(pending);
+    const { hook, finish } = startExport();
+
+    await act(() => vi.advanceTimersByTimeAsync(60_000));
+    await finish();
+    get.mockResolvedValue(ready);
+
+    await act(() => hook.result.current.start());
+
+    expect(request).toHaveBeenCalledTimes(1);
+    expect(get).toHaveBeenLastCalledWith('e1');
+    expect(hook.result.current.phase).toMatchObject({ step: 'ready' });
+  });
+
+  it('should take a ready export without its address as failed', async () => {
+    vi.spyOn(ExportService, 'request').mockResolvedValue(pending);
+    vi.spyOn(ExportService, 'get').mockResolvedValue({
+      ...ready,
+      downloadUrl: undefined,
+    });
+    const { hook, finish } = startExport();
+
+    await act(() => vi.advanceTimersByTimeAsync(2_000));
+    await finish();
+
+    expect(hook.result.current.problem).toBe(EXPORT_MESSAGES.failed);
   });
 });
