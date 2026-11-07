@@ -251,3 +251,13 @@
     }
   }
 }
+
+/* Sonner times its own toasts; they follow the app's curve and the enter/exit lengths. */
+[data-sonner-toast] {
+  transition-duration: 200ms;
+  transition-timing-function: var(--ease-chalk);
+}
+
+[data-sonner-toast][data-removed='true'] {
+  transition-duration: 140ms;
+}
