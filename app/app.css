@@ -181,9 +181,8 @@
     cursor: pointer;
   }
 
-  /* Reduced motion keeps the short fades that confirm an action and drops every movement: the
-     overlays of tw-animate-css lose their slide and zoom, and each looping or spatial animation
-     opts out with motion-reduce: where it is used. */
+  /* Only tw-animate's movement is neutralised here: every other spatial or looping animation must
+     opt out with motion-reduce: where it is used, or it keeps running. */
   @media (prefers-reduced-motion: reduce) {
     *,
     ::before,
@@ -206,18 +205,17 @@
 }
 
 @theme {
-  /* One curve for the whole app: a confident arrival, no bounce. */
   --ease-chalk: cubic-bezier(0.16, 1, 0.3, 1);
   --animate-navigation-progress: navigation-progress 1.4s ease-in-out infinite;
   --animate-chalk-draw: chalk-draw 450ms var(--ease-chalk) both;
   --animate-check-draw: chalk-draw 300ms var(--ease-chalk) 80ms both;
   --animate-dust-sweep: dust-sweep 1.6s ease-in-out infinite;
-  --animate-content-in: content-in 150ms var(--ease-chalk) both;
+  --animate-content-in: content-in 150ms var(--ease-chalk) backwards;
 
-  /* The path sets --chalk-length to its own length (pathLength="1" makes it 1). */
+  /* The drawn paths set pathLength="1". */
   @keyframes chalk-draw {
     from {
-      stroke-dashoffset: var(--chalk-length, 1);
+      stroke-dashoffset: 1;
     }
 
     to {
@@ -252,12 +250,13 @@
   }
 }
 
-/* Sonner times its own toasts; they follow the app's curve and the enter/exit lengths. */
-[data-sonner-toast] {
+/* Sonner appends its own stylesheet after this one: these need the extra specificity to win. */
+[data-sonner-toaster] [data-sonner-toast] {
   transition-duration: 200ms;
   transition-timing-function: var(--ease-chalk);
 }
 
-[data-sonner-toast][data-removed='true'] {
+[data-sonner-toaster] [data-sonner-toast][data-removed='true'] {
   transition-duration: 140ms;
+  transition-timing-function: var(--ease-chalk);
 }
