@@ -55,8 +55,8 @@ export function AvatarCard({ profile }: { profile: Profile }) {
             className="h-1.5 overflow-hidden rounded-full bg-muted"
           >
             <div
-              className="h-full bg-primary transition-[width]"
-              style={{ width: `${String(percent)}%` }}
+              className="h-full origin-left bg-primary transition-transform duration-300 ease-chalk motion-reduce:transition-none"
+              style={{ transform: `scaleX(${String(percent / 100)})` }}
             />
           </div>
           <p role="status" className="text-sm text-muted-foreground">
