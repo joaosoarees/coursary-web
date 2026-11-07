@@ -110,6 +110,20 @@ describe('course students', () => {
       }),
     ).toBeVisible();
     expect(screen.getByText(/depois de publicado/)).toBeVisible();
+    expect(screen.queryByText(/aulas$/)).toBeNull();
+  });
+
+  it('should point a published course without students to its page', async () => {
+    vi.spyOn(InstructorService, 'get').mockResolvedValue({
+      ...course,
+      enrollmentCount: 0,
+    });
+    list.mockResolvedValue({ items: [], nextCursor: null });
+    renderPage();
+
+    expect(
+      await screen.findByRole('link', { name: 'Ver a página do curso' }),
+    ).toHaveAttribute('href', '/cursos/c1');
   });
 
   it('should say an archived course takes no new students', async () => {
