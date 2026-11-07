@@ -32,15 +32,18 @@ describe('StudentsPager', () => {
         shown={20}
         total={47}
         canNext
+        busy={false}
         onPrevious={onPrevious}
         onNext={onNext}
       />,
     );
 
     expect(screen.getByText('Página 1 de 3')).toBeVisible();
+    fireEvent.click(screen.getByRole('button', { name: 'Página anterior' }));
     expect(
       screen.getByRole('button', { name: 'Página anterior' }),
-    ).toBeDisabled();
+    ).toHaveAttribute('aria-disabled', 'true');
+    expect(onPrevious).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole('button', { name: 'Próxima página' }));
     expect(onNext).toHaveBeenCalled();
   });

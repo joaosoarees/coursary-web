@@ -22,6 +22,7 @@ export function StudentsPager({
   shown,
   total,
   canNext,
+  busy,
   onPrevious,
   onNext,
 }: {
@@ -29,17 +30,21 @@ export function StudentsPager({
   shown: number;
   total: number;
   canNext: boolean;
+  busy: boolean;
   onPrevious: () => void;
   onNext: () => void;
 }) {
   const range = StudentsRange.of(index, shown, total);
 
+  // aria-disabled, not disabled: a disabled button drops the focus of whoever just pressed it.
   return (
     <nav
       aria-label="Páginas de alunos"
       className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t px-4 py-3.5 sm:px-5"
     >
-      <span className="text-muted-foreground">{range.text}</span>
+      <span aria-live="polite" className="text-muted-foreground">
+        {busy ? 'Carregando os alunos…' : range.text}
+      </span>
       <span className="flex items-center gap-3">
         <span>
           Página {index + 1} de {range.pages}
@@ -48,8 +53,13 @@ export function StudentsPager({
           variant="outline"
           size="icon"
           aria-label="Página anterior"
-          disabled={index === 0}
-          onClick={onPrevious}
+          aria-disabled={index === 0}
+          className="size-11"
+          onClick={() => {
+            if (index > 0) {
+              onPrevious();
+            }
+          }}
         >
           <ChevronLeft aria-hidden="true" />
         </Button>
@@ -57,8 +67,13 @@ export function StudentsPager({
           variant="outline"
           size="icon"
           aria-label="Próxima página"
-          disabled={!canNext}
-          onClick={onNext}
+          aria-disabled={!canNext}
+          className="size-11"
+          onClick={() => {
+            if (canNext) {
+              onNext();
+            }
+          }}
         >
           <ChevronRight aria-hidden="true" />
         </Button>

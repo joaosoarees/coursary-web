@@ -6,6 +6,7 @@ import { CourseFormat } from '~/components/course/CourseFormat';
 import { EmptyState } from '~/components/EmptyState';
 import { ErrorState } from '~/components/ErrorState';
 import { LoadingNote } from '~/components/LoadingNote';
+import { Button } from '~/components/ui/button';
 import { Skeleton } from '~/components/ui/skeleton';
 import { StudentsPager } from '~/instructor/students/StudentsPager';
 import { StudentsTable } from '~/instructor/students/StudentsTable';
@@ -109,7 +110,15 @@ function CourseStudents({ course }: { course: ManagedCourse }) {
       {students.isLoading ? (
         <TableSkeleton />
       ) : students.isError && !students.data ? (
-        <ErrorState onRetry={() => void students.refetch()} />
+        <div className="flex flex-col items-start gap-3">
+          <ErrorState variant="block" onRetry={() => void students.refetch()} />
+          {pages.index > 0 && (
+            <Button variant="outline" onClick={pages.previous}>
+              <ChevronLeft aria-hidden="true" />
+              Voltar à página anterior
+            </Button>
+          )}
+        </div>
       ) : empty ? (
         <EmptyState
           icon={Users}
@@ -120,6 +129,7 @@ function CourseStudents({ course }: { course: ManagedCourse }) {
         students.data && (
           <section
             aria-label="Lista de alunos"
+            aria-busy={students.isPlaceholderData}
             className="overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm"
           >
             <StudentsTable
@@ -134,6 +144,7 @@ function CourseStudents({ course }: { course: ManagedCourse }) {
               shown={students.data.items.length}
               total={course.enrollmentCount}
               canNext={!students.isPlaceholderData && Boolean(nextCursor)}
+              busy={students.isPlaceholderData}
               onPrevious={pages.previous}
               onNext={() => {
                 if (nextCursor) {
