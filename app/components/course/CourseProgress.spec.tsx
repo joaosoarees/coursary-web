@@ -44,4 +44,11 @@ describe('CourseProgress', () => {
     expect(solidSegments(container)).toBe(5);
     expect(screen.queryByText('Concluído')).toBeNull();
   });
+
+  it('should say a course was never started where asked to', () => {
+    render(<CourseProgress completed={0} total={8} notStarted="Não começou" />);
+
+    expect(screen.getByText('Não começou')).toBeVisible();
+    expect(screen.queryByText(/0 de 8 aulas/)).toBeNull();
+  });
 });

@@ -1,0 +1,95 @@
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+
+import { CourseFormat } from '~/components/course/CourseFormat';
+import { Button } from '~/components/ui/button';
+import { STUDENTS_PAGE_SIZE } from '~/queries/students';
+
+export class StudentsRange {
+  static of(index: number, shown: number, total: number) {
+    const first = index * STUDENTS_PAGE_SIZE + 1;
+    const last = index * STUDENTS_PAGE_SIZE + shown;
+    // The course's count is a copy that can lag behind the list; never show a page beyond it.
+    const known = Math.max(total, last);
+
+    return {
+      text:
+        shown === 0
+          ? 'Nenhum aluno nesta página'
+          : `Mostrando ${String(first)}–${String(last)} de ${String(known)}`,
+      pages: Math.max(Math.ceil(known / STUDENTS_PAGE_SIZE), index + 1),
+    };
+  }
+}
+
+export function StudentsPager({
+  index,
+  shown,
+  total,
+  canNext,
+  busy,
+  onPrevious,
+  onNext,
+}: {
+  index: number;
+  shown: number;
+  total: number;
+  canNext: boolean;
+  busy: boolean;
+  onPrevious: () => void;
+  onNext: () => void;
+}) {
+  const range = StudentsRange.of(index, shown, total);
+
+  if (index === 0 && !canNext && !busy) {
+    return (
+      <p className="border-t px-4 py-3.5 text-muted-foreground sm:px-5">
+        {CourseFormat.count(shown, 'aluno', 'alunos')}
+      </p>
+    );
+  }
+
+  // aria-disabled, not disabled: a disabled button drops the focus of whoever just pressed it.
+  return (
+    <nav
+      aria-label="Páginas de alunos"
+      className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t px-4 py-3.5 sm:px-5"
+    >
+      <span aria-live="polite" className="text-muted-foreground">
+        {busy ? 'Carregando os alunos…' : range.text}
+      </span>
+      <span className="flex items-center gap-3">
+        <span>
+          Página {index + 1} de {range.pages}
+        </span>
+        <Button
+          variant="outline"
+          size="icon"
+          aria-label="Página anterior"
+          aria-disabled={index === 0}
+          className="size-11"
+          onClick={() => {
+            if (index > 0) {
+              onPrevious();
+            }
+          }}
+        >
+          <ChevronLeft aria-hidden="true" />
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          aria-label="Próxima página"
+          aria-disabled={!canNext}
+          className="size-11"
+          onClick={() => {
+            if (canNext) {
+              onNext();
+            }
+          }}
+        >
+          <ChevronRight aria-hidden="true" />
+        </Button>
+      </span>
+    </nav>
+  );
+}

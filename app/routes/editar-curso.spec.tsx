@@ -180,4 +180,16 @@ describe('edit course', () => {
       screen.getByRole('link', { name: 'Ir para Meus cursos' }),
     ).toHaveAttribute('href', '/instrutor/cursos');
   });
+
+  it('should link to the course students with their count', async () => {
+    vi.spyOn(InstructorService, 'get').mockResolvedValue({
+      ...draft,
+      enrollmentCount: 1284,
+    });
+    renderAt();
+
+    expect(
+      await screen.findByRole('link', { name: 'Alunos: 1.284 matriculados' }),
+    ).toHaveAttribute('href', '/instrutor/cursos/c1/alunos');
+  });
 });

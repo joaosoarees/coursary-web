@@ -16,3 +16,10 @@ describe('CourseFormat.count', () => {
     expect(CourseFormat.count(1284, 'aluno', 'alunos')).toBe('1.284 alunos');
   });
 });
+
+describe('CourseFormat.integer', () => {
+  it('should group thousands', () => {
+    expect(CourseFormat.integer(47)).toBe('47');
+    expect(CourseFormat.integer(1284)).toBe('1.284');
+  });
+});
