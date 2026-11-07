@@ -120,7 +120,7 @@ export function LessonView({
   );
 
   return (
-    <article className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_21.25rem] lg:gap-10">
+    <article className="grid animate-content-in items-start gap-8 lg:grid-cols-[minmax(0,1fr)_21.25rem] lg:gap-10">
       <div className="flex min-w-0 flex-col gap-7">
         <header className="flex flex-col gap-1.5">
           <h1 className="font-display text-3xl leading-tight font-bold tracking-tight text-balance md:text-4xl">
