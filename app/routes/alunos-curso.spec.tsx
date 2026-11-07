@@ -113,6 +113,20 @@ describe('course students', () => {
     expect(screen.getByText(/depois de publicado/)).toBeVisible();
   });
 
+  it('should say an archived course takes no new students', async () => {
+    vi.spyOn(InstructorService, 'get').mockResolvedValue({
+      ...course,
+      status: 'ARCHIVED',
+      enrollmentCount: 0,
+    });
+    list.mockResolvedValue({ items: [], nextCursor: null });
+    renderPage();
+
+    expect(
+      await screen.findByText(/não recebe matrículas novas/),
+    ).toBeVisible();
+  });
+
   it('should say a course that is not yours is not found', async () => {
     vi.spyOn(InstructorService, 'get').mockRejectedValue(
       apiError(403, 'FORBIDDEN'),
