@@ -22,6 +22,12 @@ describe('StudentsRange', () => {
   });
 });
 
+describe('StudentsRange of an emptied page', () => {
+  it('should not count backwards when a later page comes back empty', () => {
+    expect(StudentsRange.of(1, 0, 21).text).toBe('Nenhum aluno nesta página');
+  });
+});
+
 describe('StudentsPager', () => {
   it('should move between pages only where a page exists', () => {
     const onPrevious = vi.fn();
