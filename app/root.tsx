@@ -11,6 +11,7 @@ import { Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router';
 
 import { AuthProvider } from '~/auth/AuthProvider';
 import { ErrorState } from '~/components/ErrorState';
+import { NavigationProgress } from '~/components/NavigationProgress';
 import { Toaster } from '~/components/ui/sonner';
 import { queryClient } from '~/lib/queryClient';
 import { installAuthInterceptors } from '~/services/authInterceptors';
@@ -81,6 +82,7 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
+        <NavigationProgress />
         <AuthProvider>
           <Outlet />
         </AuthProvider>
