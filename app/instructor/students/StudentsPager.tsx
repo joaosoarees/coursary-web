@@ -12,7 +12,10 @@ export class StudentsRange {
     const known = Math.max(total, last);
 
     return {
-      text: `Mostrando ${String(first)}–${String(last)} de ${String(known)}`,
+      text:
+        shown === 0
+          ? 'Nenhum aluno nesta página'
+          : `Mostrando ${String(first)}–${String(last)} de ${String(known)}`,
       pages: Math.max(Math.ceil(known / STUDENTS_PAGE_SIZE), index + 1),
     };
   }
