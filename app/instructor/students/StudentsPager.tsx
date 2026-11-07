@@ -1,5 +1,6 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
+import { CourseFormat } from '~/components/course/CourseFormat';
 import { Button } from '~/components/ui/button';
 import { STUDENTS_PAGE_SIZE } from '~/queries/students';
 
@@ -35,6 +36,14 @@ export function StudentsPager({
   onNext: () => void;
 }) {
   const range = StudentsRange.of(index, shown, total);
+
+  if (index === 0 && !canNext && !busy) {
+    return (
+      <p className="border-t px-4 py-3.5 text-muted-foreground sm:px-5">
+        {CourseFormat.count(shown, 'aluno', 'alunos')}
+      </p>
+    );
+  }
 
   // aria-disabled, not disabled: a disabled button drops the focus of whoever just pressed it.
   return (
