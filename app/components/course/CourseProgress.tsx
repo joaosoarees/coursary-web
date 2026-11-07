@@ -1,4 +1,5 @@
 import { CircleCheck } from 'lucide-react';
+import { useState } from 'react';
 
 import { ChalkStroke } from '~/components/ChalkStroke';
 import { cn } from '~/lib/utils';
@@ -36,6 +37,15 @@ export function CourseProgress({
 }) {
   const done = segmentsDone(completed, total);
   const finished = done === SEGMENTS;
+  // Only segments completed while the page is open draw themselves; the ones done before it
+  // opened are simply there.
+  const [shown, setShown] = useState(done);
+  const [drawFrom, setDrawFrom] = useState(done);
+
+  if (done !== shown) {
+    setShown(done);
+    setDrawFrom(Math.min(shown, done));
+  }
 
   return (
     <div className="flex max-w-90 flex-col gap-1.5">
@@ -44,6 +54,7 @@ export function CourseProgress({
           <ChalkStroke
             key={index}
             dashed={index >= done}
+            draw={index >= drawFrom && index < done}
             className={cn(
               index >= done
                 ? 'text-input'
