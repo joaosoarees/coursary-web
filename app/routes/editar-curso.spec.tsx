@@ -189,7 +189,7 @@ describe('edit course', () => {
     renderAt();
 
     expect(
-      await screen.findByRole('link', { name: 'Alunos (1.284)' }),
+      await screen.findByRole('link', { name: 'Alunos: 1.284 matriculados' }),
     ).toHaveAttribute('href', '/instrutor/cursos/c1/alunos');
   });
 });

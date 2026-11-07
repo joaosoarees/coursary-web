@@ -59,7 +59,10 @@ export function CourseActions({
     <div className="flex flex-col items-start gap-2 md:items-end">
       <div className="flex flex-wrap gap-3">
         <Button variant="outline" asChild>
-          <Link to={`/instrutor/cursos/${course.id}/alunos`}>
+          <Link
+            to={`/instrutor/cursos/${course.id}/alunos`}
+            aria-label={`Alunos: ${CourseFormat.count(course.enrollmentCount, 'matriculado', 'matriculados')}`}
+          >
             <Users aria-hidden="true" />
             Alunos ({CourseFormat.integer(course.enrollmentCount)})
           </Link>
