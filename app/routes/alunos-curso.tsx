@@ -77,7 +77,10 @@ export default function CourseStudentsPage({ params }: Route.ComponentProps) {
           <ErrorState onRetry={() => void course.refetch()} />
         )
       ) : (
-        course.data && <CourseStudents course={course.data} />
+        // Keyed: another course's cursors mean nothing to this one.
+        course.data && (
+          <CourseStudents key={course.data.id} course={course.data} />
+        )
       )}
     </section>
   );
