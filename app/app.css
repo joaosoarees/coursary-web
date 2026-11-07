@@ -193,3 +193,17 @@
     @apply bg-chalk-yellow text-chalk-yellow-foreground;
   }
 }
+
+@theme {
+  --animate-navigation-progress: navigation-progress 1.4s ease-in-out infinite;
+
+  @keyframes navigation-progress {
+    from {
+      transform: translateX(-100%);
+    }
+
+    to {
+      transform: translateX(300%);
+    }
+  }
+}
