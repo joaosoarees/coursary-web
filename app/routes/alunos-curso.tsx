@@ -144,7 +144,7 @@ function CourseStudents({ course }: { course: ManagedCourse }) {
           <section
             aria-label="Lista de alunos"
             aria-busy={students.isPlaceholderData}
-            className="overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm"
+            className="animate-content-in overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm"
           >
             <StudentsTable
               students={students.data.items}
