@@ -65,7 +65,10 @@ describe('useStudentExport', () => {
 
     await act(() => vi.advanceTimersByTimeAsync(290_000));
 
-    expect(hook.result.current.phase).toEqual({ step: 'idle' });
+    expect(hook.result.current).toMatchObject({
+      phase: { step: 'idle' },
+      notice: EXPORT_MESSAGES.expired,
+    });
   });
 
   it('should say another CSV of the course is already on its way', async () => {
