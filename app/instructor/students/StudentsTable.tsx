@@ -87,7 +87,11 @@ const studentColumns = (lessonCount: number) =>
     }),
   ]);
 
-const ONLY_ON_WIDE_SCREENS = new Set(['enrolledAt']);
+// On a phone the date moves under the name, and the progress keeps a narrow column.
+const COLUMN_CLASS: Partial<Record<string, string>> = {
+  enrolledAt: 'hidden sm:table-cell',
+  completedLessons: 'w-36 sm:w-72',
+};
 
 const ARIA_SORT = { asc: 'ascending', desc: 'descending' } as const;
 
@@ -137,9 +141,8 @@ export function StudentsTable({
                   colSpan={header.colSpan}
                   aria-sort={sorted ? ARIA_SORT[sorted] : undefined}
                   className={cn(
-                    'h-12 px-5 text-sm tracking-wide',
-                    ONLY_ON_WIDE_SCREENS.has(header.column.id) &&
-                      'hidden sm:table-cell',
+                    'h-12 px-4 text-sm tracking-wide sm:px-5',
+                    COLUMN_CLASS[header.column.id],
                   )}
                 >
                   {header.isPlaceholder ? null : <FlexRender header={header} />}
@@ -156,9 +159,8 @@ export function StudentsTable({
               <TableCell
                 key={cell.id}
                 className={cn(
-                  'px-5 py-3',
-                  ONLY_ON_WIDE_SCREENS.has(cell.column.id) &&
-                    'hidden sm:table-cell',
+                  'px-4 py-3 whitespace-normal sm:px-5',
+                  COLUMN_CLASS[cell.column.id],
                 )}
               >
                 <FlexRender cell={cell} />
