@@ -5,7 +5,7 @@ import type { CatalogItem } from '~/services/CatalogService';
 
 export function CourseGrid({ courses }: { courses: CatalogItem[] }) {
   return (
-    <ul className="grid grid-cols-[repeat(auto-fill,minmax(18rem,1fr))] gap-x-6 gap-y-8">
+    <ul className="grid animate-content-in grid-cols-[repeat(auto-fill,minmax(18rem,1fr))] gap-x-6 gap-y-8">
       {courses.map((course) => (
         <li key={course.id}>
           <CourseCard course={course} />
