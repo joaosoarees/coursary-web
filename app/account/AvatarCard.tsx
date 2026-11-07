@@ -37,7 +37,10 @@ export function AvatarCard({ profile }: { profile: Profile }) {
         </Avatar>
         {busy && (
           <div className="absolute inset-0 grid place-items-center rounded-full bg-black/45 text-white">
-            <LoaderCircle aria-hidden="true" className="size-8 animate-spin" />
+            <LoaderCircle
+              aria-hidden="true"
+              className="size-8 animate-spin motion-reduce:animate-none"
+            />
           </div>
         )}
       </div>
