@@ -27,20 +27,17 @@ import type { Route } from './+types/editar-curso';
 // another instructor's published course with a 403. None of them is this person's course.
 const NOT_MINE = new Set(['COURSE_NOT_FOUND', 'VALIDATION', 'FORBIDDEN']);
 
-export const meta: Route.MetaFunction = ({ loaderData }) => [
-  { title: `${loaderData?.title ?? 'Editar curso'} · Coursary` },
+// The course's own title is rendered by the editor once it loads: the loader does not wait for it.
+export const meta: Route.MetaFunction = () => [
+  { title: 'Editar curso · Coursary' },
 ];
 
-export async function clientLoader({ params }: Route.ClientLoaderArgs) {
-  if (!isSignedIn()) {
-    return null;
+export function clientLoader({ params }: Route.ClientLoaderArgs) {
+  if (isSignedIn()) {
+    void queryClient.query(managedCourseQuery(params.id)).catch(noop);
   }
 
-  const course = await queryClient
-    .query(managedCourseQuery(params.id))
-    .catch(noop);
-
-  return { title: course?.title };
+  return null;
 }
 
 export default function EditCoursePage({ params }: Route.ComponentProps) {
@@ -78,6 +75,7 @@ function CourseEditor({ course }: { course: ManagedCourse }) {
 
   return (
     <>
+      <title>{`${course.title} · Coursary`}</title>
       <header className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
         <div className="flex min-w-0 flex-[1_1_26rem] flex-col gap-2">
           <CourseStatusBadge status={course.status} />

@@ -153,6 +153,42 @@ describe('the catalog', () => {
     );
   });
 
+  it('should not answer a new search with the results of the last one', async () => {
+    const slow = Promise.withResolvers<{
+      items: ReturnType<typeof course>[];
+      page: number;
+      totalPages: number;
+      totalItems: number;
+    }>();
+    vi.spyOn(CatalogService, 'search')
+      .mockResolvedValueOnce({
+        items: [],
+        page: 0,
+        totalPages: 0,
+        totalItems: 0,
+      })
+      .mockReturnValueOnce(slow.promise);
+    renderAt('/cursos?busca=violino');
+
+    await screen.findByText('Nenhum curso para “violino”');
+    fireEvent.change(screen.getByRole('searchbox', { name: 'Buscar cursos' }), {
+      target: { value: 'python' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Buscar' }));
+
+    expect(await screen.findByText('Carregando cursos…')).toBeInTheDocument();
+    expect(screen.queryByText('Nenhum curso para “python”')).toBeNull();
+
+    slow.resolve({
+      items: [course('c1', 'Python para dados')],
+      page: 0,
+      totalPages: 1,
+      totalItems: 1,
+    });
+
+    expect((await screen.findAllByText('Python para dados'))[0]).toBeVisible();
+  });
+
   it('should lead back from a search page past the last one', async () => {
     vi.spyOn(CatalogService, 'search').mockResolvedValue({
       items: [],

@@ -102,6 +102,16 @@ describe('the course page', () => {
     expect(get).toHaveBeenCalledWith('c1', expect.any(AbortSignal));
   });
 
+  it('should title the tab with the course once it loads', async () => {
+    vi.spyOn(CourseService, 'get').mockResolvedValue(course);
+    vi.spyOn(EnrollmentService, 'progress').mockResolvedValue(null);
+    renderCourse();
+
+    await screen.findByRole('heading', { level: 1, name: course.title });
+
+    expect(document.title).toBe(`${course.title} · Coursary`);
+  });
+
   it('should sum up the outline and lead an enrolled student on', async () => {
     vi.spyOn(EnrollmentService, 'progress').mockResolvedValue(progress);
     renderCourse();

@@ -69,6 +69,9 @@ describe('course students', () => {
     ).toBeVisible();
     expect(await screen.findByText('Aluno 1')).toBeVisible();
     expect(screen.getByText('Mostrando 1–20 de 21')).toBeVisible();
+    expect(document.title).toBe(
+      'Alunos · Python para análise de dados · Coursary',
+    );
     expect(screen.getByRole('button', { name: 'Exportar CSV' })).toBeVisible();
 
     fireEvent.click(screen.getByRole('button', { name: 'Próxima página' }));
