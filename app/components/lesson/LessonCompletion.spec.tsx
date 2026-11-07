@@ -30,4 +30,18 @@ describe('LessonCompletion', () => {
     expect(screen.getByRole('status')).toHaveTextContent('Concluída');
     expect(screen.queryByRole('checkbox')).toBeNull();
   });
+
+  it('should draw the check only when the lesson is completed here', () => {
+    const { container, rerender } = render(
+      <LessonCompletion done={false} pending onComplete={vi.fn()} />,
+    );
+
+    rerender(<LessonCompletion done pending={false} onComplete={vi.fn()} />);
+    expect(container.querySelector('.animate-check-draw')).not.toBeNull();
+
+    const visit = render(
+      <LessonCompletion done pending={false} onComplete={vi.fn()} />,
+    );
+    expect(visit.container.querySelector('.animate-check-draw')).toBeNull();
+  });
 });

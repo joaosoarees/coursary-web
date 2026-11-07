@@ -51,4 +51,16 @@ describe('CourseProgress', () => {
     expect(screen.getByText('Não começou')).toBeVisible();
     expect(screen.queryByText(/0 de 8 aulas/)).toBeNull();
   });
+
+  it('should draw only the segment completed while the page is open', () => {
+    const { container, rerender } = render(
+      <CourseProgress completed={4} total={12} />,
+    );
+
+    expect(container.querySelectorAll('mask')).toHaveLength(0);
+
+    rerender(<CourseProgress completed={6} total={12} />);
+
+    expect(container.querySelectorAll('mask')).toHaveLength(1);
+  });
 });

@@ -137,9 +137,9 @@ export function VideoCard({
               className="h-1.5 overflow-hidden rounded-full bg-muted"
             >
               <div
-                className="h-full bg-primary transition-[width] motion-reduce:transition-none"
+                className="h-full origin-left bg-primary transition-transform duration-300 ease-chalk motion-reduce:transition-none"
                 style={{
-                  width: `${String(VideoProgress.percent(phase.loaded, phase.total))}%`,
+                  transform: `scaleX(${String(VideoProgress.percent(phase.loaded, phase.total) / 100)})`,
                 }}
               />
             </div>

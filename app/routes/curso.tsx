@@ -81,7 +81,7 @@ function CourseDetails({ course }: { course: CoursePage }) {
   const enrollment = useEnrollment(course.id);
 
   return (
-    <article className="flex flex-col gap-8">
+    <article className="flex animate-content-in flex-col gap-8">
       <title>{`${course.title} · Coursary`}</title>
       <Link
         to="/cursos"

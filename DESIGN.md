@@ -334,7 +334,7 @@ Uma paleta de lousa: verdes profundos e frios como estrutura, giz claro como mar
 
 Um trilho e uma área de trabalho. O trilho é uma barra lateral de lousa que se recolhe. A partir de 768 px, fica fixo à esquerda, na altura da tela, sem borda: aberto mede 256 px; recolhido, 64 px, só de ícones. A largura muda em 200 ms com saída suave (ease-out) e o conteúdo acompanha. Os ícones não saem do lugar entre as duas larguras: só os textos somem e aparecem por opacidade, no mesmo tempo, e nada muda de tamanho ou de respiro no meio da transição. De cima para baixo: marca (24 px de respiro no topo), navegação (12 px laterais, 16 px no vertical) e, no pé, separados por um fio de giz a 10%, a troca de tema e a conta. A escolha entre aberto e recolhido fica guardada no navegador (`coursary:sidebar`), e Ctrl/Cmd+B alterna. Na área de trabalho, uma barra fina no topo (12 px por 16 px, fio de Fio de Sálvia embaixo) leva só o botão que abre e recolhe o trilho.
 
-Abaixo de 768 px, o trilho sai da página. No topo fica uma barra de lousa (10 px por 12 px) com o botão de menu, a marca e o avatar; o menu abre o trilho como uma gaveta de 300 px, vinda da esquerda sobre um véu preto a 50%, e seguir um link a fecha.
+Abaixo de 768 px, o trilho sai da página. No topo fica uma barra de lousa (10 px por 12 px) com o botão de menu, a marca e o avatar; o menu abre o trilho como uma gaveta de 300 px, vinda da esquerda sobre o véu tingido de lousa, e seguir um link a fecha.
 
 O conteúdo ocupa toda a largura ao lado da sidebar (os parágrafos seguem limitados a 65ch), com respiro lateral de 20 px no celular e 56 px no desktop, 32 a 40 px no vertical. O ritmo segue a escala de 4 px: 4 px entre título e descrição, 12 px entre ações, 16 a 24 px entre blocos, 40 px entre seções. Tabelas rolam na horizontal dentro do próprio contêiner em vez de quebrar a página. O rodapé diz, em Verde Grafite, que cursos, nomes e números são exemplos.
 
@@ -396,7 +396,7 @@ Firmes, legíveis e marcados a giz: cada controle tem tamanho de dedo, bordas qu
 
 ### Overlays
 - **Menu e select:** folha de popover com borda fina, cantos de 6 px, 4 px de folga e a sombra Erguida. Itens de 40 px, cantos de 4 px, 0.875rem; o destacado ganha fundo Sálvia Pálida e um contorno interno de 2 px na cor do anel. Item destrutivo em Tijolo.
-- **Diálogo:** até 512 px de largura, chão da página como fundo, borda fina, 24 px de respiro, sombra Erguida; entra com fade e zoom de 95% a 100% em 200 ms. Botão de fechar de 40 px no canto. Véu em preto a 50%.
+- **Diálogo:** até 512 px de largura, chão da página como fundo, borda fina, 24 px de respiro, sombra Erguida; entra com fade e escala de 98% a 100% em 200 ms e sai em 140 ms. Botão de fechar de 40 px no canto. Véu tingido de lousa: Verde Lousa a 50% no claro, preto a 55% no escuro.
 - **Avisos (toasts):** folha de popover com borda fina, ícones de 16 px por tipo, seguindo o tema.
 
 ### Tables
@@ -406,12 +406,25 @@ Firmes, legíveis e marcados a giz: cada controle tem tamanho de dedo, bordas qu
 - **Vazio:** bloco centralizado com borda tracejada em Cinza-Musgo, cantos de 6 px, 48 px de respiro vertical; ícone de 32 px em Verde Grafite, título em Title, descrição apagada e uma ação.
 - **Primeiro uso:** quando a pessoa ainda não criou nada ("Você ainda não criou nenhum curso"), o vazio vira uma lousa: bloco em Verde Lousa de até 720 px, alinhado à esquerda, com o traço de giz amarelo no topo, título em Headline em Giz Branco, descrição em Musgo Claro e uma única ação em Giz Amarelo. O tracejado fica para as listas que só estão vazias.
 - **Erro:** ícone de alerta em Tijolo ao lado de título e mensagem; na página inteira, título em Headline com "Tentar de novo" e "Ir para o início"; num bloco, um card com borda Cinza-Musgo e botão pequeno. A causa nunca aparece para quem lê.
-- **Carregando:** blocos em Sálvia Pálida com cantos de 6 px e pulso, no formato do conteúdo que virá.
+- **Carregando:** blocos em Sálvia Pálida com cantos de 6 px, no formato do conteúdo que virá, com uma faixa de pó de giz que os atravessa a cada 1,6 s; o conteúdo entra com um fade de 150 ms.
 
 ### Traço de Giz (assinatura)
-O marcador do mundo: um traço ondulado de 3 px em `currentColor`, contínuo com falhas ou tracejado, sempre sobre a lousa e sempre em uma cor de giz. Hoje marca o item ativo do trilho aberto.
+O marcador do mundo: um traço ondulado de 3 px em `currentColor`, contínuo com falhas ou tracejado, sempre sobre a lousa e sempre em uma cor de giz. Marca o item ativo do trilho aberto e se desenha sob ele ao trocar de página; um segmento do progresso concluído com a página aberta também se desenha.
 
-**Direção para histórias futuras (ainda não construída, registrada para quando couber):** o traço de giz como marcador da aba ativa no lugar da barra de 3 px; o traço tracejado como contorno do estado vazio no lugar da borda tracejada de CSS; um véu de diálogo tingido de lousa no lugar do preto a 50%; esqueletos de carregamento como pó de giz; um único momento de movimento autoral, o traço ativo se desenhando, respeitando a redução de movimento; e a presença da lousa no tema claro além do trilho (as placas de giz são o primeiro candidato).
+**Direção para histórias futuras (ainda não construída, registrada para quando couber):** o traço de giz como marcador da aba ativa no lugar da barra de 3 px; o traço tracejado como contorno do estado vazio no lugar da borda tracejada de CSS; e a presença da lousa no tema claro além do trilho (as placas de giz são o primeiro candidato).
+
+## Motion
+
+Movimento explica uma ação ou uma mudança de estado; não há coreografia de página. Uma curva só, `ease-chalk` (`cubic-bezier(0.16, 1, 0.3, 1)`), sem quique. Só `transform`, `opacity` e o traço do SVG: nada que anime layout.
+
+- **Diálogo:** 200 ms de entrada, 140 ms de saída, escala de 98% a 100%.
+- **Menu, select e tooltip:** 150 ms com 4 px de deslize vindo do lado do gatilho, saída em 100 ms, sem zoom.
+- **Gaveta:** 300 ms de entrada, 200 ms de saída.
+- **Toasts:** 200 ms na mesma curva, saída em 140 ms.
+- **Botão:** afunda a 98% por 100 ms ao clicar.
+- **Barra de envio:** cresce com `scaleX`, nunca com a largura.
+- **Navegação pendente:** a barra fina de 3 px em Ocre Velho (Giz Amarelo no escuro) só depois de 150 ms.
+- **O momento autoral:** o traço de giz que se desenha (450 ms), sob o item ativo do trilho e no segmento de progresso recém-concluído, e o check de "Concluída" que se desenha (300 ms) quando a aula é concluída ali.
 
 ## Do's and Don'ts
 
@@ -424,7 +437,7 @@ O marcador do mundo: um traço ondulado de 3 px em `currentColor`, contínuo com
 - **Do** usar algarismos tabulares em todo número.
 - **Do** colocar todo par novo de cores no teste de contraste: 4,5:1 para texto, 3:1 para bordas de controle e anel, nos dois temas.
 - **Do** restaurar o estilo do contorno (`outline-solid`) quando um contorno de foco convive com `outline-none` ou `outline-hidden` na mesma classe: o Tailwind 4 zera o estilo e o foco some.
-- **Do** respeitar `prefers-reduced-motion`: animações e transições caem para 0,01 ms.
+- **Do** respeitar `prefers-reduced-motion`: saem deslizes, escalas, o pó de giz e os traços que se desenham (o traço aparece pronto); ficam os fades curtos e as mudanças de cor. Toda animação espacial ou em laço declara `motion-reduce:` onde é usada.
 
 ### Don't:
 - **Don't** voltar ao padrão da categoria: página branca, botão de marca roxo e cards de curso todos iguais.
