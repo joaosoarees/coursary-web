@@ -119,7 +119,11 @@ function CourseStudents({ course }: { course: ManagedCourse }) {
             </p>
           )}
         </div>
-        {students.data && !empty && <StudentsExportButton csv={csv} />}
+        {/* Kept once started: a list that reloads must not take the download link with it. */}
+        {!empty &&
+          (students.data !== undefined || csv.phase.step !== 'idle') && (
+            <StudentsExportButton csv={csv} />
+          )}
       </header>
       <StudentsExportStatus csv={csv} />
       {students.isLoading ? (
