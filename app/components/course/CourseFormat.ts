@@ -17,8 +17,12 @@ export class CourseFormat {
     return RATING.format(average);
   }
 
+  static integer(value: number): string {
+    return INTEGER.format(value);
+  }
+
   static count(count: number, one: string, many: string): string {
-    return `${INTEGER.format(count)} ${count === 1 ? one : many}`;
+    return `${CourseFormat.integer(count)} ${count === 1 ? one : many}`;
   }
 
   static duration(minutes: number): string {
