@@ -1,5 +1,6 @@
+import { noop, useQueryClient } from '@tanstack/react-query';
 import { Ban, RotateCcw } from 'lucide-react';
-import { useId, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import { ROLE_LABEL } from '~/admin/users/AccountLabels';
@@ -23,6 +24,7 @@ import {
   SheetTitle,
 } from '~/components/ui/sheet';
 import { useChangeRole, useChangeStatus } from '~/mutations/admin';
+import { accountByEmailQuery } from '~/queries/admin';
 import { useMe } from '~/queries/me';
 import {
   ACCOUNT_ROLES,
@@ -32,16 +34,28 @@ import {
 } from '~/services/AdminService';
 import { ApiFailure } from '~/services/ApiFailure';
 
-const STALE =
-  'A conta mudou enquanto isso. Feche e abra de novo para ver como ela está.';
-
 const REFUSALS = {
   CANNOT_CHANGE_OWN_ROLE: 'Você não pode mudar o seu próprio papel.',
   CANNOT_CHANGE_OWN_STATUS: 'Você não pode desativar a sua própria conta.',
-  ACCOUNT_NOT_ACTIVE: STALE,
-  CONFLICT: STALE,
   ACCOUNT_NOT_FOUND: 'Esta conta não existe mais.',
+  ACCOUNT_NOT_ACTIVE:
+    'A conta mudou enquanto isso. Confira o painel e tente de novo.',
+  CONFLICT: 'A conta mudou enquanto isso. Confira o painel e tente de novo.',
 };
+
+// These refusals mean the account changed elsewhere: the panel shows what it is now.
+const STALE = new Set(['ACCOUNT_NOT_ACTIVE', 'CONFLICT']);
+
+type Section = 'role' | 'access';
+
+const SECTION_TITLE: Record<Section, string> = {
+  role: 'painel-conta-papel',
+  access: 'painel-conta-acesso',
+};
+
+// Disabled controls keep their full colour on the border colour, as drawn.
+const LOCKED =
+  'aria-disabled:border-border aria-disabled:bg-transparent aria-disabled:text-input aria-disabled:opacity-100';
 
 const ROLE_HINT =
   'Instrutor cria e edita os próprios cursos; aluno só estuda; admin também cuida das contas.';
@@ -80,6 +94,8 @@ export function AccountPanel({
   onChanged: (account: AccountSummary) => void;
 }) {
   const opener = useRef<HTMLElement | null>(null);
+  // Where the focus goes after a change rebuilds the panel: the section that made it.
+  const [landing, setLanding] = useState<Section | null>(null);
 
   return (
     <Sheet
@@ -91,13 +107,20 @@ export function AccountPanel({
       }}
     >
       <SheetContent
-        className="w-full gap-0 sm:max-w-115"
+        className="w-full gap-0 bg-card text-card-foreground sm:max-w-115"
         // Radix gives the focus back only to a SheetTrigger; a name in the table opens this one.
-        onOpenAutoFocus={() => {
+        onOpenAutoFocus={(event) => {
           opener.current =
             document.activeElement instanceof HTMLElement
               ? document.activeElement
               : null;
+          // The first control can be a locked one; the name says where the focus landed.
+          event.preventDefault();
+          if (event.currentTarget instanceof HTMLElement) {
+            event.currentTarget
+              .querySelector<HTMLElement>('[data-slot="sheet-title"]')
+              ?.focus();
+          }
         }}
         onCloseAutoFocus={(event) => {
           if (opener.current?.isConnected) {
@@ -111,7 +134,11 @@ export function AccountPanel({
           <PanelBody
             key={`${account.id}:${account.role}:${account.status}`}
             account={account}
-            onChanged={onChanged}
+            landing={landing}
+            onChanged={(next, section) => {
+              setLanding(section);
+              onChanged(next);
+            }}
           />
         )}
       </SheetContent>
@@ -121,19 +148,30 @@ export function AccountPanel({
 
 function PanelBody({
   account,
+  landing,
   onChanged,
 }: {
   account: AccountSummary;
-  onChanged: (account: AccountSummary) => void;
+  landing: Section | null;
+  onChanged: (account: AccountSummary, section: Section) => void;
 }) {
   const me = useMe();
+
+  useEffect(() => {
+    if (landing) {
+      document.getElementById(SECTION_TITLE[landing])?.focus();
+    }
+  }, [landing]);
   const own = me.data?.id === account.id;
   const active = account.status === 'ACTIVE';
 
   return (
     <>
       <SheetHeader className="gap-0.5 border-b px-6 pt-6 pb-5">
-        <SheetTitle className="pr-10 font-display text-2xl leading-tight font-bold tracking-tight [overflow-wrap:anywhere]">
+        <SheetTitle
+          tabIndex={-1}
+          className="pr-10 font-display text-2xl leading-tight font-bold tracking-tight [overflow-wrap:anywhere] outline-none"
+        >
           {account.name}
         </SheetTitle>
         <SheetDescription className="text-base [overflow-wrap:anywhere]">
@@ -163,7 +201,9 @@ function PanelBody({
                   : ROLE_HINT
           }
           locked={own || !active}
-          onChanged={onChanged}
+          onChanged={(next) => {
+            onChanged(next, 'role');
+          }}
         />
         <AccessSection
           account={account}
@@ -177,12 +217,39 @@ function PanelBody({
                   : 'A pessoa sai na hora de todas as sessões e só volta a entrar quando a conta for reativada.'
           }
           locked={own || account.status === 'PENDING'}
-          onChanged={onChanged}
+          onChanged={(next) => {
+            onChanged(next, 'access');
+          }}
         />
         <RoleHistory accountId={account.id} myId={me.data?.id} />
       </div>
     </>
   );
+}
+
+function useShowWhatChanged(
+  account: AccountSummary,
+  onChanged: (account: AccountSummary) => void,
+) {
+  const queryClient = useQueryClient();
+
+  return (error: Error) => {
+    if (!STALE.has(ApiFailure.codeOf(error) ?? '')) {
+      return;
+    }
+
+    queryClient
+      .query({ ...accountByEmailQuery(account.email), staleTime: 0 })
+      .then((fresh) => {
+        if (fresh) {
+          onChanged(fresh);
+          toast(
+            'A conta mudou enquanto isso. O painel agora mostra como ela está.',
+          );
+        }
+      })
+      .catch(noop);
+  };
 }
 
 function RoleSection({
@@ -200,17 +267,22 @@ function RoleSection({
   const [role, setRole] = useState(account.role);
   const [confirming, setConfirming] = useState(false);
   const changeRole = useChangeRole();
+  const showWhatChanged = useShowWhatChanged(account, onChanged);
   const changed = role !== account.role;
 
   return (
     <section
-      aria-labelledby={`${id}-title`}
+      aria-labelledby={SECTION_TITLE.role}
       className="flex flex-col gap-2.5 border-b py-6"
     >
-      <h3 id={`${id}-title`} className="font-display text-lg font-bold">
+      <h3
+        id={SECTION_TITLE.role}
+        tabIndex={-1}
+        className="font-display text-lg font-bold outline-none"
+      >
         Mudar o papel
       </h3>
-      <label htmlFor={`${id}-role`} className="sr-only">
+      <label htmlFor={`${id}-role`} className="font-bold">
         Novo papel
       </label>
       <div className="flex flex-wrap gap-2">
@@ -241,6 +313,8 @@ function RoleSection({
         <Button
           variant={changed ? 'default' : 'outline'}
           aria-disabled={!changed}
+          aria-describedby={`${id}-note`}
+          className={LOCKED}
           onClick={() => {
             if (changed) {
               setConfirming(true);
@@ -281,6 +355,7 @@ function RoleSection({
                 onChanged({ ...account, role: saved.role });
                 toast(`${account.name} agora é ${roleWord(saved.role)}.`);
               },
+              onError: showWhatChanged,
             },
           );
         }}
@@ -303,14 +378,19 @@ function AccessSection({
   const id = useId();
   const [confirming, setConfirming] = useState(false);
   const changeStatus = useChangeStatus();
+  const showWhatChanged = useShowWhatChanged(account, onChanged);
   const enable = account.status === 'DISABLED';
 
   return (
     <section
-      aria-labelledby={`${id}-title`}
+      aria-labelledby={SECTION_TITLE.access}
       className="flex flex-col items-start gap-2.5 border-b py-6"
     >
-      <h3 id={`${id}-title`} className="font-display text-lg font-bold">
+      <h3
+        id={SECTION_TITLE.access}
+        tabIndex={-1}
+        className="font-display text-lg font-bold outline-none"
+      >
         Acesso
       </h3>
       <p id={`${id}-note`} className="max-w-[46ch] text-muted-foreground">
@@ -327,10 +407,10 @@ function AccessSection({
         </Button>
       ) : (
         <Button
-          variant="outline"
+          variant="destructive-outline"
           aria-disabled={locked}
           aria-describedby={`${id}-note`}
-          className="border-destructive text-destructive hover:bg-destructive/10 aria-disabled:border-border aria-disabled:text-muted-foreground aria-disabled:hover:bg-transparent"
+          className={LOCKED}
           onClick={() => {
             if (!locked) {
               setConfirming(true);
@@ -385,6 +465,7 @@ function AccessSection({
                     : `A conta de ${account.name} foi desativada.`,
                 );
               },
+              onError: showWhatChanged,
             },
           );
         }}
