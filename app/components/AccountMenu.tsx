@@ -1,4 +1,5 @@
 import { ChevronsUpDown, LogOut, UserRound } from 'lucide-react';
+import { useId } from 'react';
 import { Link } from 'react-router';
 import { toast } from 'sonner';
 
@@ -26,6 +27,7 @@ export function AccountMenu({
 }) {
   const { signOut } = useAuth();
   const me = useMe();
+  const emailId = useId();
 
   const handleSignOut = async () => {
     await signOut();
@@ -51,6 +53,7 @@ export function AccountMenu({
         <button
           type="button"
           aria-label={`Conta de ${name}`}
+          aria-describedby={!compact && me.data ? emailId : undefined}
           className={cn(
             'flex items-center gap-3 overflow-hidden p-0.5 text-left transition-[background-color,border-radius] duration-200 hover:bg-shell-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chalk-yellow',
             compact
@@ -71,7 +74,10 @@ export function AccountMenu({
               <span className="flex min-w-0 flex-1 flex-col leading-tight transition-opacity duration-200 group-data-[collapsible=icon]:opacity-0">
                 <span className="truncate font-bold">{name}</span>
                 {me.data && (
-                  <span className="truncate text-sm text-shell-muted">
+                  <span
+                    id={emailId}
+                    className="truncate text-sm text-shell-muted"
+                  >
                     {me.data.email}
                   </span>
                 )}
