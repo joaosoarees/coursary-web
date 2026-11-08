@@ -1,5 +1,4 @@
 import {
-  keepPreviousData,
   noop,
   queryOptions,
   useQuery,
@@ -20,7 +19,7 @@ export const accountsQuery = (
       'admin',
       'accounts',
       { ...filter, cursor, limit: ACCOUNTS_PAGE_SIZE },
-    ],
+    ] as const,
     queryFn: ({ signal }) =>
       AdminService.list(
         { ...filter, cursor, limit: ACCOUNTS_PAGE_SIZE },
@@ -36,7 +35,14 @@ export function useAccounts(
   const queryClient = useQueryClient();
   const query = useQuery({
     ...accountsQuery(filter, cursor),
-    placeholderData: keepPreviousData,
+    // Only another page of the same filter bridges the wait: another filter's rows would be wrong.
+    placeholderData: (previous, previousQuery) => {
+      const key = previousQuery?.queryKey[2];
+
+      return key?.role === filter.role && key.status === filter.status
+        ? previous
+        : undefined;
+    },
   });
   const nextCursor = query.isPlaceholderData
     ? undefined
