@@ -10,7 +10,11 @@ import {
 } from 'vitest';
 
 import AdminUsersPage from '~/routes/admin-usuarios';
-import { type AccountSummary, AdminService } from '~/services/AdminService';
+import {
+  type AccountsPage,
+  type AccountSummary,
+  AdminService,
+} from '~/services/AdminService';
 import { renderRoutes } from '~/test/renderRoutes';
 
 const account = (
@@ -142,6 +146,29 @@ describe('admin users', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Mostrar todas' }));
 
     expect(await screen.findByText('Pessoa 1')).toBeVisible();
+  });
+
+  it("should not show another status's accounts while the new ones load", async () => {
+    renderPage();
+    await screen.findByText('Pessoa 1');
+    const disabled = Promise.withResolvers<AccountsPage>();
+
+    list.mockReturnValueOnce(disabled.promise);
+    fireEvent.keyDown(screen.getByRole('combobox', { name: 'Status' }), {
+      key: 'Enter',
+    });
+    fireEvent.click(await screen.findByRole('option', { name: 'Desativadas' }));
+
+    expect(
+      await screen.findByText('Carregando as contas…'),
+    ).toBeInTheDocument();
+    expect(screen.queryByText('Pessoa 1')).toBeNull();
+
+    disabled.resolve({ items: [], nextCursor: null });
+
+    expect(
+      await screen.findByRole('heading', { name: 'Nenhuma conta aqui' }),
+    ).toBeVisible();
   });
 
   it('should find an account by its e-mail and go back to the same page of the list', async () => {
