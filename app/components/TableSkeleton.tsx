@@ -1,6 +1,5 @@
 import { Skeleton } from '~/components/ui/skeleton';
 
-// The shape of a table card on its way: a header row and a few rows.
 export function TableSkeleton({ rows }: { rows: number }) {
   return (
     <div
