@@ -5,7 +5,12 @@ import { z } from 'zod';
 
 import { emailSchema } from '~/auth/authSchemas';
 import { Button } from '~/components/ui/button';
-import { Field, FieldError, FieldLabel } from '~/components/ui/field';
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from '~/components/ui/field';
 import { Input } from '~/components/ui/input';
 
 const searchSchema = z.object({ email: emailSchema });
@@ -59,18 +64,22 @@ export function AccountSearch({
                 placeholder="nome@exemplo.com"
                 aria-invalid={fieldState.invalid}
                 aria-describedby={
-                  fieldState.invalid ? `${id}-email-error` : undefined
+                  fieldState.invalid ? `${id}-email-error` : `${id}-email-hint`
                 }
               />
               <Button type="submit" variant="outline">
                 Buscar
               </Button>
             </span>
-            {fieldState.invalid && (
+            {fieldState.invalid ? (
               <FieldError
                 id={`${id}-email-error`}
                 errors={[fieldState.error]}
               />
+            ) : (
+              <FieldDescription id={`${id}-email-hint`}>
+                Digite o e-mail completo da conta.
+              </FieldDescription>
             )}
           </Field>
         )}
