@@ -3,7 +3,7 @@ import { useId } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Link, useLocation, useNavigate } from 'react-router';
 
-import { TOO_MANY_REQUESTS } from '~/auth/authMessages';
+import { TOO_MANY_CODE_REQUESTS } from '~/auth/authMessages';
 import {
   forgotPasswordSchema,
   type ForgotPasswordValues,
@@ -45,7 +45,9 @@ export default function ForgotPassword() {
       void navigate('/redefinir-senha', { state: { email } });
     } catch (error) {
       form.setError('root.server', {
-        message: ApiFailure.message(error, { TOO_MANY_REQUESTS }),
+        message: ApiFailure.message(error, {
+          TOO_MANY_REQUESTS: TOO_MANY_CODE_REQUESTS,
+        }),
       });
     }
   });
