@@ -6,6 +6,7 @@ import { CourseFormat } from '~/components/course/CourseFormat';
 import { EmptyState } from '~/components/EmptyState';
 import { ErrorState } from '~/components/ErrorState';
 import { LoadingNote } from '~/components/LoadingNote';
+import { TableSkeleton } from '~/components/TableSkeleton';
 import { Button } from '~/components/ui/button';
 import { Skeleton } from '~/components/ui/skeleton';
 import {
@@ -122,7 +123,7 @@ function CourseStudents({ course }: { course: ManagedCourse }) {
       </header>
       <StudentsExportStatus csv={csv} />
       {students.isLoading ? (
-        <TableSkeleton />
+        <StudentsTableSkeleton />
       ) : students.isError && !students.data ? (
         <div className="flex flex-col items-start gap-3">
           <ErrorState variant="block" onRetry={() => void students.refetch()} />
@@ -193,17 +194,17 @@ function StudentsSkeleton() {
           <Skeleton className="h-10 w-1/3" />
           <Skeleton className="h-5 w-1/3" />
         </div>
-        <Skeleton className="h-96" />
+        <TableSkeleton rows={6} />
       </div>
     </>
   );
 }
 
-function TableSkeleton() {
+function StudentsTableSkeleton() {
   return (
     <>
       <LoadingNote>Carregando os alunos…</LoadingNote>
-      <Skeleton aria-hidden="true" className="h-96" />
+      <TableSkeleton rows={6} />
     </>
   );
 }
