@@ -96,6 +96,25 @@ describe('admin users', () => {
     );
   });
 
+  it('should open the account panel from a name', async () => {
+    vi.spyOn(AdminService, 'roleChanges').mockResolvedValue({
+      items: [],
+      nextCursor: null,
+    });
+    renderPage();
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Pessoa 3' }));
+
+    const panel = await screen.findByRole('dialog', { name: 'Pessoa 3' });
+
+    expect(panel).toHaveTextContent('pessoa3@exemplo.com');
+    expect(
+      await screen.findByText(
+        'O papel desta conta nunca mudou desde o cadastro.',
+      ),
+    ).toBeVisible();
+  });
+
   it('should start another role from its first page', async () => {
     renderPage();
     fireEvent.click(
