@@ -384,6 +384,7 @@ Firmes, legíveis e marcados a giz: cada controle tem tamanho de dedo, bordas qu
 
 ### Navigation
 - **Trilho:** barra lateral em Verde Lousa nos dois temas, texto Giz Branco. Itens de 44 px, 11 px laterais, cantos de 6 px, ícone de 18 px em Musgo Claro com 12 px de vão, rótulo em Body a 85% em repouso, fundo em Verde Lousa Claro (Lousa Gasta no escuro) no hover. Foco: contorno de 2 px em Giz Amarelo, afastado 2 px.
+- **Seções:** os itens se agrupam pelo que a pessoa faz: Estudar (Catálogo, Minhas matrículas), Ensinar (Meus cursos, para instrutor e admin) e Administrar (Usuários, só para admin). Cada seção leva um rótulo em versalete de 13 px, negrito, espaçado a 0,06em, em Musgo Claro, e 20 px separam uma seção da outra. Recolhido, o rótulo some por opacidade e guarda o lugar, para os ícones não subirem.
 - **Item atual:** aberto, fica em negrito, com o ícone em Giz Amarelo e o **traço de giz** em Giz Amarelo, 64 px, logo abaixo do rótulo. Recolhido, sem rótulo para sublinhar, ganha o fundo de hover e mantém o ícone amarelo.
 - **Recolhido:** só os ícones, nas mesmas posições; cada item mostra o próprio nome numa dica (tooltip) à direita, que só existe nessa largura. A marca fica só no desenho do quadro.
 - **Abrir e recolher:** botão fantasma de ícone, 40 px, com o ícone de painel lateral, na barra fina sobre o conteúdo; a dica diz a ação e o atalho (Ctrl+B).
