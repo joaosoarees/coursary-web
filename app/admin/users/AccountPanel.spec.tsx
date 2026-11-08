@@ -1,4 +1,4 @@
-import { fireEvent, screen, within } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import { useState } from 'react';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -69,6 +69,30 @@ function Opened({ account }: { account: AccountSummary }) {
       }}
       onChanged={setOpened}
     />
+  );
+}
+
+function OpenedFromButton() {
+  const [opened, setOpened] = useState<AccountSummary | null>(null);
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => {
+          setOpened(rafael);
+        }}
+      >
+        Rafael Tavares
+      </button>
+      <AccountPanel
+        account={opened}
+        onClose={() => {
+          setOpened(null);
+        }}
+        onChanged={setOpened}
+      />
+    </>
   );
 }
 
@@ -190,6 +214,25 @@ describe('AccountPanel', () => {
     expect(
       screen.queryByRole('dialog', { name: /Desativar a conta/ }),
     ).toBeNull();
+  });
+
+  it('should give the focus back to the name that opened it', async () => {
+    renderRoutes(
+      [{ path: '/admin/usuarios', Component: OpenedFromButton }],
+      '/admin/usuarios',
+    );
+    const name = await screen.findByRole('button', { name: 'Rafael Tavares' });
+
+    name.focus();
+    fireEvent.click(name);
+    await screen.findByRole('dialog', { name: 'Rafael Tavares' });
+    fireEvent.keyDown(document.activeElement ?? document.body, {
+      key: 'Escape',
+    });
+
+    await waitFor(() => {
+      expect(name).toHaveFocus();
+    });
   });
 
   it('should tell who made each role change', async () => {
