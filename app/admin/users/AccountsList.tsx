@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from '~/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
-import type { useCursorPages } from '~/lib/useCursorPages';
+import type { useCursorStack } from '~/lib/useCursorStack';
 import { ACCOUNTS_PAGE_SIZE, useAccounts } from '~/queries/admin';
 import {
   ACCOUNT_ROLES,
@@ -30,7 +30,10 @@ import {
   type AccountsFilter,
 } from '~/services/AdminService';
 
-type AccountPages = ReturnType<typeof useCursorPages<AccountsFilter>>;
+type AccountPages = ReturnType<typeof useCursorStack> & {
+  filter: AccountsFilter;
+  filterBy: (filter: AccountsFilter) => void;
+};
 
 const ALL = 'ALL';
 

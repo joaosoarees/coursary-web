@@ -1,10 +1,11 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router';
 
 import { AccountSearch } from '~/admin/users/AccountSearch';
 import { AccountSearchResult } from '~/admin/users/AccountSearchResult';
+import { AccountsFilterParams } from '~/admin/users/AccountsFilterParams';
 import { AccountsList } from '~/admin/users/AccountsList';
-import { useCursorPages } from '~/lib/useCursorPages';
-import type { AccountsFilter } from '~/services/AdminService';
+import { useCursorStack } from '~/lib/useCursorStack';
 
 import type { Route } from './+types/admin-usuarios';
 
@@ -13,11 +14,21 @@ export const meta: Route.MetaFunction = () => [
 ];
 
 export default function AdminUsersPage() {
-  // Kept here, so the list comes back on the same tab and page after a search.
-  const pages = useCursorPages<AccountsFilter>({
-    role: 'student',
-    status: undefined,
-  });
+  // The tab and the status live in the address; the cursors cannot, so the page stays here, which
+  // also brings the list back on the same page after a search.
+  const [params, setParams] = useSearchParams();
+  const filter = AccountsFilterParams.read(params);
+  const stack = useCursorStack(`${filter.role}:${filter.status ?? ''}`);
+  const pages = {
+    ...stack,
+    filter,
+    filterBy: (next: typeof filter) => {
+      setParams(AccountsFilterParams.write(next), {
+        replace: true,
+        preventScrollReset: true,
+      });
+    },
+  };
   const [searched, setSearched] = useState<string>();
   // A new key empties the search field; after the first clearing it also takes the focus back.
   const [clearings, setClearings] = useState(0);
