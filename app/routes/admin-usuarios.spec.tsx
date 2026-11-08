@@ -161,6 +161,9 @@ describe('admin users', () => {
         name: 'Nenhuma conta com esse e-mail',
       }),
     ).toBeVisible();
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Busca por ninguem@exemplo.com: nenhuma conta encontrada',
+    );
 
     fireEvent.click(screen.getByRole('button', { name: 'Limpar busca' }));
 
