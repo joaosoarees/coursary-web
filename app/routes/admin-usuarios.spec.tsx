@@ -59,10 +59,10 @@ beforeEach(() => {
     );
 });
 
-const renderPage = () =>
+const renderPage = (search = '') =>
   renderRoutes(
     [{ path: '/admin/usuarios', Component: AdminUsersPage }],
-    '/admin/usuarios',
+    `/admin/usuarios${search}`,
   );
 
 describe('admin users', () => {
@@ -105,6 +105,20 @@ describe('admin users', () => {
     expect(screen.getByText('1 conta')).toBeVisible();
     expect(list).toHaveBeenLastCalledWith(
       { role: 'instructor', status: undefined, cursor: undefined, limit: 20 },
+      expect.anything(),
+    );
+  });
+
+  it('should open on the role and status in the address', async () => {
+    renderPage('?papel=instrutores&status=pendentes');
+
+    expect(await screen.findByText('Rafael Tavares')).toBeVisible();
+    expect(screen.getByRole('tab', { name: 'Instrutores' })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
+    expect(list).toHaveBeenLastCalledWith(
+      { role: 'instructor', status: 'PENDING', cursor: undefined, limit: 20 },
       expect.anything(),
     );
   });
