@@ -143,7 +143,7 @@ function NavSection({
       {/* Faded but kept in place when collapsed, so the icons below it do not move. */}
       <SidebarGroupLabel
         id={labelId}
-        className={`h-7 items-start px-[13px] text-[13px] font-bold tracking-[0.06em] whitespace-nowrap text-shell-muted uppercase group-data-[collapsible=icon]:mt-0 ${FADES}`}
+        className={`h-7 items-start px-[13px] text-sm font-bold tracking-[0.06em] whitespace-nowrap text-shell-muted uppercase group-data-[collapsible=icon]:mt-0 ${FADES}`}
       >
         {label}
       </SidebarGroupLabel>
