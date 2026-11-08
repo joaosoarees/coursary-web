@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useSearchParams } from 'react-router';
 
 import { AccountPanel } from '~/admin/users/AccountPanel';
@@ -36,13 +36,18 @@ export default function AdminUsersPage() {
   const [clearings, setClearings] = useState(0);
   // A copy of the row that opened the panel: after a role change the account can leave the list.
   const [opened, setOpened] = useState<AccountSummary | null>(null);
+  const heading = useRef<HTMLHeadingElement>(null);
   const opening = { openedId: opened?.id, onOpen: setOpened };
 
   return (
     <section className="flex flex-col gap-6">
       <header className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
         <div className="flex min-w-0 flex-[1_1_22rem] flex-col gap-1">
-          <h1 className="font-display text-3xl leading-tight font-bold tracking-tight md:text-4xl">
+          <h1
+            ref={heading}
+            tabIndex={-1}
+            className="font-display text-3xl leading-tight font-bold tracking-tight outline-none md:text-4xl"
+          >
             Usuários
           </h1>
           <p className="text-muted-foreground">
@@ -74,6 +79,7 @@ export default function AdminUsersPage() {
           setOpened(null);
         }}
         onChanged={setOpened}
+        fallbackFocus={heading}
       />
     </section>
   );

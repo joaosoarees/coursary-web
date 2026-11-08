@@ -68,6 +68,7 @@ function Opened({ account }: { account: AccountSummary }) {
         setOpened(null);
       }}
       onChanged={setOpened}
+      fallbackFocus={{ current: null }}
     />
   );
 }
@@ -91,6 +92,7 @@ function OpenedFromButton() {
           setOpened(null);
         }}
         onChanged={setOpened}
+        fallbackFocus={{ current: null }}
       />
     </>
   );
@@ -263,6 +265,49 @@ describe('AccountPanel', () => {
 
     await waitFor(() => {
       expect(name).toHaveFocus();
+    });
+  });
+
+  it('should open the next panel on its title after a change in the last one', async () => {
+    vi.spyOn(AdminService, 'changeRole').mockResolvedValue({
+      id: 'a1',
+      role: 'admin',
+    });
+    renderRoutes(
+      [{ path: '/admin/usuarios', Component: OpenedFromButton }],
+      '/admin/usuarios',
+    );
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Rafael Tavares' }),
+    );
+    const opened = await screen.findByRole('dialog', {
+      name: 'Rafael Tavares',
+    });
+
+    fireEvent.keyDown(within(opened).getByRole('combobox'), { key: 'Enter' });
+    fireEvent.click(await screen.findByRole('option', { name: 'Admin' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Salvar papel' }));
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Tornar admin' }),
+    );
+    await waitFor(() => {
+      expect(
+        screen.getByRole('heading', { name: 'Mudar o papel' }),
+      ).toHaveFocus();
+    });
+
+    fireEvent.keyDown(document.activeElement ?? document.body, {
+      key: 'Escape',
+    });
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).toBeNull();
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Rafael Tavares' }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('heading', { level: 2, name: 'Rafael Tavares' }),
+      ).toHaveFocus();
     });
   });
 

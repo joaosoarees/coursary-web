@@ -62,9 +62,8 @@ const ROLE_HINT =
 
 const roleWord = (role: AccountRole) => ROLE_LABEL[role].toLowerCase();
 
-const ROLE_CHANGE: Record<AccountRole, Record<AccountRole, string>> = {
+const ROLE_CHANGE: Record<AccountRole, Partial<Record<AccountRole, string>>> = {
   student: {
-    student: '',
     instructor: 'Passa a criar e editar os próprios cursos.',
     admin:
       'Passa a cuidar das contas da plataforma, além de criar e editar cursos.',
@@ -72,7 +71,6 @@ const ROLE_CHANGE: Record<AccountRole, Record<AccountRole, string>> = {
   instructor: {
     student:
       'Deixa de criar e editar cursos. Os cursos que já tem continuam como estão, com os alunos e o progresso de cada um.',
-    instructor: '',
     admin:
       'Passa a cuidar das contas da plataforma e continua com os próprios cursos.',
   },
@@ -80,7 +78,6 @@ const ROLE_CHANGE: Record<AccountRole, Record<AccountRole, string>> = {
     student:
       'Deixa de cuidar das contas e de criar e editar cursos. Os cursos que já tem continuam como estão.',
     instructor: 'Deixa de cuidar das contas e continua com os próprios cursos.',
-    admin: '',
   },
 };
 
@@ -88,10 +85,12 @@ export function AccountPanel({
   account,
   onClose,
   onChanged,
+  fallbackFocus,
 }: {
   account: AccountSummary | null;
   onClose: () => void;
   onChanged: (account: AccountSummary) => void;
+  fallbackFocus: React.RefObject<HTMLElement | null>;
 }) {
   const opener = useRef<HTMLElement | null>(null);
   // Where the focus goes after a change rebuilds the panel: the section that made it.
@@ -102,6 +101,7 @@ export function AccountPanel({
       open={account !== null}
       onOpenChange={(open) => {
         if (!open) {
+          setLanding(null);
           onClose();
         }
       }}
@@ -123,10 +123,12 @@ export function AccountPanel({
           }
         }}
         onCloseAutoFocus={(event) => {
-          if (opener.current?.isConnected) {
-            event.preventDefault();
-            opener.current.focus();
-          }
+          event.preventDefault();
+          // The row that opened it leaves the list when the change moves the account elsewhere.
+          (opener.current?.isConnected
+            ? opener.current
+            : fallbackFocus.current
+          )?.focus();
         }}
       >
         {account && (
@@ -241,7 +243,10 @@ function useShowWhatChanged(
     queryClient
       .query({ ...accountByEmailQuery(account.email), staleTime: 0 })
       .then((fresh) => {
-        if (fresh) {
+        if (
+          fresh &&
+          (fresh.role !== account.role || fresh.status !== account.status)
+        ) {
           onChanged(fresh);
           toast(
             'A conta mudou enquanto isso. O painel agora mostra como ela está.',
@@ -340,7 +345,7 @@ function RoleSection({
             : null
         }
         title={`Tornar ${account.name} ${roleWord(role)}?`}
-        description={ROLE_CHANGE[account.role][role]}
+        description={ROLE_CHANGE[account.role][role] ?? ''}
         consequence="A mudança vale em até 1 hora, quando a sessão da pessoa se renova."
         confirm={{
           label: `Tornar ${roleWord(role)}`,
