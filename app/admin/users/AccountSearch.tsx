@@ -48,7 +48,9 @@ export function AccountSearch({
         name="email"
         render={({ field, fieldState }) => (
           <Field data-invalid={fieldState.invalid} className="gap-1.5">
-            <FieldLabel htmlFor={`${id}-email`}>Buscar por e-mail</FieldLabel>
+            <FieldLabel htmlFor={`${id}-email`} className="font-bold">
+              Buscar por e-mail
+            </FieldLabel>
             <span className="flex gap-2">
               <Input
                 {...field}
