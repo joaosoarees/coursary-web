@@ -1,5 +1,5 @@
 import { Ban, RotateCcw } from 'lucide-react';
-import { useId, useState } from 'react';
+import { useId, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import { ROLE_LABEL } from '~/admin/users/AccountLabels';
@@ -79,6 +79,8 @@ export function AccountPanel({
   onClose: () => void;
   onChanged: (account: AccountSummary) => void;
 }) {
+  const opener = useRef<HTMLElement | null>(null);
+
   return (
     <Sheet
       open={account !== null}
@@ -88,7 +90,22 @@ export function AccountPanel({
         }
       }}
     >
-      <SheetContent className="w-full gap-0 sm:max-w-115">
+      <SheetContent
+        className="w-full gap-0 sm:max-w-115"
+        // Radix gives the focus back only to a SheetTrigger; a name in the table opens this one.
+        onOpenAutoFocus={() => {
+          opener.current =
+            document.activeElement instanceof HTMLElement
+              ? document.activeElement
+              : null;
+        }}
+        onCloseAutoFocus={(event) => {
+          if (opener.current?.isConnected) {
+            event.preventDefault();
+            opener.current.focus();
+          }
+        }}
+      >
         {account && (
           // Keyed: a saved change starts the controls again from what the account now is.
           <PanelBody
