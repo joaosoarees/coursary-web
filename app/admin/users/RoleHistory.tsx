@@ -9,11 +9,13 @@ import { useRoleChanges } from '~/queries/admin';
 
 // The API keeps who changed it as an account id, or "bootstrap" for the first admin's script.
 const byWhom = (changedBy: string, myId: string | undefined) =>
-  changedBy === myId
-    ? 'por você'
-    : changedBy === 'bootstrap'
-      ? 'pelo script inicial'
-      : 'por outro admin';
+  changedBy === 'bootstrap'
+    ? 'pelo script inicial'
+    : myId === undefined
+      ? 'por um admin'
+      : changedBy === myId
+        ? 'por você'
+        : 'por outro admin';
 
 export function RoleHistory({
   accountId,
