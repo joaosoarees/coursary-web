@@ -11,6 +11,7 @@ import { CursorPager } from '~/components/CursorPager';
 import { EmptyState } from '~/components/EmptyState';
 import { ErrorState } from '~/components/ErrorState';
 import { LoadingNote } from '~/components/LoadingNote';
+import { TableSkeleton } from '~/components/TableSkeleton';
 import { Button } from '~/components/ui/button';
 import { Label } from '~/components/ui/label';
 import {
@@ -20,7 +21,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '~/components/ui/select';
-import { Skeleton } from '~/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
 import type { useCursorPages } from '~/lib/useCursorPages';
 import { ACCOUNTS_PAGE_SIZE, useAccounts } from '~/queries/admin';
@@ -54,15 +54,24 @@ export function AccountsList({ pages }: { pages: AccountPages }) {
       className="gap-6"
     >
       <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3 border-b">
-        <TabsList aria-label="Papel" className="h-11 p-0">
+        <TabsList
+          aria-label="Papel"
+          className="p-0 group-data-[orientation=horizontal]/tabs:h-11"
+        >
           {ACCOUNT_ROLES.map((role) => (
-            <TabsTrigger key={role} value={role} className="px-3.5 text-base">
+            <TabsTrigger
+              key={role}
+              value={role}
+              className="px-3.5 text-base group-data-[orientation=horizontal]/tabs:after:bottom-[-2px]"
+            >
               {ROLE_TAB_LABEL[role]}
             </TabsTrigger>
           ))}
         </TabsList>
         <div className="flex items-center gap-2.5 pb-2">
-          <Label htmlFor="filtro-status">Status</Label>
+          <Label htmlFor="filtro-status" className="font-bold">
+            Status
+          </Label>
           <Select
             value={filter.status ?? ALL}
             onValueChange={(value) => {
@@ -103,7 +112,7 @@ function AccountsPage({ pages }: { pages: AccountPages }) {
     return (
       <>
         <LoadingNote>Carregando as contas…</LoadingNote>
-        <Skeleton aria-hidden="true" className="h-96" />
+        <TableSkeleton rows={6} />
       </>
     );
   }
