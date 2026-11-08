@@ -3,8 +3,8 @@ import { SearchX, X } from 'lucide-react';
 import { AccountsTable } from '~/admin/users/AccountsTable';
 import { EmptyState } from '~/components/EmptyState';
 import { ErrorState } from '~/components/ErrorState';
+import { TableSkeleton } from '~/components/TableSkeleton';
 import { Button } from '~/components/ui/button';
-import { Skeleton } from '~/components/ui/skeleton';
 import { useAccountByEmail } from '~/queries/admin';
 
 export function AccountSearchResult({
@@ -22,9 +22,14 @@ export function AccountSearchResult({
         <p role="status" className="font-bold [overflow-wrap:anywhere]">
           {result.isPending
             ? `Buscando ${email}…`
-            : result.data
-              ? '1 conta com esse e-mail'
-              : `Busca por ${email}`}
+            : result.isError
+              ? `Busca por ${email}`
+              : result.data
+                ? '1 conta com esse e-mail'
+                : `Busca por ${email}`}
+          {!result.isPending && !result.isError && !result.data && (
+            <span className="sr-only">: nenhuma conta encontrada</span>
+          )}
         </p>
         <Button variant="outline" onClick={onClear}>
           <X aria-hidden="true" />
@@ -32,7 +37,7 @@ export function AccountSearchResult({
         </Button>
       </div>
       {result.isPending ? (
-        <Skeleton aria-hidden="true" className="h-28" />
+        <TableSkeleton rows={1} />
       ) : result.isError ? (
         <ErrorState variant="block" onRetry={() => void result.refetch()} />
       ) : result.data ? (
@@ -46,7 +51,7 @@ export function AccountSearchResult({
         <EmptyState
           icon={SearchX}
           title="Nenhuma conta com esse e-mail"
-          description="A busca procura o e-mail inteiro, sem diferenciar maiúsculas. Confira se ele foi digitado completo."
+          description="A busca procura o e-mail exato, sem diferenciar maiúsculas. Confira se ele foi digitado inteiro."
         />
       )}
     </div>
