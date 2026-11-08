@@ -36,7 +36,7 @@ const accountColumns = (
           <button
             type="button"
             aria-haspopup="dialog"
-            className="-ml-1.5 min-h-10 self-start rounded-sm px-1.5 text-left font-bold [overflow-wrap:anywhere] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+            className="-ml-1.5 min-h-10 self-start rounded-sm px-1.5 text-left font-bold [overflow-wrap:anywhere] underline-offset-4 hover:bg-accent hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             onClick={() => {
               onOpen(row.original);
             }}
