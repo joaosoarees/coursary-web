@@ -5,10 +5,13 @@ import type { AccountStatus } from '~/services/AdminService';
 
 // The dot and the word carry the status; the colour only repeats it.
 const LOOK: Record<AccountStatus, { badge: string; dot: string }> = {
-  ACTIVE: { badge: 'bg-success-soft text-success', dot: 'bg-success' },
+  ACTIVE: {
+    badge: 'border-transparent bg-success-soft text-success',
+    dot: 'bg-success',
+  },
   PENDING: { badge: 'border-input text-muted-foreground', dot: 'bg-input' },
   DISABLED: {
-    badge: 'bg-destructive/10 text-destructive',
+    badge: 'border-transparent bg-destructive/10 text-destructive',
     dot: 'bg-destructive',
   },
 };
