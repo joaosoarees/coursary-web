@@ -28,6 +28,7 @@ import {
   ACCOUNT_ROLES,
   ACCOUNT_STATUSES,
   type AccountsFilter,
+  type AccountSummary,
   isAccountRole,
   isAccountStatus,
 } from '~/services/AdminService';
@@ -37,9 +38,20 @@ type AccountPages = ReturnType<typeof useCursorStack> & {
   filterBy: (filter: AccountsFilter) => void;
 };
 
+interface Opening {
+  openedId: string | undefined;
+  onOpen: (account: AccountSummary) => void;
+}
+
 const ALL = 'ALL';
 
-export function AccountsList({ pages }: { pages: AccountPages }) {
+export function AccountsList({
+  pages,
+  opening,
+}: {
+  pages: AccountPages;
+  opening: Opening;
+}) {
   const { filter } = pages;
 
   return (
@@ -97,14 +109,20 @@ export function AccountsList({ pages }: { pages: AccountPages }) {
       {/* Radix mounts only the open tab's panel. */}
       {ACCOUNT_ROLES.map((role) => (
         <TabsContent key={role} value={role}>
-          <AccountsPage pages={pages} />
+          <AccountsPage pages={pages} opening={opening} />
         </TabsContent>
       ))}
     </Tabs>
   );
 }
 
-function AccountsPage({ pages }: { pages: AccountPages }) {
+function AccountsPage({
+  pages,
+  opening,
+}: {
+  pages: AccountPages;
+  opening: Opening;
+}) {
   const { filter } = pages;
   const accounts = useAccounts(filter, pages.cursor);
   const nextCursor = accounts.data?.nextCursor;
@@ -178,6 +196,7 @@ function AccountsPage({ pages }: { pages: AccountPages }) {
         accounts={accounts.data.items}
         showRole={false}
         busy={busy}
+        {...opening}
       />
       {pages.index === 0 && !canNext && !busy ? (
         <p className="border-t px-4 py-3.5 text-muted-foreground sm:px-5">

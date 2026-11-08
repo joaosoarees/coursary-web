@@ -24,15 +24,25 @@ import type { AccountSummary } from '~/services/AdminService';
 const features = tableFeatures({});
 const columnHelper = createColumnHelper<typeof features, AccountSummary>();
 
-const accountColumns = (showRole: boolean) =>
+const accountColumns = (
+  showRole: boolean,
+  onOpen: (account: AccountSummary) => void,
+) =>
   columnHelper.columns([
     columnHelper.accessor('name', {
       header: 'Nome',
       cell: ({ row }) => (
         <span className="flex flex-col gap-0.5">
-          <span className="font-bold [overflow-wrap:anywhere]">
+          <button
+            type="button"
+            aria-haspopup="dialog"
+            className="-ml-1.5 min-h-10 self-start rounded-sm px-1.5 text-left font-bold [overflow-wrap:anywhere] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+            onClick={() => {
+              onOpen(row.original);
+            }}
+          >
             {row.original.name}
-          </span>
+          </button>
           <span className="text-sm [overflow-wrap:anywhere] text-muted-foreground sm:hidden">
             {row.original.email}
           </span>
@@ -81,12 +91,19 @@ export function AccountsTable({
   accounts,
   showRole,
   busy,
+  openedId,
+  onOpen,
 }: {
   accounts: AccountSummary[];
   showRole: boolean;
   busy: boolean;
+  openedId: string | undefined;
+  onOpen: (account: AccountSummary) => void;
 }) {
-  const columns = useMemo(() => accountColumns(showRole), [showRole]);
+  const columns = useMemo(
+    () => accountColumns(showRole, onOpen),
+    [showRole, onOpen],
+  );
   const table = useTable({
     features,
     columns,
@@ -118,7 +135,10 @@ export function AccountsTable({
       </TableHeader>
       <TableBody>
         {table.getRowModel().rows.map((row) => (
-          <TableRow key={row.id}>
+          <TableRow
+            key={row.id}
+            data-state={row.id === openedId ? 'selected' : undefined}
+          >
             {row.getAllCells().map((cell) => (
               <TableCell
                 key={cell.id}
