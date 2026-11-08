@@ -94,9 +94,10 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent className="px-2.5 py-4">
         <nav aria-label="Principal" className="flex flex-col gap-5">
-          {sections.map((section) => (
+          {sections.map((section, index) => (
             <NavSection
               key={section.label}
+              divided={index > 0}
               label={section.label}
               items={section.items}
               pathname={pathname}
@@ -123,11 +124,13 @@ export function AppSidebar() {
 }
 
 function NavSection({
+  divided,
   label,
   items,
   pathname,
   onNavigate,
 }: {
+  divided: boolean;
   label: string;
   items: NavItem[];
   pathname: string;
@@ -140,10 +143,16 @@ function NavSection({
       {/* Faded but kept in place when collapsed, so the icons below it do not move. */}
       <SidebarGroupLabel
         id={labelId}
-        className={`h-auto px-[13px] pb-1.5 text-[13px] font-bold tracking-[0.06em] text-shell-muted uppercase group-data-[collapsible=icon]:mt-0 ${FADES}`}
+        className={`h-7 items-start px-[13px] text-[13px] font-bold tracking-[0.06em] whitespace-nowrap text-shell-muted uppercase group-data-[collapsible=icon]:mt-0 ${FADES}`}
       >
         {label}
       </SidebarGroupLabel>
+      {divided && (
+        <span
+          aria-hidden="true"
+          className={`absolute top-3 left-1/2 h-px w-6 -translate-x-1/2 bg-shell-foreground/10 ${SHOWS_WHEN_COLLAPSED}`}
+        />
+      )}
       <SidebarMenu>
         {items.map(({ to, label: itemLabel, Icon }) => (
           <SidebarMenuItem key={to}>
