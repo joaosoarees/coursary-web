@@ -68,7 +68,7 @@ describe('MaterialCard', () => {
     renderCard();
 
     fireEvent.click(screen.getByRole('button', { name: 'Apagar guia.pdf' }));
-    const dialog = await screen.findByRole('dialog', {
+    const dialog = await screen.findByRole('alertdialog', {
       name: 'Apagar o arquivo?',
     });
     fireEvent.click(

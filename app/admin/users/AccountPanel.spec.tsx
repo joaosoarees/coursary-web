@@ -122,7 +122,7 @@ describe('AccountPanel', () => {
     fireEvent.click(await screen.findByRole('option', { name: 'Aluno' }));
     fireEvent.click(screen.getByRole('button', { name: 'Salvar papel' }));
 
-    const confirm = await screen.findByRole('dialog', {
+    const confirm = await screen.findByRole('alertdialog', {
       name: 'Tornar Rafael Tavares aluno?',
     });
 
@@ -139,6 +139,11 @@ describe('AccountPanel', () => {
       ).getByText('Aluno', { selector: 'dd' }),
     ).toBeVisible();
     expect(changeRole).toHaveBeenCalledWith('a1', 'student');
+    await waitFor(() => {
+      expect(
+        screen.getByRole('heading', { name: 'Mudar o papel' }),
+      ).toHaveFocus();
+    });
   });
 
   it('should keep the save off until another role is chosen', async () => {
@@ -147,7 +152,7 @@ describe('AccountPanel', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Salvar papel' }));
 
-    expect(screen.queryByRole('dialog', { name: /Tornar/ })).toBeNull();
+    expect(screen.queryByRole('alertdialog', { name: /Tornar/ })).toBeNull();
   });
 
   it('should show a refusal inside the confirmation', async () => {
@@ -169,6 +174,32 @@ describe('AccountPanel', () => {
     ).toBeVisible();
   });
 
+  it('should show what the account is now when it changed elsewhere', async () => {
+    vi.spyOn(AdminService, 'disable').mockRejectedValue(
+      apiError(409, 'ACCOUNT_NOT_ACTIVE'),
+    );
+    vi.spyOn(AdminService, 'findByEmail').mockResolvedValue({
+      ...rafael,
+      status: 'DISABLED',
+    });
+    renderPanel(rafael);
+    await screen.findByText('rafael@exemplo.com');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Desativar conta' }));
+    fireEvent.click(
+      within(
+        await screen.findByRole('alertdialog', {
+          name: 'Desativar a conta de Rafael Tavares?',
+        }),
+      ).getByRole('button', { name: 'Desativar conta' }),
+    );
+
+    expect(
+      await screen.findByRole('button', { name: 'Reativar conta' }),
+    ).toBeVisible();
+    expect(screen.queryByRole('alertdialog')).toBeNull();
+  });
+
   it('should disable the account, and then offer to reactivate it', async () => {
     const disable = vi
       .spyOn(AdminService, 'disable')
@@ -179,7 +210,7 @@ describe('AccountPanel', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Desativar conta' }));
 
-    const confirm = await screen.findByRole('dialog', {
+    const confirm = await screen.findByRole('alertdialog', {
       name: 'Desativar a conta de Rafael Tavares?',
     });
 
@@ -212,7 +243,7 @@ describe('AccountPanel', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Desativar conta' }));
 
     expect(
-      screen.queryByRole('dialog', { name: /Desativar a conta/ }),
+      screen.queryByRole('alertdialog', { name: /Desativar a conta/ }),
     ).toBeNull();
   });
 
