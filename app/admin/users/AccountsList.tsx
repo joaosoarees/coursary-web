@@ -28,6 +28,8 @@ import {
   ACCOUNT_ROLES,
   ACCOUNT_STATUSES,
   type AccountsFilter,
+  isAccountRole,
+  isAccountStatus,
 } from '~/services/AdminService';
 
 type AccountPages = ReturnType<typeof useCursorStack> & {
@@ -37,10 +39,6 @@ type AccountPages = ReturnType<typeof useCursorStack> & {
 
 const ALL = 'ALL';
 
-const isRole = (value: string) => ACCOUNT_ROLES.find((role) => role === value);
-const isStatus = (value: string) =>
-  ACCOUNT_STATUSES.find((status) => status === value);
-
 export function AccountsList({ pages }: { pages: AccountPages }) {
   const { filter } = pages;
 
@@ -48,10 +46,8 @@ export function AccountsList({ pages }: { pages: AccountPages }) {
     <Tabs
       value={filter.role}
       onValueChange={(value) => {
-        const role = isRole(value);
-
-        if (role) {
-          pages.filterBy({ ...filter, role });
+        if (isAccountRole(value)) {
+          pages.filterBy({ ...filter, role: value });
         }
       }}
       className="gap-6"
@@ -78,7 +74,10 @@ export function AccountsList({ pages }: { pages: AccountPages }) {
           <Select
             value={filter.status ?? ALL}
             onValueChange={(value) => {
-              pages.filterBy({ ...filter, status: isStatus(value) });
+              pages.filterBy({
+                ...filter,
+                status: isAccountStatus(value) ? value : undefined,
+              });
             }}
           >
             <SelectTrigger id="filtro-status" className="w-40">
