@@ -48,7 +48,7 @@ describe('AccountMenu', () => {
     });
 
     expect(trigger).toHaveTextContent('AS');
-    expect(trigger).toHaveTextContent('ana@exemplo.com');
+    expect(trigger).toHaveAccessibleDescription('ana@exemplo.com');
   });
 
   it('should lead to the profile', async () => {
