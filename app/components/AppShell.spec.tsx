@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { createRoutesStub, Link, Outlet } from 'react-router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -124,6 +124,37 @@ describe('the app shell', () => {
     expect(
       await screen.findByRole('link', { name: 'Meus cursos' }),
     ).toHaveAttribute('href', '/instrutor/cursos');
+  });
+
+  it('should group the items by what each role does, the users for an admin only', async () => {
+    const { unmount } = renderShell();
+    await screen.findByText('Ana Souza');
+
+    expect(
+      within(screen.getByRole('group', { name: 'Estudar' })).getByRole('link', {
+        name: 'Minhas matrículas',
+      }),
+    ).toBeVisible();
+    expect(screen.queryByRole('group', { name: 'Ensinar' })).toBeNull();
+    expect(screen.queryByRole('group', { name: 'Administrar' })).toBeNull();
+
+    unmount();
+    vi.spyOn(AccountService, 'getMe').mockResolvedValue({
+      id: 'account-3',
+      name: 'Marina Lopes',
+      email: 'marina@exemplo.com',
+      role: 'admin',
+    });
+    renderShell();
+
+    const administer = await screen.findByRole('group', {
+      name: 'Administrar',
+    });
+
+    expect(
+      within(administer).getByRole('link', { name: 'Usuários' }),
+    ).toHaveAttribute('href', '/admin/usuarios');
+    expect(screen.getByRole('group', { name: 'Ensinar' })).toBeVisible();
   });
 
   it('should collapse the sidebar and remember it', async () => {

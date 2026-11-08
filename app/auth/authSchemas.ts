@@ -5,7 +5,7 @@ const EMAIL_MESSAGE = 'Informe um e-mail completo, como nome@exemplo.com.';
 export const PASSWORD_RULE =
   '8 caracteres ou mais, com uma letra minúscula e um número.';
 
-const emailSchema = z
+export const emailSchema = z
   .string()
   .trim()
   .min(1, 'Informe o e-mail.')

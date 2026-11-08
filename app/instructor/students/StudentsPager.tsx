@@ -1,7 +1,5 @@
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-
 import { CourseFormat } from '~/components/course/CourseFormat';
-import { Button } from '~/components/ui/button';
+import { CursorPager } from '~/components/CursorPager';
 import { STUDENTS_PAGE_SIZE } from '~/queries/students';
 
 export class StudentsRange {
@@ -48,48 +46,17 @@ export function StudentsPager({
     );
   }
 
-  // aria-disabled, not disabled: a disabled button drops the focus of whoever just pressed it.
   return (
-    <nav
-      aria-label="Páginas de alunos"
-      className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t px-4 py-3.5 sm:px-5"
-    >
-      <span aria-live="polite" className="text-muted-foreground">
-        {busy ? 'Carregando os alunos…' : range.text}
-      </span>
-      <span className="flex items-center gap-3">
-        <span>
-          Página {index + 1} de {range.pages}
-        </span>
-        <Button
-          variant="outline"
-          size="icon"
-          aria-label="Página anterior"
-          aria-disabled={index === 0}
-          className="size-11"
-          onClick={() => {
-            if (index > 0) {
-              onPrevious();
-            }
-          }}
-        >
-          <ChevronLeft aria-hidden="true" />
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          aria-label="Próxima página"
-          aria-disabled={!canNext}
-          className="size-11"
-          onClick={() => {
-            if (canNext) {
-              onNext();
-            }
-          }}
-        >
-          <ChevronRight aria-hidden="true" />
-        </Button>
-      </span>
-    </nav>
+    <CursorPager
+      label="Páginas de alunos"
+      index={index}
+      range={range.text}
+      pageLabel={`Página ${String(index + 1)} de ${String(range.pages)}`}
+      canNext={canNext}
+      busy={busy}
+      busyText="Carregando os alunos…"
+      onPrevious={onPrevious}
+      onNext={onNext}
+    />
   );
 }
