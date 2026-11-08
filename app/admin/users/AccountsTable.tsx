@@ -33,7 +33,7 @@ const accountColumns = (showRole: boolean) =>
           <span className="font-bold [overflow-wrap:anywhere]">
             {row.original.name}
           </span>
-          <span className="[overflow-wrap:anywhere] text-muted-foreground sm:hidden">
+          <span className="text-sm [overflow-wrap:anywhere] text-muted-foreground sm:hidden">
             {row.original.email}
           </span>
         </span>
