@@ -168,7 +168,7 @@ export default function ConfirmSignUp() {
                   />
                 ) : (
                   <FieldDescription id={`${id}-code-hint`}>
-                    O código está no e-mail que mandamos.
+                    Os 6 dígitos do e-mail que enviamos.
                   </FieldDescription>
                 )}
               </Field>

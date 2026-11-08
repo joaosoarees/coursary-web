@@ -37,6 +37,9 @@ export default [
       route('instrutor/cursos/:id/alunos', 'routes/alunos-curso.tsx'),
       route('instrutor/cursos/:id/aulas/:aulaId', 'routes/editar-aula.tsx'),
     ]),
+    layout('routes/admin-layout.tsx', [
+      route('admin/usuarios', 'routes/admin-usuarios.tsx'),
+    ]),
     ...(import.meta.env.DEV ? [route('design', 'routes/design.tsx')] : []),
     route('*', 'routes/not-found.tsx'),
   ]),

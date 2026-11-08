@@ -6,6 +6,7 @@ import { CourseFormat } from '~/components/course/CourseFormat';
 import { EmptyState } from '~/components/EmptyState';
 import { ErrorState } from '~/components/ErrorState';
 import { LoadingNote } from '~/components/LoadingNote';
+import { TableSkeleton } from '~/components/TableSkeleton';
 import { Button } from '~/components/ui/button';
 import { Skeleton } from '~/components/ui/skeleton';
 import {
@@ -15,12 +16,13 @@ import {
 import { StudentsPager } from '~/instructor/students/StudentsPager';
 import { StudentsTable } from '~/instructor/students/StudentsTable';
 import { useStudentExport } from '~/instructor/students/useStudentExport';
-import { useStudentPages } from '~/instructor/students/useStudentPages';
 import { queryClient } from '~/lib/queryClient';
+import { useCursorPages } from '~/lib/useCursorPages';
 import { managedCourseQuery, useManagedCourse } from '~/queries/instructor';
 import { courseStudentsQuery, useCourseStudents } from '~/queries/students';
 import { ApiFailure } from '~/services/ApiFailure';
 import type { ManagedCourse } from '~/services/InstructorService';
+import type { StudentOrder } from '~/services/StudentService';
 import { isSignedIn } from '~/session/session';
 
 import type { Route } from './+types/alunos-curso';
@@ -85,10 +87,10 @@ export default function CourseStudentsPage({ params }: Route.ComponentProps) {
 }
 
 function CourseStudents({ course }: { course: ManagedCourse }) {
-  const pages = useStudentPages();
+  const pages = useCursorPages<StudentOrder>('desc');
   const students = useCourseStudents(course.id, {
     cursor: pages.cursor,
-    order: pages.order,
+    order: pages.filter,
   });
   const nextCursor = students.data?.nextCursor;
   const empty = students.data?.items.length === 0 && pages.index === 0;
@@ -121,7 +123,7 @@ function CourseStudents({ course }: { course: ManagedCourse }) {
       </header>
       <StudentsExportStatus csv={csv} />
       {students.isLoading ? (
-        <TableSkeleton />
+        <StudentsTableSkeleton />
       ) : students.isError && !students.data ? (
         <div className="flex flex-col items-start gap-3">
           <ErrorState variant="block" onRetry={() => void students.refetch()} />
@@ -149,8 +151,8 @@ function CourseStudents({ course }: { course: ManagedCourse }) {
             <StudentsTable
               students={students.data.items}
               lessonCount={course.lessonCount}
-              order={pages.order}
-              onSort={pages.sortBy}
+              order={pages.filter}
+              onSort={pages.filterBy}
               busy={students.isPlaceholderData}
             />
             <StudentsPager
@@ -192,17 +194,17 @@ function StudentsSkeleton() {
           <Skeleton className="h-10 w-1/3" />
           <Skeleton className="h-5 w-1/3" />
         </div>
-        <Skeleton className="h-96" />
+        <TableSkeleton rows={6} />
       </div>
     </>
   );
 }
 
-function TableSkeleton() {
+function StudentsTableSkeleton() {
   return (
     <>
       <LoadingNote>Carregando os alunos…</LoadingNote>
-      <Skeleton aria-hidden="true" className="h-96" />
+      <TableSkeleton rows={6} />
     </>
   );
 }

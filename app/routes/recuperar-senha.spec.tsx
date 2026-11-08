@@ -40,7 +40,7 @@ describe('the password recovery page', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Enviar código' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      'Muitas tentativas seguidas. Espere alguns minutos e tente de novo.',
+      'Muitas tentativas seguidas. Espere alguns minutos e peça o código de novo.',
     );
   });
 });
