@@ -40,12 +40,15 @@ const open = async () => {
 };
 
 describe('AccountMenu', () => {
-  it("should show the account's name and initials", async () => {
+  it("should show the account's initials, name and e-mail, named for whose account it is", async () => {
     renderMenu();
 
-    expect(
-      await screen.findByRole('button', { name: /Ana Souza/ }),
-    ).toHaveTextContent('AS');
+    const trigger = await screen.findByRole('button', {
+      name: 'Conta de Ana Souza',
+    });
+
+    expect(trigger).toHaveTextContent('AS');
+    expect(trigger).toHaveAccessibleDescription('ana@exemplo.com');
   });
 
   it('should lead to the profile', async () => {

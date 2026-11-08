@@ -39,7 +39,7 @@ const renderAt = () =>
     '/instrutor/cursos/c1',
   );
 
-const dialog = () => screen.getByRole('dialog');
+const dialog = () => screen.getByRole('alertdialog');
 
 beforeEach(() => {
   vi.spyOn(LessonService, 'outline').mockResolvedValue({
@@ -62,7 +62,7 @@ describe('course actions', () => {
 
     expect(publish).toHaveAttribute('aria-disabled', 'true');
     fireEvent.click(publish);
-    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(screen.queryByRole('alertdialog')).toBeNull();
     expect(publish).toHaveAccessibleDescription(
       'Adicione ao menos uma aula para publicar.',
     );
@@ -83,7 +83,7 @@ describe('course actions', () => {
       );
     });
     fireEvent.click(archive);
-    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(screen.queryByRole('alertdialog')).toBeNull();
   });
 
   it('should publish a draft after confirming', async () => {
@@ -179,7 +179,7 @@ describe('course actions', () => {
       await screen.findByRole('heading', { name: 'Meus cursos' }),
     ).toBeVisible();
     await waitFor(() => {
-      expect(screen.queryByRole('dialog')).toBeNull();
+      expect(screen.queryByRole('alertdialog')).toBeNull();
     });
     expect(remove).toHaveBeenCalledWith('c1');
   });

@@ -140,7 +140,7 @@ describe('VideoCard', () => {
     renderCard();
 
     fireEvent.click(screen.getByRole('button', { name: 'Remover vídeo' }));
-    const dialog = await screen.findByRole('dialog', {
+    const dialog = await screen.findByRole('alertdialog', {
       name: 'Remover o vídeo desta aula?',
     });
     fireEvent.click(

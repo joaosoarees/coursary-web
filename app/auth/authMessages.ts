@@ -3,3 +3,6 @@ export const INVALID_CODE =
 
 export const TOO_MANY_REQUESTS =
   'Muitas tentativas seguidas. Espere alguns minutos e tente de novo.';
+
+export const TOO_MANY_CODE_REQUESTS =
+  'Muitas tentativas seguidas. Espere alguns minutos e peça o código de novo.';

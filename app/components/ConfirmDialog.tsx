@@ -9,8 +9,7 @@ import {
 } from '~/components/ui/dialog';
 import { FormAlert } from '~/components/visitor/FormMessage';
 
-// Confirms an action that cannot be undone; a refusal shows inside, and the dialog stays open while
-// the request runs.
+// A refusal shows inside, and the dialog stays open while the request runs.
 export function ConfirmDialog({
   open,
   onClose,
@@ -51,6 +50,7 @@ export function ConfirmDialog({
       }}
     >
       <DialogContent
+        role="alertdialog"
         showCloseButton={false}
         className="sm:max-w-[32rem]"
         onCloseAutoFocus={onCloseAutoFocus}
