@@ -91,3 +91,57 @@ describe('AdminService.findByEmail', () => {
     ).rejects.toThrow();
   });
 });
+
+describe('AdminService writes', () => {
+  it('should change the role', async () => {
+    answer({ id: 'a1', role: 'admin' });
+
+    await expect(AdminService.changeRole('a1', 'admin')).resolves.toEqual({
+      id: 'a1',
+      role: 'admin',
+    });
+    expect(adapter.mock.calls[0]?.[0]).toMatchObject({
+      method: 'put',
+      url: '/admin/users/a1/role',
+      data: JSON.stringify({ role: 'admin' }),
+    });
+  });
+
+  it('should disable and enable the account', async () => {
+    answer({ id: 'a1', status: 'DISABLED' });
+    answer({ id: 'a1', status: 'ACTIVE' });
+
+    await expect(AdminService.disable('a1')).resolves.toEqual({
+      id: 'a1',
+      status: 'DISABLED',
+    });
+    await expect(AdminService.enable('a1')).resolves.toEqual({
+      id: 'a1',
+      status: 'ACTIVE',
+    });
+    expect(adapter.mock.calls.map(([config]) => config.url)).toEqual([
+      '/admin/users/a1/disable',
+      '/admin/users/a1/enable',
+    ]);
+  });
+
+  it('should read a page of the role changes', async () => {
+    const change = {
+      id: 'c1',
+      fromRole: 'student',
+      toRole: 'instructor',
+      changedBy: 'bootstrap',
+      changedAt: '2026-10-01T12:00:00.000Z',
+    };
+
+    answer({ items: [change], nextCursor: null });
+
+    await expect(
+      AdminService.roleChanges('a1', { cursor: undefined, limit: 20 }),
+    ).resolves.toEqual({ items: [change], nextCursor: null });
+    expect(adapter.mock.calls[0]?.[0]).toMatchObject({
+      url: '/admin/users/a1/role-changes',
+      params: { limit: 20 },
+    });
+  });
+});
