@@ -25,6 +25,12 @@ export type AccountsPage = z.infer<typeof accountsPageSchema>;
 export type AccountRole = AccountSummary['role'];
 export type AccountStatus = AccountSummary['status'];
 
+export const isAccountRole = (value: string): value is AccountRole =>
+  ACCOUNT_ROLES.some((role) => role === value);
+
+export const isAccountStatus = (value: string): value is AccountStatus =>
+  ACCOUNT_STATUSES.some((status) => status === value);
+
 export interface AccountsFilter {
   role: AccountRole;
   status: AccountStatus | undefined;
