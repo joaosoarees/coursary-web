@@ -1,6 +1,8 @@
 import {
+  infiniteQueryOptions,
   noop,
   queryOptions,
+  useInfiniteQuery,
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
@@ -73,3 +75,22 @@ export function useAccountByEmail(email: string | undefined) {
     enabled: email !== undefined,
   });
 }
+
+const ROLE_CHANGES_PAGE_SIZE = 20;
+
+export const roleChangesQuery = (accountId: string) =>
+  infiniteQueryOptions({
+    queryKey: ['admin', 'accounts', accountId, 'role-changes'],
+    queryFn: ({ pageParam, signal }) =>
+      AdminService.roleChanges(
+        accountId,
+        { cursor: pageParam, limit: ROLE_CHANGES_PAGE_SIZE },
+        signal,
+      ),
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+    staleTime: 30_000,
+  });
+
+export const useRoleChanges = (accountId: string) =>
+  useInfiniteQuery(roleChangesQuery(accountId));

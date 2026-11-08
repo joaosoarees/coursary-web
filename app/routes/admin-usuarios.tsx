@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useSearchParams } from 'react-router';
 
+import { AccountPanel } from '~/admin/users/AccountPanel';
 import { AccountSearch } from '~/admin/users/AccountSearch';
 import { AccountSearchResult } from '~/admin/users/AccountSearchResult';
 import { AccountsFilterParams } from '~/admin/users/AccountsFilterParams';
 import { AccountsList } from '~/admin/users/AccountsList';
 import { useCursorStack } from '~/lib/useCursorStack';
+import type { AccountSummary } from '~/services/AdminService';
 
 import type { Route } from './+types/admin-usuarios';
 
@@ -32,16 +34,25 @@ export default function AdminUsersPage() {
   const [searched, setSearched] = useState<string>();
   // A new key empties the search field; after the first clearing it also takes the focus back.
   const [clearings, setClearings] = useState(0);
+  // A copy of the row that opened the panel: after a role change the account can leave the list.
+  const [opened, setOpened] = useState<AccountSummary | null>(null);
+  const heading = useRef<HTMLHeadingElement>(null);
+  const opening = { openedId: opened?.id, onOpen: setOpened };
 
   return (
     <section className="flex flex-col gap-6">
       <header className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
         <div className="flex min-w-0 flex-[1_1_22rem] flex-col gap-1">
-          <h1 className="font-display text-3xl leading-tight font-bold tracking-tight md:text-4xl">
+          <h1
+            ref={heading}
+            tabIndex={-1}
+            className="font-display text-3xl leading-tight font-bold tracking-tight outline-none md:text-4xl"
+          >
             Usuários
           </h1>
           <p className="text-muted-foreground">
-            Papéis e acesso das contas da plataforma.
+            Papéis e acesso das contas da plataforma. Escolha um nome para agir
+            sobre a conta.
           </p>
         </div>
         <AccountSearch
@@ -51,7 +62,7 @@ export default function AdminUsersPage() {
         />
       </header>
       {searched === undefined ? (
-        <AccountsList pages={pages} />
+        <AccountsList pages={pages} opening={opening} />
       ) : (
         <AccountSearchResult
           email={searched}
@@ -59,8 +70,17 @@ export default function AdminUsersPage() {
             setSearched(undefined);
             setClearings((count) => count + 1);
           }}
+          {...opening}
         />
       )}
+      <AccountPanel
+        account={opened}
+        onClose={() => {
+          setOpened(null);
+        }}
+        onChanged={setOpened}
+        fallbackFocus={heading}
+      />
     </section>
   );
 }

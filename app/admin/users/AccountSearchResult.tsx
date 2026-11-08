@@ -6,13 +6,18 @@ import { ErrorState } from '~/components/ErrorState';
 import { TableSkeleton } from '~/components/TableSkeleton';
 import { Button } from '~/components/ui/button';
 import { useAccountByEmail } from '~/queries/admin';
+import type { AccountSummary } from '~/services/AdminService';
 
 export function AccountSearchResult({
   email,
   onClear,
+  openedId,
+  onOpen,
 }: {
   email: string;
   onClear: () => void;
+  openedId: string | undefined;
+  onOpen: (account: AccountSummary) => void;
 }) {
   const result = useAccountByEmail(email);
 
@@ -45,7 +50,13 @@ export function AccountSearchResult({
           aria-label="Resultado da busca"
           className="animate-content-in overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm"
         >
-          <AccountsTable accounts={[result.data]} showRole busy={false} />
+          <AccountsTable
+            accounts={[result.data]}
+            showRole
+            busy={false}
+            openedId={openedId}
+            onOpen={onOpen}
+          />
         </section>
       ) : (
         <EmptyState
