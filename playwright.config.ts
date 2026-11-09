@@ -8,14 +8,14 @@ try {
   // No .env: the variables come from the shell.
 }
 
-// Each project is one person's part of a single journey and needs the data the one
-// before it left (the course published, the student enrolled), so they run in order.
-const journey: { name: string; role?: Role }[] = [
+// Each project is one person's part of the journey and needs what the one it follows
+// left: the account's new name for the admin; the course, then the enrolment, for the rest.
+const journey: { name: string; role?: Role; after?: string }[] = [
   { name: 'conta' },
+  { name: 'admin', role: 'admin', after: 'conta' },
   { name: 'instrutor', role: 'instrutor' },
-  { name: 'aluno', role: 'aluno' },
-  { name: 'instrutor-alunos', role: 'instrutor' },
-  { name: 'admin', role: 'admin' },
+  { name: 'aluno', role: 'aluno', after: 'instrutor' },
+  { name: 'instrutor-alunos', role: 'instrutor', after: 'aluno' },
 ];
 
 export default defineConfig<{ role: Role | undefined }>({
@@ -35,12 +35,10 @@ export default defineConfig<{ role: Role | undefined }>({
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
   },
-  projects: journey.map(({ name, role }, index) => ({
+  projects: journey.map(({ name, role, after }) => ({
     name,
     testMatch: `${name}.spec.ts`,
     use: { role },
-    dependencies: journey
-      .slice(Math.max(index - 1, 0), index)
-      .map((p) => p.name),
+    dependencies: after ? [after] : [],
   })),
 });
