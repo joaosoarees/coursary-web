@@ -49,7 +49,12 @@ const modules: CourseModule[] = [
   { id: 'm3', title: 'Escrevendo o título', position: 2, lessons: [] },
 ];
 
-const renderContent = (shown: ManagedCourse = course) => {
+const renderContent = (
+  shown: ManagedCourse = course,
+  Shell: (props: { children: React.ReactNode }) => React.ReactNode = ({
+    children,
+  }) => children,
+) => {
   vi.spyOn(LessonService, 'outline').mockResolvedValue({
     courseId: 'c1',
     title: shown.title,
@@ -57,7 +62,14 @@ const renderContent = (shown: ManagedCourse = course) => {
     modules,
   });
   const Stub = createRoutesStub([
-    { path: '/', Component: () => <CourseContent course={shown} /> },
+    {
+      path: '/',
+      Component: () => (
+        <Shell>
+          <CourseContent course={shown} />
+        </Shell>
+      ),
+    },
   ]);
 
   return render(
@@ -71,6 +83,16 @@ const titles = () =>
   screen.getAllByRole('link').map((link) => link.textContent);
 
 describe('CourseContent', () => {
+  it('should name its region after its heading inside the app shell', async () => {
+    renderContent(course, ({ children }) => (
+      <main id="conteudo">{children}</main>
+    ));
+
+    expect(
+      await screen.findByRole('region', { name: 'Conteúdo' }),
+    ).toBeVisible();
+  });
+
   it('should list the modules and lessons with their facts and numbers', async () => {
     renderContent();
 
