@@ -36,6 +36,9 @@ describe('LessonAttachments', () => {
   it('should show each file with its kind and size', () => {
     renderList();
 
+    expect(
+      screen.getByRole('region', { name: 'Material' }),
+    ).toBeInTheDocument();
     expect(screen.getByText('guia.pdf')).toBeInTheDocument();
     expect(screen.getByText('PDF · 3 MB')).toBeInTheDocument();
   });
