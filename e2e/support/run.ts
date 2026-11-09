@@ -1,4 +1,4 @@
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 export const ROLES = ['instrutor', 'aluno', 'admin', 'alvo'] as const;
@@ -20,7 +20,11 @@ export interface RunState {
 const RUN_DIR = join(import.meta.dirname, '..', '.run');
 const STATE_FILE = join(RUN_DIR, 'state.json');
 
-export const sessionFile = (role: Role) => join(RUN_DIR, `${role}.json`);
+// A function: playwright.config.ts loads .env after its imports are evaluated.
+export const siteUrl = () =>
+  process.env.E2E_BASE_URL ?? 'https://coursary-dev.joaodevdude.com';
+
+export const hasState = () => existsSync(STATE_FILE);
 
 export function readState(): RunState {
   return JSON.parse(readFileSync(STATE_FILE, 'utf8')) as RunState;
@@ -33,4 +37,14 @@ export function writeState(state: RunState) {
 
 export function updateState(change: Partial<RunState>) {
   writeState({ ...readState(), ...change });
+}
+
+export function readCourse() {
+  const { course } = readState();
+
+  if (!course) {
+    throw new Error('The instructor part of the journey created no course.');
+  }
+
+  return course;
 }
