@@ -1,7 +1,7 @@
 import { test as base } from '@playwright/test';
 
 import { apiUrl } from './accounts';
-import { type Account, readState, type Role, siteUrl } from './run';
+import { type Account, readState, type Role, SITE_URL } from './run';
 
 // The API keeps one session per account and rotates the refresh cookie on every page load,
 // so a saved storageState works once: each test signs in afresh, through the context's own
@@ -20,7 +20,7 @@ export const test = base.extend<{
           `${apiUrl()}/auth/sign-in`,
           {
             data: { email: account.email, password: account.password },
-            headers: { origin: new URL(siteUrl()).origin },
+            headers: { origin: SITE_URL },
           },
         );
 
