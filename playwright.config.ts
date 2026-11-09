@@ -1,6 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 
-import type { Role } from './e2e/support/run';
+import { type Role, siteUrl } from './e2e/support/run';
 
 try {
   process.loadEnvFile('.env');
@@ -29,7 +29,7 @@ export default defineConfig<{ role: Role | undefined }>({
   reporter: 'list',
   use: {
     ...devices['Desktop Chrome'],
-    baseURL: process.env.E2E_BASE_URL ?? 'https://coursary-dev.joaodevdude.com',
+    baseURL: siteUrl(),
     locale: 'pt-BR',
     timezoneId: 'America/Sao_Paulo',
     trace: 'retain-on-failure',
