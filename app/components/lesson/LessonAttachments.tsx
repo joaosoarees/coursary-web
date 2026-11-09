@@ -1,4 +1,5 @@
 import { Download, File } from 'lucide-react';
+import { useId } from 'react';
 
 import { AttachmentFormat } from '~/components/lesson/AttachmentFormat';
 import { Button } from '~/components/ui/button';
@@ -14,9 +15,11 @@ export function LessonAttachments({
   lessonId: string;
   attachments: Attachment[];
 }) {
+  const headingId = useId();
+
   return (
-    <section aria-labelledby="material" className="flex flex-col gap-3">
-      <h2 id="material" className="font-display text-xl font-bold">
+    <section aria-labelledby={headingId} className="flex flex-col gap-3">
+      <h2 id={headingId} className="font-display text-xl font-bold">
         Material
       </h2>
       <ul className="flex flex-col divide-y rounded-md border bg-card">
