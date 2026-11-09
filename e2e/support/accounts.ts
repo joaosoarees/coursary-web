@@ -2,7 +2,7 @@ import { execFileSync } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
 
 import { aws, region, service, stackResource, table } from './aws';
-import type { Account } from './run';
+import { type Account, siteUrl } from './run';
 
 type Key = Record<'PK' | 'SK', { S: string }>;
 type Items = { Items?: Record<string, { S: string }>[] } | undefined;
@@ -26,6 +26,8 @@ async function call<T>(
     method,
     headers: {
       'content-type': 'application/json',
+      // The API refuses a sign-in from an origin other than the site's.
+      origin: new URL(siteUrl()).origin,
       ...(token ? { authorization: `Bearer ${token}` } : {}),
     },
     body: body === undefined ? undefined : JSON.stringify(body),
