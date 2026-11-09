@@ -23,10 +23,6 @@ const STATE_FILE = join(RUN_DIR, 'state.json');
 // The journey checks the deployed site: the API takes sign-ins from its origin only.
 export const SITE_URL = 'https://coursary-dev.joaodevdude.com';
 
-// A function: playwright.config.ts loads .env after its imports are evaluated.
-export const siteUrl = () =>
-  process.env.E2E_BASE_URL ?? 'https://coursary-dev.joaodevdude.com';
-
 export const hasState = () => existsSync(STATE_FILE);
 
 export function readState(): RunState {
