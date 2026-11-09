@@ -7,5 +7,18 @@ export default function globalTeardown() {
     return;
   }
 
-  Object.values(readState().accounts).forEach(deleteAccount);
+  // One account that fails to go must not keep the others in dev.
+  const left = Object.values(readState().accounts).flatMap((account) => {
+    try {
+      deleteAccount(account);
+
+      return [];
+    } catch {
+      return [account.email];
+    }
+  });
+
+  if (left.length > 0) {
+    throw new Error(`Not deleted, remove by hand: ${left.join(', ')}`);
+  }
 }
