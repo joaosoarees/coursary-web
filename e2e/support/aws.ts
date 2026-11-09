@@ -17,7 +17,15 @@ export function aws(...args: string[]): unknown {
   return output.trim() ? JSON.parse(output) : undefined;
 }
 
+const resources = new Map<string, string>();
+
 export function stackResource(logicalId: string): string {
+  const known = resources.get(logicalId);
+
+  if (known) {
+    return known;
+  }
+
   const found = aws(
     'cloudformation',
     'describe-stack-resource',
@@ -30,6 +38,8 @@ export function stackResource(logicalId: string): string {
   if (!found) {
     throw new Error(`The stack ${service} has no ${logicalId}.`);
   }
+
+  resources.set(logicalId, found.StackResourceDetail.PhysicalResourceId);
 
   return found.StackResourceDetail.PhysicalResourceId;
 }
