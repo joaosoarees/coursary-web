@@ -67,9 +67,14 @@ export default defineConfig([
       ],
     },
   },
-  // Only the build's own configuration and scripts run in Node; the app runs in the browser.
+  // Only the build's own configuration, scripts and the Playwright runner run in Node; the app runs in the browser.
   {
-    files: ['*.config.{js,mjs,cjs,ts}', 'vitest.setup.ts', 'scripts/**/*.ts'],
+    files: [
+      '*.config.{js,mjs,cjs,ts}',
+      'vitest.setup.ts',
+      'scripts/**/*.ts',
+      'e2e/**/*.ts',
+    ],
     languageOptions: { globals: globals.node },
   },
   {

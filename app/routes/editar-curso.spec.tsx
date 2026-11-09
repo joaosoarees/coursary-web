@@ -55,6 +55,7 @@ describe('edit course', () => {
         name: 'Gráficos que contam uma história',
       }),
     ).toBeVisible();
+    expect(screen.getByRole('region', { name: 'Informações' })).toBeVisible();
     expect(screen.getByRole('button', { name: /Enviar capa/ })).toBeVisible();
     expect(document.title).toBe('Gráficos que contam uma história · Coursary');
 

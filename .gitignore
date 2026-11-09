@@ -13,3 +13,7 @@ node_modules/
 .impeccable/questions/
 /coverage/
 .impeccable/review/
+
+# Playwright: sessions, run state and failure traces
+/e2e/.run/
+/test-results/

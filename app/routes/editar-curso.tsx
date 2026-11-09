@@ -1,6 +1,6 @@
 import { noop } from '@tanstack/react-query';
 import { Archive } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useId, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import { CourseFormat } from '~/components/course/CourseFormat';
@@ -72,6 +72,7 @@ function CourseEditor({ course }: { course: ManagedCourse }) {
   const archived = course.status === 'ARCHIVED';
   const heading = useRef<HTMLHeadingElement>(null);
   const [unsaved, setUnsaved] = useState(false);
+  const infoHeadingId = useId();
 
   return (
     <>
@@ -107,10 +108,10 @@ function CourseEditor({ course }: { course: ManagedCourse }) {
       )}
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
         <section
-          aria-labelledby="informacoes"
+          aria-labelledby={infoHeadingId}
           className="flex flex-col gap-5 rounded-lg border bg-card p-5 text-card-foreground shadow-sm md:p-7"
         >
-          <h2 id="informacoes" className="font-display text-xl font-bold">
+          <h2 id={infoHeadingId} className="font-display text-xl font-bold">
             Informações
           </h2>
           <CourseInfoForm

@@ -1,0 +1,21 @@
+import { readFile } from 'node:fs/promises';
+
+import { readCourse, readState } from './support/run';
+import { expect, test } from './support/test';
+
+test('vê o aluno na lista e baixa o CSV', async ({ page }) => {
+  const student = readState().accounts.aluno;
+
+  await page.goto(`/instrutor/cursos/${readCourse().id}/alunos`);
+  const list = page.getByRole('region', { name: 'Lista de alunos' });
+  await expect(list.getByText(student.name)).toBeVisible();
+
+  await page.getByRole('button', { name: 'Exportar CSV' }).click();
+  const link = page.getByRole('link', { name: 'Baixar CSV' });
+  await expect(link).toBeVisible({ timeout: 60_000 });
+
+  const download = page.waitForEvent('download');
+  await link.click();
+  const csv = await readFile(await (await download).path(), 'utf8');
+  expect(csv).toContain(student.name);
+});
