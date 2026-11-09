@@ -1,6 +1,6 @@
 import { Plus } from 'lucide-react';
 import { Reorder } from 'motion/react';
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { toast } from 'sonner';
 
 import { BoardIcon } from '~/components/BoardIcon';
@@ -35,12 +35,13 @@ class ContentFacts {
 
 export function CourseContent({ course }: { course: ManagedCourse }) {
   const outline = useOutline(course.id);
+  const headingId = useId();
 
   return (
-    <section aria-labelledby="conteudo" className="flex flex-col gap-4 pt-2">
+    <section aria-labelledby={headingId} className="flex flex-col gap-4 pt-2">
       {outline.isPending ? (
         <>
-          <ContentHeading />
+          <ContentHeading id={headingId} />
           <LoadingNote>Carregando o conteúdo…</LoadingNote>
           <div aria-hidden="true" className="flex flex-col gap-4">
             <Skeleton className="h-48" />
@@ -49,7 +50,7 @@ export function CourseContent({ course }: { course: ManagedCourse }) {
         </>
       ) : outline.isError ? (
         <>
-          <ContentHeading />
+          <ContentHeading id={headingId} />
           <ErrorState
             variant="block"
             title="Não deu para carregar o conteúdo"
@@ -57,19 +58,20 @@ export function CourseContent({ course }: { course: ManagedCourse }) {
           />
         </>
       ) : (
-        <ContentEditor course={course} modules={outline.data.modules} />
+        <ContentEditor
+          course={course}
+          modules={outline.data.modules}
+          headingId={headingId}
+        />
       )}
     </section>
   );
 }
 
-function ContentHeading({ facts }: { facts?: string }) {
+function ContentHeading({ id, facts }: { id: string; facts?: string }) {
   return (
     <div className="flex flex-col gap-0.5">
-      <h2
-        id="conteudo"
-        className="font-display text-2xl leading-tight font-bold"
-      >
+      <h2 id={id} className="font-display text-2xl leading-tight font-bold">
         Conteúdo
       </h2>
       <p className="text-muted-foreground">
@@ -82,9 +84,11 @@ function ContentHeading({ facts }: { facts?: string }) {
 function ContentEditor({
   course,
   modules: saved,
+  headingId,
 }: {
   course: ManagedCourse;
   modules: Modules;
+  headingId: string;
 }) {
   const editable = course.status !== 'ARCHIVED';
   const deletable = course.status === 'DRAFT';
@@ -136,6 +140,7 @@ function ContentEditor({
     <>
       <div className="flex flex-wrap items-end justify-between gap-x-5 gap-y-3">
         <ContentHeading
+          id={headingId}
           facts={
             modules.length === 0
               ? undefined
