@@ -6,8 +6,6 @@ import { ConfirmDialog } from '~/components/ConfirmDialog';
 import { QuestionFailure } from '~/components/questions/QuestionFailure';
 import { Button } from '~/components/ui/button';
 
-// The Apagar button of a question or an answer, with its confirmation. The post leaves the page
-// when it is deleted, so the focus goes where onDeleted puts it instead of the gone button.
 export function DeletePost({
   label,
   title,
@@ -28,19 +26,25 @@ export function DeletePost({
   const [error, setError] = useState<string | null>(null);
   const [deleted, setDeleted] = useState(false);
 
+  // The reload can take the post, and this dialog with it, off the page before the request
+  // answers: the focus is moved here instead of waiting for the dialog to close.
+  const leave = () => {
+    setDeleted(true);
+    setOpen(false);
+    onDeleted();
+  };
+
   const confirm = async () => {
     setPending(true);
     setError(null);
 
     try {
       await onDelete();
-      setDeleted(true);
-      setOpen(false);
+      leave();
     } catch (failure) {
       if (QuestionFailure.isStale(failure)) {
         toast.error(QuestionFailure.message(failure));
-        setDeleted(true);
-        setOpen(false);
+        leave();
         return;
       }
 
@@ -72,7 +76,6 @@ export function DeletePost({
         onCloseAutoFocus={(event) => {
           if (deleted) {
             event.preventDefault();
-            onDeleted();
           }
         }}
         pending={pending}
