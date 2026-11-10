@@ -4,23 +4,23 @@ import { useLocation } from 'react-router';
 
 import { ErrorState } from '~/components/ErrorState';
 
-// A custom fallback is for a place too small for the error state, such as the account menu.
 type Fallback =
   { title: string; fallback?: never } | { fallback: ReactNode; title?: never };
 
 export function BlockBoundary({
   title,
   fallback,
+  resetKeys = [],
   children,
-}: Fallback & { children: ReactNode }) {
+}: Fallback & { resetKeys?: unknown[]; children: ReactNode }) {
   const { pathname } = useLocation();
 
   return (
     // A block in a layout outlives the page below it: without the path, its fallback would stay after leaving.
     <ErrorBoundary
-      resetKeys={[pathname]}
+      resetKeys={[pathname, ...resetKeys]}
       fallbackRender={({ resetErrorBoundary }: FallbackProps) =>
-        fallback ?? (
+        fallback === undefined ? (
           <ErrorState
             variant="block"
             title={title}
@@ -28,6 +28,8 @@ export function BlockBoundary({
               resetErrorBoundary();
             }}
           />
+        ) : (
+          fallback
         )
       }
     >
