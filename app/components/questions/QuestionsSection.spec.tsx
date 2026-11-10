@@ -233,9 +233,11 @@ describe('QuestionsSection', () => {
     expect(screen.queryByRole('button', { name: 'Perguntar' })).toBeNull();
     fireEvent.click(duda.getByRole('button', { name: /Responder/ }));
 
-    expect(
-      await duda.findByRole('textbox', { name: 'Sua resposta' }),
-    ).toHaveAttribute(
+    const reply = await duda.findByRole('textbox', { name: 'Sua resposta' });
+    await waitFor(() => {
+      expect(reply).toHaveFocus();
+    });
+    expect(reply).toHaveAttribute(
       'placeholder',
       'A sua resposta sai marcada como do instrutor',
     );
