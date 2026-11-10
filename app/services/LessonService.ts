@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { courseUrl } from '~/services/apiPaths';
+import { courseUrl, lessonUrl } from '~/services/apiPaths';
 import { moduleSchema } from '~/services/CourseService';
 import { httpClient } from '~/services/httpClient';
 
@@ -35,9 +35,6 @@ export type CourseOutline = z.infer<typeof outlineSchema>;
 export type LessonContent = z.infer<typeof lessonContentSchema>;
 export type Attachment = z.infer<typeof attachmentSchema>;
 export type SignedUrl = z.infer<typeof signedUrlSchema>;
-
-const lessonUrl = (courseId: string, lessonId: string) =>
-  `${courseUrl(courseId)}/lessons/${encodeURIComponent(lessonId)}`;
 
 export class LessonService {
   static async outline(

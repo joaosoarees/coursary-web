@@ -14,8 +14,10 @@ export interface Account {
 export interface RunState {
   stamp: string;
   accounts: Record<Role, Account>;
-  course?: { id: string; title: string };
+  course?: { id: string; title: string; lessonId?: string };
 }
+
+export const LESSON_TITLE = 'Primeira aula';
 
 const RUN_DIR = join(import.meta.dirname, '..', '.run');
 const STATE_FILE = join(RUN_DIR, 'state.json');
@@ -46,4 +48,14 @@ export function readCourse() {
   }
 
   return course;
+}
+
+export function readLessonId() {
+  const { lessonId } = readCourse();
+
+  if (!lessonId) {
+    throw new Error('The student part of the journey opened no lesson.');
+  }
+
+  return lessonId;
 }

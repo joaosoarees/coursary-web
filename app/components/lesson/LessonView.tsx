@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { toast } from 'sonner';
 
+import { BlockBoundary } from '~/components/BlockBoundary';
 import { ReviewButton } from '~/components/course/ReviewButton';
 import { ReviewDialog } from '~/components/course/ReviewDialog';
 import { LessonAttachments } from '~/components/lesson/LessonAttachments';
@@ -11,6 +12,10 @@ import { LessonBody } from '~/components/lesson/LessonBody';
 import { LessonCompletion } from '~/components/lesson/LessonCompletion';
 import { LessonOutline } from '~/components/lesson/LessonOutline';
 import { LessonVideo } from '~/components/lesson/LessonVideo';
+import {
+  QuestionsSection,
+  type QuestionsViewer,
+} from '~/components/questions/QuestionsSection';
 import { Button } from '~/components/ui/button';
 import { useCompleteLesson, useSavePosition } from '~/mutations/progress';
 import { myReviewQuery } from '~/queries/course';
@@ -38,6 +43,7 @@ export function LessonView({
   index,
   onVideoExpired,
   lessonPath,
+  questionsViewer,
 }: {
   outline: CourseOutline;
   progress: Progress | undefined;
@@ -46,6 +52,7 @@ export function LessonView({
   index: number;
   onVideoExpired: () => Promise<unknown>;
   lessonPath: (lessonId: string) => string;
+  questionsViewer?: QuestionsViewer;
 }) {
   const preview = progress === undefined;
   const lesson = lessons[index];
@@ -142,20 +149,22 @@ export function LessonView({
         </header>
         {content.video && (
           <div className="overflow-hidden rounded-md border bg-card shadow-sm">
-            <div className="bg-black">
-              <LessonVideo
-                title={lesson.title}
-                video={content.video}
-                startAt={
-                  progress?.lastLessonId === lesson.id
-                    ? (progress.positionSeconds ?? undefined)
-                    : undefined
-                }
-                onExpired={renewVideo}
-                onPosition={preview ? undefined : savePosition}
-                onEnded={preview ? undefined : completeLesson}
-              />
-            </div>
+            <BlockBoundary title="Não deu para mostrar o vídeo">
+              <div className="bg-black">
+                <LessonVideo
+                  title={lesson.title}
+                  video={content.video}
+                  startAt={
+                    progress?.lastLessonId === lesson.id
+                      ? (progress.positionSeconds ?? undefined)
+                      : undefined
+                  }
+                  onExpired={renewVideo}
+                  onPosition={preview ? undefined : savePosition}
+                  onEnded={preview ? undefined : completeLesson}
+                />
+              </div>
+            </BlockBoundary>
             {hasStrip && <div className="border-t">{strip}</div>}
           </div>
         )}
@@ -166,37 +175,53 @@ export function LessonView({
         )}
         {content.body.trim() !== '' && (
           <section aria-label="Texto da aula">
-            <LessonBody markdown={content.body} />
+            <BlockBoundary title="Não deu para mostrar o texto da aula">
+              <LessonBody markdown={content.body} />
+            </BlockBoundary>
           </section>
         )}
         {content.attachments.length > 0 && (
-          <LessonAttachments
-            courseId={outline.courseId}
-            lessonId={lesson.id}
-            attachments={content.attachments}
-          />
+          <BlockBoundary title="Não deu para mostrar o material">
+            <LessonAttachments
+              courseId={outline.courseId}
+              lessonId={lesson.id}
+              attachments={content.attachments}
+            />
+          </BlockBoundary>
         )}
         {!content.video && hasStrip && (
           <div className="rounded-md border bg-card shadow-sm">{strip}</div>
         )}
-      </div>
-      <LessonOutline
-        courseId={outline.courseId}
-        modules={outline.modules}
-        currentLessonId={lesson.id}
-        completedLessonIds={progress?.completedLessonIds ?? []}
-        preview={preview}
-        lessonPath={lessonPath}
-        footer={
-          preview ? undefined : (
-            <ReviewButton
-              ref={reviewButton}
+        {questionsViewer && (
+          <BlockBoundary title="Não deu para mostrar as perguntas">
+            <QuestionsSection
               courseId={outline.courseId}
-              courseTitle={outline.title}
+              lessonId={lesson.id}
+              courseStatus={outline.status}
+              viewer={questionsViewer}
             />
-          )
-        }
-      />
+          </BlockBoundary>
+        )}
+      </div>
+      <BlockBoundary title="Não deu para mostrar o conteúdo do curso">
+        <LessonOutline
+          courseId={outline.courseId}
+          modules={outline.modules}
+          currentLessonId={lesson.id}
+          completedLessonIds={progress?.completedLessonIds ?? []}
+          preview={preview}
+          lessonPath={lessonPath}
+          footer={
+            preview ? undefined : (
+              <ReviewButton
+                ref={reviewButton}
+                courseId={outline.courseId}
+                courseTitle={outline.title}
+              />
+            )
+          }
+        />
+      </BlockBoundary>
       {!preview && (
         <ReviewDialog
           courseId={outline.courseId}

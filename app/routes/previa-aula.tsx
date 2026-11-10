@@ -6,12 +6,14 @@ import { lessonsOf, LessonView } from '~/components/lesson/LessonView';
 import { LoadingNote } from '~/components/LoadingNote';
 import { Skeleton } from '~/components/ui/skeleton';
 import { queryClient } from '~/lib/queryClient';
+import { managedCourseQuery, useManagedCourse } from '~/queries/instructor';
 import {
   lessonQuery,
   outlineQuery,
   useLesson,
   useOutline,
 } from '~/queries/lesson';
+import { meQuery, useMe } from '~/queries/me';
 import { ApiFailure } from '~/services/ApiFailure';
 import { isSignedIn } from '~/session/session';
 
@@ -32,6 +34,8 @@ export function clientLoader({ params }: Route.ClientLoaderArgs) {
   if (isSignedIn()) {
     void queryClient.query(outlineQuery(params.id)).catch(noop);
     void queryClient.query(lessonQuery(params.id, params.aulaId)).catch(noop);
+    void queryClient.query(managedCourseQuery(params.id)).catch(noop);
+    void queryClient.query(meQuery).catch(noop);
   }
 
   return null;
@@ -40,7 +44,16 @@ export function clientLoader({ params }: Route.ClientLoaderArgs) {
 export default function LessonPreviewRoute({ params }: Route.ComponentProps) {
   const outline = useOutline(params.id);
   const lesson = useLesson(params.id, params.aulaId);
+  const managed = useManagedCourse(params.id);
+  const me = useMe();
   const queries = [outline, lesson];
+  // Only the owner answers; an admin reads and deletes. Until both are known, no section.
+  const questionsViewer =
+    managed.data && me.data
+      ? managed.data.instructorId === me.data.id
+        ? 'owner'
+        : 'admin'
+      : undefined;
   const failed = queries.find((query) => query.isError);
   const notFound = (
     <ErrorState
@@ -82,8 +95,8 @@ export default function LessonPreviewRoute({ params }: Route.ComponentProps) {
       >
         <Eye aria-hidden="true" className="mt-0.5 size-5 shrink-0" />
         <span>
-          <strong>Prévia:</strong> é assim que o aluno vê esta aula. Nada do que
-          você fizer aqui fica salvo.
+          <strong>Prévia:</strong> é assim que o aluno vê esta aula. O progresso
+          não fica salvo; o que você fizer nas perguntas, fica.
         </span>
       </p>
       <LessonView
@@ -95,6 +108,7 @@ export default function LessonPreviewRoute({ params }: Route.ComponentProps) {
         index={index}
         onVideoExpired={lesson.refetch}
         lessonPath={(id) => `/instrutor/cursos/${params.id}/aulas/${id}/previa`}
+        questionsViewer={questionsViewer}
       />
     </div>
   );

@@ -11,6 +11,7 @@ import { apiError, Landing, renderRoutes } from '~/test/renderRoutes';
 
 const draft: ManagedCourse = {
   id: 'c1',
+  instructorId: 'i1',
   title: 'Gráficos que contam uma história',
   description: 'Sobre gráficos',
   status: 'DRAFT',

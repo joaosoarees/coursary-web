@@ -18,6 +18,7 @@ import { apiError, renderRoutes } from '~/test/renderRoutes';
 
 const course: ManagedCourse = {
   id: 'c1',
+  instructorId: 'i1',
   title: 'Python para análise de dados',
   description: 'Sobre dados',
   status: 'PUBLISHED',

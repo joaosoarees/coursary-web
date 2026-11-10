@@ -10,6 +10,7 @@ import {
   type LessonContent,
   LessonService,
 } from '~/services/LessonService';
+import { QuestionService } from '~/services/QuestionService';
 import { ReviewService } from '~/services/ReviewService';
 import { apiError, Landing, renderRoutes } from '~/test/renderRoutes';
 
@@ -60,6 +61,10 @@ beforeEach(() => {
   vi.spyOn(EnrollmentService, 'progress').mockResolvedValue(progress);
   vi.spyOn(LessonService, 'open').mockResolvedValue(content);
   vi.spyOn(ReviewService, 'mine').mockResolvedValue(null);
+  vi.spyOn(QuestionService, 'list').mockResolvedValue({
+    items: [],
+    nextCursor: null,
+  });
 });
 
 const renderLesson = (path = '/cursos/c1/aulas/l2') =>
@@ -133,7 +138,9 @@ describe('the lesson page', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByRole('status')).toHaveTextContent(/^Concluída$/);
+      expect(
+        screen.getByText('Concluída').closest('[role="status"]'),
+      ).toHaveTextContent(/^Concluída$/);
     });
     expect(
       screen.getByRole('link', { name: 'Próxima aula: Juntando' }),
@@ -248,7 +255,9 @@ describe('the lesson page', () => {
     fireEvent.click(screen.getByRole('checkbox', { name: 'Marcar concluída' }));
 
     await waitFor(() => {
-      expect(screen.getByRole('status')).toHaveTextContent(/^Concluída$/);
+      expect(
+        screen.getByText('Concluída').closest('[role="status"]'),
+      ).toHaveTextContent(/^Concluída$/);
     });
     expect(screen.queryByRole('dialog')).toBeNull();
   });
@@ -362,5 +371,40 @@ describe('the lesson page', () => {
     expect(
       await screen.findByRole('heading', { level: 1, name: 'Filtrando' }),
     ).toBeVisible();
+  });
+
+  it('should open the questions of the lesson to the student', async () => {
+    const list = vi
+      .spyOn(QuestionService, 'list')
+      .mockResolvedValue({ items: [], nextCursor: null });
+    renderLesson();
+
+    expect(
+      await screen.findByRole('textbox', {
+        name: 'Faça uma pergunta sobre esta aula',
+      }),
+    ).toBeInTheDocument();
+    expect(list).toHaveBeenCalledWith(
+      { courseId: 'c1', lessonId: 'l2' },
+      { cursor: undefined, limit: 10 },
+      expect.anything(),
+    );
+  });
+
+  it('should keep the video and the outline when the questions cannot be shown', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    vi.spyOn(QuestionService, 'list').mockResolvedValue({
+      items: [undefined],
+      nextCursor: null,
+    } as unknown as Awaited<ReturnType<typeof QuestionService.list>>);
+    renderLesson();
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Não deu para mostrar as perguntas',
+    );
+    expect(screen.getByLabelText('Vídeo da aula Filtrando')).toBeVisible();
+    expect(
+      screen.getByRole('link', { name: /Filtrando/, current: 'page' }),
+    ).toBeInTheDocument();
   });
 });
