@@ -149,8 +149,8 @@ export function LessonView({
         </header>
         {content.video && (
           <div className="overflow-hidden rounded-md border bg-card shadow-sm">
-            <div className="bg-black">
-              <BlockBoundary title="Não deu para mostrar o vídeo">
+            <BlockBoundary title="Não deu para mostrar o vídeo">
+              <div className="bg-black">
                 <LessonVideo
                   title={lesson.title}
                   video={content.video}
@@ -163,8 +163,8 @@ export function LessonView({
                   onPosition={preview ? undefined : savePosition}
                   onEnded={preview ? undefined : completeLesson}
                 />
-              </BlockBoundary>
-            </div>
+              </div>
+            </BlockBoundary>
             {hasStrip && <div className="border-t">{strip}</div>}
           </div>
         )}
