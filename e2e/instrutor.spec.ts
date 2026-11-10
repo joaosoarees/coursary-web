@@ -1,12 +1,15 @@
 import { randomBytes } from 'node:crypto';
 
 import { chooseFiles, fixture } from './support/files';
-import { readCourse, readState, updateState } from './support/run';
+import {
+  LESSON_TITLE,
+  readCourse,
+  readState,
+  updateState,
+} from './support/run';
 import { expect, test } from './support/test';
 
 test.describe.configure({ mode: 'serial' });
-
-const LESSON = 'Primeira aula';
 
 test('cria o curso com capa', async ({ page }) => {
   const title = `Curso E2E ${readState().stamp}`;
@@ -39,13 +42,13 @@ test('monta a aula com texto, material e vídeo', async ({ page }) => {
 
   await page.getByRole('button', { name: 'Nova aula' }).click();
   const dialog = page.getByRole('dialog', { name: 'Nova aula' });
-  await dialog.getByLabel('Título').fill(LESSON);
+  await dialog.getByLabel('Título').fill(LESSON_TITLE);
   await dialog.getByLabel('Duração').fill('5');
   await dialog.getByRole('button', { name: 'Criar aula' }).click();
   await expect(page.getByText('Aula criada.')).toBeVisible();
 
-  await page.getByRole('link', { name: LESSON }).click();
-  await expect(page.getByRole('heading', { name: LESSON })).toBeVisible();
+  await page.getByRole('link', { name: LESSON_TITLE }).click();
+  await expect(page.getByRole('heading', { name: LESSON_TITLE })).toBeVisible();
   await page
     .getByRole('textbox', { name: 'Texto da aula (opcional)' })
     .fill('Bem-vindo à **primeira aula**.');
@@ -68,8 +71,10 @@ test('monta a aula com texto, material e vídeo', async ({ page }) => {
   });
 
   await page.getByRole('link', { name: 'Ver como aluno' }).click();
-  await expect(page.getByRole('heading', { name: LESSON })).toBeVisible();
-  await expect(page.getByRole('note')).toContainText('Prévia');
+  await expect(page.getByRole('heading', { name: LESSON_TITLE })).toBeVisible();
+  await expect(
+    page.getByRole('note').filter({ hasText: 'Prévia' }),
+  ).toBeVisible();
 });
 
 test('publica o curso', async ({ page }) => {
