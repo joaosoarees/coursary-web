@@ -14,12 +14,14 @@ export function LoadMore({
   list,
   labels,
   auto = true,
+  size,
   className,
   children,
 }: {
   list: InfiniteList;
   labels: { more: string; loading: string; failed: string };
   auto?: boolean;
+  size?: 'default' | 'sm';
   className?: string;
   children?: React.ReactNode;
 }) {
@@ -52,7 +54,12 @@ export function LoadMore({
           </p>
         )}
         {hasNextPage && (
-          <Button variant="outline" disabled={isFetching} onClick={loadMore}>
+          <Button
+            variant="outline"
+            size={size}
+            disabled={isFetching}
+            onClick={loadMore}
+          >
             {isFetchingNextPage
               ? labels.loading
               : isFetchNextPageError
