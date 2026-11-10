@@ -10,7 +10,8 @@ import { Link, useLocation } from 'react-router';
 
 import { canAdminister } from '~/auth/AdminGuard';
 import { canTeach } from '~/auth/TeachingGuard';
-import { AccountMenu } from '~/components/AccountMenu';
+import { AccountFallback, AccountMenu } from '~/components/AccountMenu';
+import { BlockBoundary } from '~/components/BlockBoundary';
 import { ChalkStroke } from '~/components/ChalkStroke';
 import {
   Sidebar,
@@ -117,7 +118,9 @@ export function AppSidebar() {
             className={`[grid-area:1/1] ${SHOWS_WHEN_COLLAPSED}`}
           />
         </div>
-        <AccountMenu side={collapsed ? 'right' : 'top'} />
+        <BlockBoundary fallback={<AccountFallback />}>
+          <AccountMenu side={collapsed ? 'right' : 'top'} />
+        </BlockBoundary>
       </SidebarFooter>
     </Sidebar>
   );
