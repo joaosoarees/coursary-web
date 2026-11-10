@@ -120,6 +120,7 @@ export default function LessonRoute({ params }: Route.ComponentProps) {
         index={index}
         onVideoExpired={lesson.refetch}
         lessonPath={(id) => `/cursos/${params.id}/aulas/${id}`}
+        questionsViewer="student"
       />
     </>
   );
