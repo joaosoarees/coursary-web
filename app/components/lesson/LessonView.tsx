@@ -11,6 +11,10 @@ import { LessonBody } from '~/components/lesson/LessonBody';
 import { LessonCompletion } from '~/components/lesson/LessonCompletion';
 import { LessonOutline } from '~/components/lesson/LessonOutline';
 import { LessonVideo } from '~/components/lesson/LessonVideo';
+import {
+  QuestionsSection,
+  type QuestionsViewer,
+} from '~/components/questions/QuestionsSection';
 import { Button } from '~/components/ui/button';
 import { useCompleteLesson, useSavePosition } from '~/mutations/progress';
 import { myReviewQuery } from '~/queries/course';
@@ -38,6 +42,7 @@ export function LessonView({
   index,
   onVideoExpired,
   lessonPath,
+  questionsViewer,
 }: {
   outline: CourseOutline;
   progress: Progress | undefined;
@@ -46,6 +51,7 @@ export function LessonView({
   index: number;
   onVideoExpired: () => Promise<unknown>;
   lessonPath: (lessonId: string) => string;
+  questionsViewer?: QuestionsViewer;
 }) {
   const preview = progress === undefined;
   const lesson = lessons[index];
@@ -178,6 +184,14 @@ export function LessonView({
         )}
         {!content.video && hasStrip && (
           <div className="rounded-md border bg-card shadow-sm">{strip}</div>
+        )}
+        {questionsViewer && (
+          <QuestionsSection
+            courseId={outline.courseId}
+            lessonId={lesson.id}
+            courseStatus={outline.status}
+            viewer={questionsViewer}
+          />
         )}
       </div>
       <LessonOutline

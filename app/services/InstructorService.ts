@@ -23,6 +23,7 @@ const myCoursesPageSchema = z.object({
 });
 
 const managedCourseSchema = myCourseSchema.extend({
+  instructorId: z.string(),
   description: z.string(),
 });
 

@@ -52,7 +52,11 @@ describe('InstructorService.listMine', () => {
   });
 });
 
-const managed = { ...draft, description: 'Sobre gráficos' };
+const managed = {
+  ...draft,
+  instructorId: 'i1',
+  description: 'Sobre gráficos',
+};
 
 describe('InstructorService course editing', () => {
   it('should read a managed course by id', async () => {

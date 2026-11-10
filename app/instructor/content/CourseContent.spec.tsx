@@ -17,6 +17,7 @@ import { OutlineService } from '~/services/OutlineService';
 
 const course: ManagedCourse = {
   id: 'c1',
+  instructorId: 'i1',
   title: 'Gráficos',
   description: '',
   status: 'DRAFT',
