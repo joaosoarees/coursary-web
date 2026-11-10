@@ -62,6 +62,7 @@ export function DeletePost({
         aria-label={label}
         className="px-3 text-muted-foreground not-disabled:not-aria-disabled:hover:text-destructive-hover"
         onClick={() => {
+          setDeleted(false);
           setOpen(true);
         }}
       >
