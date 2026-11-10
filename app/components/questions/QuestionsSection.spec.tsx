@@ -338,4 +338,24 @@ describe('QuestionsSection', () => {
       expect(toggle).toHaveFocus();
     });
   });
+
+  it('should warn that the last answer on screen takes a removed question along', async () => {
+    list.mockResolvedValue(page([{ ...removed, answerCount: 2 }]));
+    answers.mockResolvedValue(page([{ ...byInstructor, canDelete: true }]));
+    renderSection('owner');
+
+    const gone = await question('Pergunta removida');
+    fireEvent.click(gone.getByRole('button', { name: /2 respostas/ }));
+    fireEvent.click(
+      await gone.findByRole('button', {
+        name: 'Apagar a resposta de Ana Souza',
+      }),
+    );
+
+    expect(
+      within(await screen.findByRole('alertdialog')).getByText(
+        'É a última resposta de uma pergunta removida: a pergunta sai junto.',
+      ),
+    ).toBeInTheDocument();
+  });
 });
