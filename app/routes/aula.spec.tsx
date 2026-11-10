@@ -133,7 +133,9 @@ describe('the lesson page', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByRole('status')).toHaveTextContent(/^Concluída$/);
+      expect(
+        screen.getByText('Concluída').closest('[role="status"]'),
+      ).toHaveTextContent(/^Concluída$/);
     });
     expect(
       screen.getByRole('link', { name: 'Próxima aula: Juntando' }),
@@ -248,7 +250,9 @@ describe('the lesson page', () => {
     fireEvent.click(screen.getByRole('checkbox', { name: 'Marcar concluída' }));
 
     await waitFor(() => {
-      expect(screen.getByRole('status')).toHaveTextContent(/^Concluída$/);
+      expect(
+        screen.getByText('Concluída').closest('[role="status"]'),
+      ).toHaveTextContent(/^Concluída$/);
     });
     expect(screen.queryByRole('dialog')).toBeNull();
   });
