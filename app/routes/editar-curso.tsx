@@ -3,6 +3,7 @@ import { Archive } from 'lucide-react';
 import { useId, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
+import { BlockBoundary } from '~/components/BlockBoundary';
 import { CourseFormat } from '~/components/course/CourseFormat';
 import { ErrorState } from '~/components/ErrorState';
 import { CourseStatusBadge } from '~/components/instructor/CourseStatusBadge';
@@ -128,7 +129,9 @@ function CourseEditor({ course }: { course: ManagedCourse }) {
         </section>
         <CoverCard course={course} readOnly={archived} />
       </div>
-      <CourseContent course={course} />
+      <BlockBoundary title="Não deu para mostrar o conteúdo do curso">
+        <CourseContent course={course} />
+      </BlockBoundary>
     </>
   );
 }
