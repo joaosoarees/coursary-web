@@ -30,7 +30,6 @@ test('responde a pergunta pela prévia da aula', async ({ page }) => {
     has: page.getByRole('article', { name: `Pergunta de ${student.name}` }),
   });
   await question.getByRole('button', { name: 'Responder' }).click();
-  // Opened from Responder, the reply field already has the focus.
   await expect(question.getByLabel('Sua resposta')).toBeFocused();
   await page.keyboard.type('Vale, sim: é o mesmo conjunto de dados.');
   await page.keyboard.press('Control+Enter');
