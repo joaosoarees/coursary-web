@@ -1,5 +1,5 @@
 import { ChevronDown, CircleMinus, MessageCircle } from 'lucide-react';
-import { useId, useState } from 'react';
+import { useId, useRef, useState } from 'react';
 
 import { AnswerThread } from '~/components/questions/AnswerThread';
 import { DeletePost } from '~/components/questions/DeletePost';
@@ -26,6 +26,7 @@ export function QuestionItem({
 }) {
   const threadId = useId();
   const [open, setOpen] = useState(false);
+  const toggle = useRef<HTMLButtonElement>(null);
   const deleteQuestion = useDeleteQuestion(lesson);
   const count = question.answerCount;
   // A removed question takes no more answers.
@@ -75,9 +76,10 @@ export function QuestionItem({
           <Button
             variant="ghost"
             size="sm"
+            ref={toggle}
             aria-expanded={open}
             aria-controls={open ? threadId : undefined}
-            className="px-3 text-link"
+            className="px-3 text-link not-disabled:not-aria-disabled:hover:text-link"
             onClick={() => {
               setOpen((value) => !value);
             }}
@@ -124,7 +126,14 @@ export function QuestionItem({
           reply={canReply ? reply : null}
           adminNote={adminNote}
           now={now}
-          onLeave={onLeave}
+          onLeave={() => {
+            // The last answer of a removed question takes the question, and this toggle, along.
+            if (toggle.current?.isConnected) {
+              toggle.current.focus();
+            } else {
+              onLeave();
+            }
+          }}
         />
       )}
     </li>
