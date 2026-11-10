@@ -20,6 +20,7 @@ export function AnswerThread({
   question,
   reply,
   adminNote,
+  focusReply,
   now,
   onLeave,
 }: {
@@ -28,6 +29,7 @@ export function AnswerThread({
   question: Question;
   reply: 'student' | 'owner' | null;
   adminNote: boolean;
+  focusReply: boolean;
   now: Date;
   onLeave: () => void;
 }) {
@@ -138,6 +140,8 @@ export function AnswerThread({
           emptyMessage="Escreva a resposta antes de enviar."
           submit={{ label: 'Responder', pending: 'Enviando…', size: 'sm' }}
           rows={2}
+          sentMessage="Resposta enviada."
+          focusOnMount={focusReply}
           onPost={(text) => answer.mutateAsync(text)}
         />
       )}

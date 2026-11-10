@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CircleAlert } from 'lucide-react';
-import { useId } from 'react';
+import { useEffect, useId, useRef } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -29,6 +29,8 @@ export function PostForm({
   emptyMessage,
   submit,
   rows,
+  sentMessage,
+  focusOnMount = false,
   className,
   onPost,
 }: {
@@ -38,6 +40,8 @@ export function PostForm({
   emptyMessage: string;
   submit: { label: string; pending: string; size?: 'default' | 'sm' };
   rows: number;
+  sentMessage: string;
+  focusOnMount?: boolean;
   className?: string;
   onPost: (text: string) => Promise<unknown>;
 }) {
@@ -47,6 +51,13 @@ export function PostForm({
     defaultValues: { text: '' },
   });
   const { errors, isSubmitting } = form.formState;
+  const formElement = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    if (focusOnMount) {
+      formElement.current?.querySelector('textarea')?.focus();
+    }
+  }, [focusOnMount]);
   const length = useWatch({ control: form.control, name: 'text' }).length;
   const fieldError = errors.text ? emptyMessage : undefined;
   const describedBy = [
@@ -54,11 +65,12 @@ export function PostForm({
     `${id}-hint`,
   ].filter(Boolean);
 
-  const post = async (text: string, formElement: HTMLFormElement) => {
+  const post = async (text: string, element: HTMLFormElement) => {
     try {
       await onPost(text);
       form.reset();
-      formElement.querySelector('textarea')?.focus();
+      toast.success(sentMessage);
+      element.querySelector('textarea')?.focus();
     } catch (error) {
       // An out-of-date screen is reloaded and this form may go with it: the toast outlives it.
       if (QuestionFailure.isStale(error)) {
@@ -74,6 +86,7 @@ export function PostForm({
 
   return (
     <form
+      ref={formElement}
       noValidate
       className={cn('flex flex-col gap-2.5', className)}
       onSubmit={(event) => {
@@ -82,9 +95,9 @@ export function PostForm({
           return;
         }
 
-        const formElement = event.currentTarget;
+        const element = event.currentTarget;
 
-        void form.handleSubmit(({ text }) => post(text, formElement))(event);
+        void form.handleSubmit(({ text }) => post(text, element))(event);
       }}
     >
       <label htmlFor={`${id}-text`} className="font-bold">
@@ -124,7 +137,9 @@ export function PostForm({
         <p id={`${id}-hint`} className="text-sm text-muted-foreground">
           {hint}
           {hint && ' '}
-          <span className="whitespace-nowrap">Ctrl+Enter envia.</span>
+          <span className="whitespace-nowrap pointer-coarse:hidden">
+            Ctrl+Enter envia.
+          </span>
         </p>
         <div className="ml-auto flex items-center gap-3.5">
           {length >= WARN_AT && (

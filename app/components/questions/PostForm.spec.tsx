@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { PostForm } from '~/components/questions/PostForm';
 import { apiError } from '~/test/renderRoutes';
 
-vi.mock('sonner', () => ({ toast: { error: vi.fn() } }));
+vi.mock('sonner', () => ({ toast: { error: vi.fn(), success: vi.fn() } }));
 
 const renderForm = (onPost: (text: string) => Promise<unknown>) =>
   render(
@@ -15,6 +15,7 @@ const renderForm = (onPost: (text: string) => Promise<unknown>) =>
       emptyMessage="Escreva a resposta antes de enviar."
       submit={{ label: 'Responder', pending: 'Enviando…' }}
       rows={2}
+      sentMessage="Resposta enviada."
       onPost={onPost}
     />,
   );
@@ -38,6 +39,7 @@ describe('PostForm', () => {
     });
     expect(onPost).toHaveBeenCalledWith('Tente com parse_dates.');
     expect(field()).toHaveFocus();
+    expect(toast.success).toHaveBeenCalledWith('Resposta enviada.');
   });
 
   it('should send with Ctrl+Enter, while Enter alone breaks the line', async () => {

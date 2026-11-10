@@ -125,6 +125,8 @@ export function QuestionItem({
           question={question}
           reply={canReply ? reply : null}
           adminNote={adminNote}
+          // Opened from "Responder": there is nothing to read first, so the field takes the focus.
+          focusReply={count === 0}
           now={now}
           onLeave={() => {
             // The last answer of a removed question takes the question, and this toggle, along.

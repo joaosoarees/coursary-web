@@ -96,6 +96,7 @@ export function QuestionsSection({
           emptyMessage="Escreva a pergunta antes de enviar."
           submit={{ label: 'Perguntar', pending: 'Enviando…' }}
           rows={3}
+          sentMessage="Pergunta enviada."
           onPost={(text) => ask.mutateAsync(text)}
         />
       )}
