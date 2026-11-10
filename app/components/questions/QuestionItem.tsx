@@ -29,7 +29,6 @@ export function QuestionItem({
   const toggle = useRef<HTMLButtonElement>(null);
   const deleteQuestion = useDeleteQuestion(lesson);
   const count = question.answerCount;
-  // A removed question takes no more answers.
   const canReply = reply !== null && !question.removed;
   const time = (
     <time
