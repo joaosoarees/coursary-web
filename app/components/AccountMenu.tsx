@@ -18,6 +18,30 @@ import { Skeleton } from '~/components/ui/skeleton';
 import { cn } from '~/lib/utils';
 import { useMe } from '~/queries/me';
 
+export function AccountFallback({ compact = false }: { compact?: boolean }) {
+  return (
+    <Link
+      to="/perfil"
+      aria-label={compact ? 'Perfil' : undefined}
+      className={cn(
+        'flex min-h-10 items-center gap-3 overflow-hidden p-0.5 font-bold transition-[background-color,border-radius] duration-200 hover:bg-shell-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chalk-yellow',
+        compact
+          ? 'rounded-full hover:bg-transparent hover:outline-2 hover:outline-shell-foreground/35'
+          : 'w-full rounded-md group-data-[collapsible=icon]:rounded-full group-data-[collapsible=icon]:hover:bg-transparent group-data-[collapsible=icon]:hover:outline-2 group-data-[collapsible=icon]:hover:outline-shell-foreground/35',
+      )}
+    >
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-chalk-yellow text-chalk-yellow-foreground">
+        <UserRound aria-hidden="true" className="size-5" />
+      </span>
+      {!compact && (
+        <span className="transition-opacity duration-200 group-data-[collapsible=icon]:opacity-0">
+          Perfil
+        </span>
+      )}
+    </Link>
+  );
+}
+
 export function AccountMenu({
   compact = false,
   side = 'top',
