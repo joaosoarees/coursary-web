@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { CircleAlert } from 'lucide-react';
 import { useId } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -97,7 +98,7 @@ export function PostForm({
         readOnly={isSubmitting}
         aria-invalid={fieldError !== undefined}
         aria-describedby={describedBy.join(' ')}
-        className="field-sizing-fixed resize-y bg-card md:text-base dark:bg-input/30"
+        className="field-sizing-fixed resize-y bg-card read-only:opacity-50 md:text-base dark:bg-input/30"
         {...form.register('text')}
         onKeyDown={(event) => {
           if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
@@ -107,7 +108,12 @@ export function PostForm({
         }}
       />
       {fieldError && (
-        <p id={`${id}-error`} role="alert" className="text-sm text-destructive">
+        <p
+          id={`${id}-error`}
+          role="alert"
+          className="flex items-center gap-2 text-sm text-destructive"
+        >
+          <CircleAlert aria-hidden="true" className="size-4 shrink-0" />
           {fieldError}
         </p>
       )}
@@ -126,7 +132,12 @@ export function PostForm({
               {COUNT.format(length)} de {COUNT.format(MAX_POST)}
             </span>
           )}
-          <Button type="submit" size={submit.size} disabled={isSubmitting}>
+          <Button
+            type="submit"
+            size={submit.size}
+            // aria-disabled keeps the focus on the button while the post is sent.
+            aria-disabled={isSubmitting}
+          >
             {isSubmitting ? submit.pending : submit.label}
           </Button>
         </div>
