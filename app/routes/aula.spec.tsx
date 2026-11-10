@@ -10,6 +10,7 @@ import {
   type LessonContent,
   LessonService,
 } from '~/services/LessonService';
+import { QuestionService } from '~/services/QuestionService';
 import { ReviewService } from '~/services/ReviewService';
 import { apiError, Landing, renderRoutes } from '~/test/renderRoutes';
 
@@ -60,6 +61,10 @@ beforeEach(() => {
   vi.spyOn(EnrollmentService, 'progress').mockResolvedValue(progress);
   vi.spyOn(LessonService, 'open').mockResolvedValue(content);
   vi.spyOn(ReviewService, 'mine').mockResolvedValue(null);
+  vi.spyOn(QuestionService, 'list').mockResolvedValue({
+    items: [],
+    nextCursor: null,
+  });
 });
 
 const renderLesson = (path = '/cursos/c1/aulas/l2') =>
@@ -366,5 +371,23 @@ describe('the lesson page', () => {
     expect(
       await screen.findByRole('heading', { level: 1, name: 'Filtrando' }),
     ).toBeVisible();
+  });
+
+  it('should open the questions of the lesson to the student', async () => {
+    const list = vi
+      .spyOn(QuestionService, 'list')
+      .mockResolvedValue({ items: [], nextCursor: null });
+    renderLesson();
+
+    expect(
+      await screen.findByRole('textbox', {
+        name: 'Faça uma pergunta sobre esta aula',
+      }),
+    ).toBeInTheDocument();
+    expect(list).toHaveBeenCalledWith(
+      { courseId: 'c1', lessonId: 'l2' },
+      { cursor: undefined, limit: 10 },
+      expect.anything(),
+    );
   });
 });
