@@ -10,6 +10,7 @@ import { apiError, Landing, renderRoutes } from '~/test/renderRoutes';
 
 const created: ManagedCourse = {
   id: 'c9',
+  instructorId: 'i1',
   title: 'Gráficos que contam uma história',
   description: 'Sobre gráficos',
   status: 'DRAFT',

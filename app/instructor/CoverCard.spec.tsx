@@ -10,6 +10,7 @@ import {
 
 const course: ManagedCourse = {
   id: 'c1',
+  instructorId: 'i1',
   title: 'Gráficos que contam uma história',
   description: '',
   status: 'DRAFT',
