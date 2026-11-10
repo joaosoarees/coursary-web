@@ -18,19 +18,31 @@ import { Skeleton } from '~/components/ui/skeleton';
 import { cn } from '~/lib/utils';
 import { useMe } from '~/queries/me';
 
-const fallbackItem = (compact: boolean) =>
+const accountItem = (compact: boolean) =>
   cn(
-    'flex min-h-10 items-center gap-3 overflow-hidden p-0.5 text-left font-bold transition-[background-color,border-radius] duration-200 hover:bg-shell-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chalk-yellow',
+    'flex items-center gap-3 overflow-hidden p-0.5 text-left transition-[background-color,border-radius] duration-200 hover:bg-shell-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chalk-yellow',
     compact
       ? 'rounded-full hover:bg-transparent hover:outline-2 hover:outline-shell-foreground/35'
       : 'w-full rounded-md group-data-[collapsible=icon]:rounded-full group-data-[collapsible=icon]:hover:bg-transparent group-data-[collapsible=icon]:hover:outline-2 group-data-[collapsible=icon]:hover:outline-shell-foreground/35',
   );
 
+const fallbackItem = (compact: boolean) =>
+  cn(accountItem(compact), 'min-h-10 font-bold');
+
+const useSignOut = () => {
+  const { signOut } = useAuth();
+
+  return async () => {
+    await signOut();
+    toast('Você saiu.');
+  };
+};
+
 const FALLBACK_LABEL =
   'transition-opacity duration-200 group-data-[collapsible=icon]:opacity-0';
 
 export function AccountFallback({ compact = false }: { compact?: boolean }) {
-  const { signOut } = useAuth();
+  const signOut = useSignOut();
 
   return (
     <div className={cn('flex gap-1', !compact && 'flex-col')}>
@@ -49,7 +61,7 @@ export function AccountFallback({ compact = false }: { compact?: boolean }) {
         aria-label={compact ? 'Sair' : undefined}
         className={fallbackItem(compact)}
         onClick={() => {
-          void signOut().then(() => toast('Você saiu.'));
+          void signOut();
         }}
       >
         <span className="flex size-9 shrink-0 items-center justify-center">
@@ -68,14 +80,9 @@ export function AccountMenu({
   compact?: boolean;
   side?: 'top' | 'right' | 'bottom';
 }) {
-  const { signOut } = useAuth();
+  const handleSignOut = useSignOut();
   const me = useMe();
   const emailId = useId();
-
-  const handleSignOut = async () => {
-    await signOut();
-    toast('Você saiu.');
-  };
 
   if (me.isPending) {
     return (
@@ -97,12 +104,7 @@ export function AccountMenu({
           type="button"
           aria-label={`Conta de ${name}`}
           aria-describedby={!compact && me.data ? emailId : undefined}
-          className={cn(
-            'flex items-center gap-3 overflow-hidden p-0.5 text-left transition-[background-color,border-radius] duration-200 hover:bg-shell-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chalk-yellow',
-            compact
-              ? 'rounded-full hover:bg-transparent hover:outline-2 hover:outline-shell-foreground/35'
-              : 'w-full rounded-md group-data-[collapsible=icon]:rounded-full group-data-[collapsible=icon]:hover:bg-transparent group-data-[collapsible=icon]:hover:outline-2 group-data-[collapsible=icon]:hover:outline-shell-foreground/35',
-          )}
+          className={accountItem(compact)}
         >
           <Avatar className="size-9 shrink-0">
             {me.data?.avatarUrl?.['64'] && (
