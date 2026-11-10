@@ -118,6 +118,7 @@ export function AnswerThread({
       <LoadMore
         list={answers}
         auto={false}
+        size="sm"
         className="items-start"
         labels={{
           more: 'Ver mais respostas',
