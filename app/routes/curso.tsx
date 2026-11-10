@@ -2,6 +2,7 @@ import { noop } from '@tanstack/react-query';
 import { ChevronLeft } from 'lucide-react';
 import { Link } from 'react-router';
 
+import { BlockBoundary } from '~/components/BlockBoundary';
 import { CourseFormat } from '~/components/course/CourseFormat';
 import { CourseOutline } from '~/components/course/CourseOutline';
 import { CourseRating } from '~/components/course/CourseRating';
@@ -110,10 +111,11 @@ function CourseDetails({ course }: { course: CoursePage }) {
             </span>
           </p>
         </header>
-        <EnrollmentPanel
-          course={course}
-          className="lg:col-start-2 lg:row-span-2 lg:row-start-1"
-        />
+        <div className="lg:col-start-2 lg:row-span-2 lg:row-start-1">
+          <BlockBoundary title="Não deu para mostrar a matrícula">
+            <EnrollmentPanel course={course} />
+          </BlockBoundary>
+        </div>
         <div className="flex min-w-0 flex-col gap-8 lg:col-start-1">
           <Section title="Sobre o curso">
             <p className="max-w-prose whitespace-pre-line">
@@ -121,14 +123,18 @@ function CourseDetails({ course }: { course: CoursePage }) {
             </p>
           </Section>
           <Section title="Conteúdo" detail={outlineSummary(course)}>
-            <CourseOutline
-              courseId={course.id}
-              modules={course.modules}
-              progress={enrollment.data}
-            />
+            <BlockBoundary title="Não deu para mostrar o conteúdo">
+              <CourseOutline
+                courseId={course.id}
+                modules={course.modules}
+                progress={enrollment.data}
+              />
+            </BlockBoundary>
           </Section>
           <Section title="Avaliações">
-            <ReviewList courseId={course.id} />
+            <BlockBoundary title="Não deu para mostrar as avaliações">
+              <ReviewList courseId={course.id} />
+            </BlockBoundary>
           </Section>
         </div>
       </div>

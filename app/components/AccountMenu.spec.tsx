@@ -4,7 +4,7 @@ import { MemoryRouter } from 'react-router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AuthProvider } from '~/auth/AuthProvider';
-import { AccountMenu } from '~/components/AccountMenu';
+import { AccountFallback, AccountMenu } from '~/components/AccountMenu';
 import { AccountService } from '~/services/AccountService';
 import { AuthService } from '~/services/AuthService';
 import { endSession, isSignedIn, startSession } from '~/session/session';
@@ -68,6 +68,36 @@ describe('AccountMenu', () => {
     await open();
     await act(async () => {
       fireEvent.click(await screen.findByRole('menuitem', { name: 'Sair' }));
+      await Promise.resolve();
+    });
+
+    expect(signOut).toHaveBeenCalled();
+    expect(isSignedIn()).toBe(false);
+  });
+});
+
+describe('AccountFallback', () => {
+  const renderFallback = (compact: boolean) =>
+    render(
+      <QueryClientProvider client={new QueryClient()}>
+        <AuthProvider>
+          <MemoryRouter>
+            <AccountFallback compact={compact} />
+          </MemoryRouter>
+        </AuthProvider>
+      </QueryClientProvider>,
+    );
+
+  it('should lead to the profile and sign out, named even without visible text', async () => {
+    const signOut = vi.spyOn(AuthService, 'signOut').mockResolvedValue();
+    renderFallback(true);
+
+    expect(screen.getByRole('link', { name: 'Perfil' })).toHaveAttribute(
+      'href',
+      '/perfil',
+    );
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Sair' }));
       await Promise.resolve();
     });
 

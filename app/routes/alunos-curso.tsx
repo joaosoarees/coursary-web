@@ -2,6 +2,7 @@ import { noop } from '@tanstack/react-query';
 import { ChevronLeft, Users } from 'lucide-react';
 import { Link } from 'react-router';
 
+import { BlockBoundary } from '~/components/BlockBoundary';
 import { CourseFormat } from '~/components/course/CourseFormat';
 import { EmptyState } from '~/components/EmptyState';
 import { ErrorState } from '~/components/ErrorState';
@@ -148,13 +149,18 @@ function CourseStudents({ course }: { course: ManagedCourse }) {
             aria-busy={students.isPlaceholderData}
             className="animate-content-in overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm"
           >
-            <StudentsTable
-              students={students.data.items}
-              lessonCount={course.lessonCount}
-              order={pages.filter}
-              onSort={pages.filterBy}
-              busy={students.isPlaceholderData}
-            />
+            <BlockBoundary
+              title="Não deu para mostrar os alunos"
+              resetKeys={[pages.index, pages.filter]}
+            >
+              <StudentsTable
+                students={students.data.items}
+                lessonCount={course.lessonCount}
+                order={pages.filter}
+                onSort={pages.filterBy}
+                busy={students.isPlaceholderData}
+              />
+            </BlockBoundary>
             <StudentsPager
               index={pages.index}
               shown={students.data.items.length}

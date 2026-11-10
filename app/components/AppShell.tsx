@@ -1,5 +1,6 @@
-import { AccountMenu } from '~/components/AccountMenu';
+import { AccountFallback, AccountMenu } from '~/components/AccountMenu';
 import { AppSidebar } from '~/components/AppSidebar';
+import { BlockBoundary } from '~/components/BlockBoundary';
 import { SkipLink } from '~/components/SkipLink';
 import { SidebarProvider, SidebarTrigger } from '~/components/ui/sidebar';
 import { Wordmark } from '~/components/Wordmark';
@@ -19,7 +20,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <Wordmark />
           </div>
           <div className="md:hidden">
-            <AccountMenu compact side="bottom" />
+            <BlockBoundary fallback={<AccountFallback compact />}>
+              <AccountMenu compact side="bottom" />
+            </BlockBoundary>
           </div>
         </header>
         <main
