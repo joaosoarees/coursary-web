@@ -103,4 +103,24 @@ describe('PostForm', () => {
     type('a'.repeat(1800));
     expect(await screen.findByText('1.800 de 2.000')).toBeInTheDocument();
   });
+
+  it('should keep the focus on the button while sending, dimming the field', async () => {
+    const sending = Promise.withResolvers<undefined>();
+    renderForm(() => sending.promise);
+    type('Uma dúvida');
+    const button = screen.getByRole('button', { name: 'Responder' });
+    button.focus();
+
+    fireEvent.click(button);
+
+    const pending = await screen.findByRole('button', { name: 'Enviando…' });
+    expect(pending).toHaveAttribute('aria-disabled', 'true');
+    expect(pending).not.toBeDisabled();
+    expect(pending).toHaveFocus();
+    expect(field()).toHaveAttribute('readonly');
+    sending.resolve(undefined);
+    await waitFor(() => {
+      expect(field()).toHaveValue('');
+    });
+  });
 });
