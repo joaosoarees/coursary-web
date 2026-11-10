@@ -74,4 +74,17 @@ describe('BlockBoundary', () => {
     expect(screen.getByText('Perguntas da aula')).toBeInTheDocument();
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
+
+  it('should show its own fallback in place of the error state', () => {
+    render(
+      <MemoryRouter>
+        <BlockBoundary fallback={<a href="/perfil">Perfil</a>}>
+          <Questions />
+        </BlockBoundary>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByRole('link', { name: 'Perfil' })).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
 });
