@@ -70,7 +70,11 @@ export function QuestionsSection({
           Perguntas
         </h2>
         <p className="max-w-prose text-muted-foreground">
-          {draft ? 'Os alunos perguntam aqui, e você responde.' : INTRO[viewer]}
+          {draft
+            ? viewer === 'owner'
+              ? 'Os alunos perguntam aqui, e você responde.'
+              : 'Os alunos perguntam aqui, e o instrutor responde.'
+            : INTRO[viewer]}
         </p>
       </div>
       {courseStatus === 'ARCHIVED' && (
