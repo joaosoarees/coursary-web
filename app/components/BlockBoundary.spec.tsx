@@ -75,6 +75,26 @@ describe('BlockBoundary', () => {
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
+  it('should clear the error when the state the block depends on changes', () => {
+    const renderWith = (page: number) => (
+      <MemoryRouter>
+        <BlockBoundary
+          title="Não deu para mostrar os alunos"
+          resetKeys={[page]}
+        >
+          <Questions />
+        </BlockBoundary>
+      </MemoryRouter>
+    );
+    const { rerender } = render(renderWith(1));
+    broken = false;
+
+    rerender(renderWith(2));
+
+    expect(screen.getByText('Perguntas da aula')).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
   it('should show its own fallback in place of the error state', () => {
     render(
       <MemoryRouter>
