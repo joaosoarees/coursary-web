@@ -60,7 +60,7 @@ export function DeletePost({
         variant="ghost"
         size="sm"
         aria-label={label}
-        className="px-3 text-muted-foreground hover:text-destructive"
+        className="px-3 text-muted-foreground not-disabled:not-aria-disabled:hover:text-destructive-hover"
         onClick={() => {
           setOpen(true);
         }}
