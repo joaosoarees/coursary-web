@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { ROLE_LABEL } from '~/admin/users/AccountLabels';
 import { AccountStatusBadge } from '~/admin/users/AccountStatusBadge';
 import { RoleHistory } from '~/admin/users/RoleHistory';
+import { BlockBoundary } from '~/components/BlockBoundary';
 import { ConfirmDialog } from '~/components/ConfirmDialog';
 import { CourseFormat } from '~/components/course/CourseFormat';
 import { Button } from '~/components/ui/button';
@@ -223,7 +224,9 @@ function PanelBody({
             onChanged(next, 'access');
           }}
         />
-        <RoleHistory accountId={account.id} myId={me.data?.id} />
+        <BlockBoundary title="Não deu para mostrar o histórico de papéis">
+          <RoleHistory accountId={account.id} myId={me.data?.id} />
+        </BlockBoundary>
       </div>
     </>
   );

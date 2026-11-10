@@ -390,4 +390,21 @@ describe('the lesson page', () => {
       expect.anything(),
     );
   });
+
+  it('should keep the video and the outline when the questions cannot be shown', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    vi.spyOn(QuestionService, 'list').mockResolvedValue({
+      items: [undefined],
+      nextCursor: null,
+    } as unknown as Awaited<ReturnType<typeof QuestionService.list>>);
+    renderLesson();
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Não deu para mostrar as perguntas',
+    );
+    expect(screen.getByLabelText('Vídeo da aula Filtrando')).toBeVisible();
+    expect(
+      screen.getByRole('link', { name: /Filtrando/, current: 'page' }),
+    ).toBeInTheDocument();
+  });
 });
