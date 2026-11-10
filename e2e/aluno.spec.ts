@@ -1,4 +1,4 @@
-import { readCourse } from './support/run';
+import { readCourse, readState, updateState } from './support/run';
 import { waitForIndex } from './support/searchIndex';
 import { expect, test } from './support/test';
 
@@ -57,4 +57,30 @@ test('vê o curso concluído em minhas matrículas', async ({ page }) => {
   await expect(
     page.getByRole('link', { name: new RegExp(readCourse().title) }),
   ).toContainText('Concluído');
+});
+
+test('pergunta sobre a aula', async ({ page }) => {
+  const course = readCourse();
+  const student = readState().accounts.aluno;
+
+  await page.goto(`/cursos/${course.id}`);
+  await page
+    .getByRole('link', { name: /Primeira aula/ })
+    .first()
+    .click();
+  await expect(
+    page.getByRole('heading', { name: 'Primeira aula' }),
+  ).toBeVisible();
+  const lessonId = new URL(page.url()).pathname.split('/').at(-1) ?? '';
+  updateState({ course: { ...course, lessonId } });
+
+  await page
+    .getByLabel('Faça uma pergunta sobre esta aula')
+    .fill('O material vale para a próxima aula também?');
+  await page.getByRole('button', { name: 'Perguntar' }).click();
+
+  await expect(page.getByText('Pergunta enviada.')).toBeVisible();
+  await expect(
+    page.getByRole('article', { name: `Pergunta de ${student.name}` }),
+  ).toContainText('O material vale para a próxima aula também?');
 });
