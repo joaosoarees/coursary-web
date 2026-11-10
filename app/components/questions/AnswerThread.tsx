@@ -39,7 +39,8 @@ export function AnswerThread({
   const items = answers.data?.pages.flatMap((page) => page.items) ?? NO_ANSWERS;
   const author = question.removed ? 'autor removido' : question.authorName;
   // The last answer of a removed question takes the question with it.
-  const lastOfRemoved = question.removed && question.answerCount === 1;
+  const lastOfRemoved =
+    question.removed && items.length === 1 && !answers.hasNextPage;
 
   return (
     <div
