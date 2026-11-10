@@ -10,7 +10,9 @@ test('lê a resposta do instrutor', async ({ page }) => {
       name: `Pergunta de ${accounts.aluno.name}`,
     }),
   });
-  await question.getByRole('button', { name: /1 resposta/ }).click();
+  await question
+    .getByRole('button', { name: '1 resposta', exact: true })
+    .click();
 
   const answer = question.getByRole('listitem').filter({
     hasText: 'Vale, sim: é o mesmo conjunto de dados.',
