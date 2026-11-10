@@ -309,4 +309,31 @@ describe('QuestionsSection', () => {
       expect.anything(),
     );
   });
+
+  it('should hand the focus back to the toggle after deleting an answer', async () => {
+    answers.mockResolvedValue(page([{ ...byInstructor, canDelete: true }]));
+    vi.spyOn(QuestionService, 'removeAnswer').mockImplementation(() => {
+      answers.mockResolvedValue(page([]));
+      return Promise.resolve();
+    });
+    renderSection('owner');
+
+    const bruno = await question('Pergunta de Bruno Reis');
+    const toggle = bruno.getByRole('button', { name: /1 resposta/ });
+    fireEvent.click(toggle);
+    fireEvent.click(
+      await bruno.findByRole('button', {
+        name: 'Apagar a resposta de Ana Souza',
+      }),
+    );
+    fireEvent.click(
+      within(await screen.findByRole('alertdialog')).getByRole('button', {
+        name: 'Apagar resposta',
+      }),
+    );
+
+    await waitFor(() => {
+      expect(toggle).toHaveFocus();
+    });
+  });
 });
