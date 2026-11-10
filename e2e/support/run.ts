@@ -17,6 +17,8 @@ export interface RunState {
   course?: { id: string; title: string; lessonId?: string };
 }
 
+export const LESSON_TITLE = 'Primeira aula';
+
 const RUN_DIR = join(import.meta.dirname, '..', '.run');
 const STATE_FILE = join(RUN_DIR, 'state.json');
 
