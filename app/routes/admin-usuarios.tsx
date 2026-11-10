@@ -6,6 +6,7 @@ import { AccountSearch } from '~/admin/users/AccountSearch';
 import { AccountSearchResult } from '~/admin/users/AccountSearchResult';
 import { AccountsFilterParams } from '~/admin/users/AccountsFilterParams';
 import { AccountsList } from '~/admin/users/AccountsList';
+import { BlockBoundary } from '~/components/BlockBoundary';
 import { useCursorStack } from '~/lib/useCursorStack';
 import type { AccountSummary } from '~/services/AdminService';
 
@@ -62,16 +63,20 @@ export default function AdminUsersPage() {
         />
       </header>
       {searched === undefined ? (
-        <AccountsList pages={pages} opening={opening} />
+        <BlockBoundary title="Não deu para mostrar as contas">
+          <AccountsList pages={pages} opening={opening} />
+        </BlockBoundary>
       ) : (
-        <AccountSearchResult
-          email={searched}
-          onClear={() => {
-            setSearched(undefined);
-            setClearings((count) => count + 1);
-          }}
-          {...opening}
-        />
+        <BlockBoundary title="Não deu para mostrar a conta buscada">
+          <AccountSearchResult
+            email={searched}
+            onClear={() => {
+              setSearched(undefined);
+              setClearings((count) => count + 1);
+            }}
+            {...opening}
+          />
+        </BlockBoundary>
       )}
       <AccountPanel
         account={opened}
