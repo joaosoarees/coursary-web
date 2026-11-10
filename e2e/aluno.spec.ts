@@ -1,4 +1,9 @@
-import { readCourse, readState, updateState } from './support/run';
+import {
+  LESSON_TITLE,
+  readCourse,
+  readState,
+  updateState,
+} from './support/run';
 import { waitForIndex } from './support/searchIndex';
 import { expect, test } from './support/test';
 
@@ -26,10 +31,8 @@ test('matricula, conclui a aula e avalia o curso', async ({ page }) => {
   await page.getByRole('button', { name: 'Matricular-me' }).click();
   await expect(page.getByText('Você está matriculado')).toBeVisible();
 
-  await page.getByRole('link', { name: /Primeira aula/ }).click();
-  await expect(
-    page.getByRole('heading', { name: 'Primeira aula' }),
-  ).toBeVisible();
+  await page.getByRole('link', { name: new RegExp(LESSON_TITLE) }).click();
+  await expect(page.getByRole('heading', { name: LESSON_TITLE })).toBeVisible();
   await expect(
     page.getByRole('button', { name: 'Baixar material.pdf' }),
   ).toBeVisible();
@@ -65,13 +68,14 @@ test('pergunta sobre a aula', async ({ page }) => {
 
   await page.goto(`/cursos/${course.id}`);
   await page
-    .getByRole('link', { name: /Primeira aula/ })
+    .getByRole('link', { name: new RegExp(LESSON_TITLE) })
     .first()
     .click();
-  await expect(
-    page.getByRole('heading', { name: 'Primeira aula' }),
-  ).toBeVisible();
-  const lessonId = new URL(page.url()).pathname.split('/').at(-1) ?? '';
+  await expect(page.getByRole('heading', { name: LESSON_TITLE })).toBeVisible();
+  const lessonId = /\/aulas\/([^/]+)/.exec(new URL(page.url()).pathname)?.[1];
+  if (!lessonId) {
+    throw new Error(`No lesson id in ${page.url()}.`);
+  }
   updateState({ course: { ...course, lessonId } });
 
   await page
