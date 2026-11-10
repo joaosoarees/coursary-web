@@ -69,7 +69,9 @@ test('monta a aula com texto, material e vídeo', async ({ page }) => {
 
   await page.getByRole('link', { name: 'Ver como aluno' }).click();
   await expect(page.getByRole('heading', { name: LESSON })).toBeVisible();
-  await expect(page.getByRole('note')).toContainText('Prévia');
+  await expect(
+    page.getByRole('note').filter({ hasText: 'Prévia' }),
+  ).toBeVisible();
 });
 
 test('publica o curso', async ({ page }) => {
