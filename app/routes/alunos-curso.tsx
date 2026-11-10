@@ -149,7 +149,10 @@ function CourseStudents({ course }: { course: ManagedCourse }) {
             aria-busy={students.isPlaceholderData}
             className="animate-content-in overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm"
           >
-            <BlockBoundary title="Não deu para mostrar os alunos">
+            <BlockBoundary
+              title="Não deu para mostrar os alunos"
+              resetKeys={[pages.index, pages.filter]}
+            >
               <StudentsTable
                 students={students.data.items}
                 lessonCount={course.lessonCount}
