@@ -67,7 +67,10 @@ export default function AdminUsersPage() {
           <AccountsList pages={pages} opening={opening} />
         </BlockBoundary>
       ) : (
-        <BlockBoundary title="Não deu para mostrar a conta buscada">
+        <BlockBoundary
+          title="Não deu para mostrar a conta buscada"
+          resetKeys={[searched]}
+        >
           <AccountSearchResult
             email={searched}
             onClear={() => {
