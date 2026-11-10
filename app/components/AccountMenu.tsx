@@ -18,27 +18,46 @@ import { Skeleton } from '~/components/ui/skeleton';
 import { cn } from '~/lib/utils';
 import { useMe } from '~/queries/me';
 
+const fallbackItem = (compact: boolean) =>
+  cn(
+    'flex min-h-10 items-center gap-3 overflow-hidden p-0.5 text-left font-bold transition-[background-color,border-radius] duration-200 hover:bg-shell-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chalk-yellow',
+    compact
+      ? 'rounded-full hover:bg-transparent hover:outline-2 hover:outline-shell-foreground/35'
+      : 'w-full rounded-md group-data-[collapsible=icon]:rounded-full group-data-[collapsible=icon]:hover:bg-transparent group-data-[collapsible=icon]:hover:outline-2 group-data-[collapsible=icon]:hover:outline-shell-foreground/35',
+  );
+
+const FALLBACK_LABEL =
+  'transition-opacity duration-200 group-data-[collapsible=icon]:opacity-0';
+
 export function AccountFallback({ compact = false }: { compact?: boolean }) {
+  const { signOut } = useAuth();
+
   return (
-    <Link
-      to="/perfil"
-      aria-label={compact ? 'Perfil' : undefined}
-      className={cn(
-        'flex min-h-10 items-center gap-3 overflow-hidden p-0.5 font-bold transition-[background-color,border-radius] duration-200 hover:bg-shell-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chalk-yellow',
-        compact
-          ? 'rounded-full hover:bg-transparent hover:outline-2 hover:outline-shell-foreground/35'
-          : 'w-full rounded-md group-data-[collapsible=icon]:rounded-full group-data-[collapsible=icon]:hover:bg-transparent group-data-[collapsible=icon]:hover:outline-2 group-data-[collapsible=icon]:hover:outline-shell-foreground/35',
-      )}
-    >
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-chalk-yellow text-chalk-yellow-foreground">
-        <UserRound aria-hidden="true" className="size-5" />
-      </span>
-      {!compact && (
-        <span className="transition-opacity duration-200 group-data-[collapsible=icon]:opacity-0">
-          Perfil
+    <div className={cn('flex gap-1', !compact && 'flex-col')}>
+      <Link
+        to="/perfil"
+        aria-label={compact ? 'Perfil' : undefined}
+        className={fallbackItem(compact)}
+      >
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-chalk-yellow text-chalk-yellow-foreground">
+          <UserRound aria-hidden="true" className="size-5" />
         </span>
-      )}
-    </Link>
+        {!compact && <span className={FALLBACK_LABEL}>Perfil</span>}
+      </Link>
+      <button
+        type="button"
+        aria-label={compact ? 'Sair' : undefined}
+        className={fallbackItem(compact)}
+        onClick={() => {
+          void signOut().then(() => toast('Você saiu.'));
+        }}
+      >
+        <span className="flex size-9 shrink-0 items-center justify-center">
+          <LogOut aria-hidden="true" className="size-5" />
+        </span>
+        {!compact && <span className={FALLBACK_LABEL}>Sair</span>}
+      </button>
+    </div>
   );
 }
 
