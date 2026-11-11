@@ -24,6 +24,7 @@ import {
   type Question,
   QuestionService,
 } from '~/services/QuestionService';
+import { RealtimeService } from '~/services/RealtimeService';
 import { apiError } from '~/test/renderRoutes';
 
 const asked: Question = {
@@ -69,6 +70,7 @@ const page = <T,>(items: T[], nextCursor: string | null = null) => ({
 
 let list: MockInstance<typeof QuestionService.list>;
 let answers: MockInstance<typeof QuestionService.answers>;
+let ticket: MockInstance<typeof RealtimeService.ticket>;
 
 beforeEach(() => {
   vi.restoreAllMocks();
@@ -78,6 +80,9 @@ beforeEach(() => {
   answers = vi
     .spyOn(QuestionService, 'answers')
     .mockResolvedValue(page([byInstructor]));
+  ticket = vi
+    .spyOn(RealtimeService, 'ticket')
+    .mockReturnValue(new Promise<string>(() => undefined));
 });
 
 const renderSection = (
@@ -267,6 +272,15 @@ describe('QuestionsSection', () => {
       screen.getByText('As perguntas abrem quando o curso for publicado.'),
     ).toBeInTheDocument();
     expect(list).not.toHaveBeenCalled();
+    expect(ticket).not.toHaveBeenCalled();
+  });
+
+  it('should listen for changes to the lesson it shows', async () => {
+    renderSection('student', 'ARCHIVED');
+
+    await waitFor(() => {
+      expect(ticket).toHaveBeenCalledWith({ courseId: 'c1', lessonId: 'l1' });
+    });
   });
 
   it('should invite the first question when there is none', async () => {
