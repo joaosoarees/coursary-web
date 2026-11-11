@@ -25,33 +25,45 @@ test('responde a pergunta pela prévia da aula, e o aluno a vê chegar', async (
   browser,
 }) => {
   const studentContext = await browser.newContext();
-  const student = await signInAs(studentContext, 'aluno');
-  const studentPage = await studentContext.newPage();
-  await studentPage.goto(`/cursos/${readCourse().id}/aulas/${readLessonId()}`);
-  const asked = studentPage.getByRole('listitem').filter({
-    has: studentPage.getByRole('article', {
-      name: `Pergunta de ${student.name}`,
-    }),
-  });
-  await expect(asked.getByRole('button', { name: 'Responder' })).toBeVisible();
 
-  await page.goto(
-    `/instrutor/cursos/${readCourse().id}/aulas/${readLessonId()}/previa`,
-  );
-  const question = page.getByRole('listitem').filter({
-    has: page.getByRole('article', { name: `Pergunta de ${student.name}` }),
-  });
-  await question.getByRole('button', { name: 'Responder' }).click();
-  await expect(question.getByLabel('Sua resposta')).toBeFocused();
-  await page.keyboard.type('Vale, sim: é o mesmo conjunto de dados.');
-  await page.keyboard.press('Control+Enter');
+  try {
+    const student = await signInAs(studentContext, 'aluno');
+    const studentPage = await studentContext.newPage();
+    await studentPage.goto(
+      `/cursos/${readCourse().id}/aulas/${readLessonId()}`,
+    );
+    const asked = studentPage.getByRole('listitem').filter({
+      has: studentPage.getByRole('article', {
+        name: `Pergunta de ${student.name}`,
+      }),
+    });
+    await expect(
+      asked.getByRole('button', { name: 'Responder' }),
+    ).toBeVisible();
 
-  await expect(page.getByText('Resposta enviada.')).toBeVisible();
-  await expect(question.getByText('Instrutor', { exact: true })).toBeVisible();
+    await page.goto(
+      `/instrutor/cursos/${readCourse().id}/aulas/${readLessonId()}/previa`,
+    );
+    const question = page.getByRole('listitem').filter({
+      has: page.getByRole('article', { name: `Pergunta de ${student.name}` }),
+    });
+    await question.getByRole('button', { name: 'Responder' }).click();
+    await expect(question.getByLabel('Sua resposta')).toBeFocused();
+    await page.keyboard.type('Vale, sim: é o mesmo conjunto de dados.');
+    await page.keyboard.press('Control+Enter');
 
-  // No reload on the student's page: only the socket can bring the count.
-  await expect(asked.getByRole('button', { name: '1 resposta' })).toBeVisible({
-    timeout: 15_000,
-  });
-  await studentContext.close();
+    await expect(page.getByText('Resposta enviada.')).toBeVisible();
+    await expect(
+      question.getByText('Instrutor', { exact: true }),
+    ).toBeVisible();
+
+    // No reload on the student's page: only the socket can bring the count.
+    await expect(asked.getByRole('button', { name: '1 resposta' })).toBeVisible(
+      {
+        timeout: 15_000,
+      },
+    );
+  } finally {
+    await studentContext.close();
+  }
 });
