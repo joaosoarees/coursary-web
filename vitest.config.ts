@@ -8,7 +8,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     setupFiles: ['./vitest.setup.ts'],
-    env: { VITE_API_URL: 'https://api.test' },
+    env: { VITE_API_URL: 'https://api.test', VITE_WS_URL: 'wss://ws.test' },
     include: ['app/**/*.{spec,test}.{ts,tsx}'],
     coverage: {
       provider: 'v8',

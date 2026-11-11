@@ -12,6 +12,7 @@ import { PostForm } from '~/components/questions/PostForm';
 import { QuestionItem } from '~/components/questions/QuestionItem';
 import { Button } from '~/components/ui/button';
 import { Skeleton } from '~/components/ui/skeleton';
+import { useLessonRealtime } from '~/hooks/useLessonRealtime';
 import { useAskQuestion } from '~/mutations/questions';
 import { useQuestions } from '~/queries/questions';
 import type { Question } from '~/services/QuestionService';
@@ -44,6 +45,7 @@ export function QuestionsSection({
   const draft = courseStatus === 'DRAFT';
   const writable = courseStatus === 'PUBLISHED';
   const questions = useQuestions(lesson, !draft);
+  useLessonRealtime(lesson, !draft);
   const ask = useAskQuestion(lesson);
   const heading = useRef<HTMLHeadingElement>(null);
   // Fixed while the page is open, so the dates do not shift under the reader.

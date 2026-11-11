@@ -11,6 +11,7 @@ import {
   LessonService,
 } from '~/services/LessonService';
 import { QuestionService } from '~/services/QuestionService';
+import { RealtimeService } from '~/services/RealtimeService';
 import { apiError, renderRoutes } from '~/test/renderRoutes';
 
 const outline: CourseOutline = {
@@ -41,6 +42,9 @@ let progress: ReturnType<typeof vi.spyOn>;
 let savePosition: ReturnType<typeof vi.spyOn>;
 
 beforeEach(() => {
+  vi.spyOn(RealtimeService, 'ticket').mockReturnValue(
+    new Promise<string>(() => undefined),
+  );
   vi.spyOn(LessonService, 'outline').mockResolvedValue(outline);
   vi.spyOn(LessonService, 'open').mockResolvedValue(content);
   progress = vi.spyOn(EnrollmentService, 'progress');
