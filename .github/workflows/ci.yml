@@ -16,6 +16,7 @@ concurrency:
 env:
   LEFTHOOK: 0
   VITE_API_URL: https://api-dev.coursary.joaodevdude.com
+  VITE_WS_URL: wss://ws-dev.coursary.joaodevdude.com
 
 jobs:
   check:

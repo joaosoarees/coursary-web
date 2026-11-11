@@ -11,6 +11,7 @@ import {
   LessonService,
 } from '~/services/LessonService';
 import { QuestionService } from '~/services/QuestionService';
+import { RealtimeService } from '~/services/RealtimeService';
 import { ReviewService } from '~/services/ReviewService';
 import { apiError, Landing, renderRoutes } from '~/test/renderRoutes';
 
@@ -57,6 +58,9 @@ const content: LessonContent = {
 };
 
 beforeEach(() => {
+  vi.spyOn(RealtimeService, 'ticket').mockReturnValue(
+    new Promise<string>(() => undefined),
+  );
   vi.spyOn(LessonService, 'outline').mockResolvedValue(outline);
   vi.spyOn(EnrollmentService, 'progress').mockResolvedValue(progress);
   vi.spyOn(LessonService, 'open').mockResolvedValue(content);
