@@ -22,7 +22,6 @@ interface Server {
 
 let server: Server | undefined;
 
-// A local ws server on a free port, standing in for API Gateway.
 const startServer = async ({
   refuse = false,
 }: { refuse?: boolean } = {}): Promise<Server> => {
