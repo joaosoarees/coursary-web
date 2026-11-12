@@ -31,6 +31,7 @@
   --highlight: #fcf3d4;
   --highlight-foreground: #13241b;
   --highlight-border: #b8952a;
+  --highlight-hover: #f8eabd;
   --progress: #a08a2e;
   --star: #8a6d12;
   --link: #2b6b52;
@@ -77,6 +78,7 @@
   --highlight: #2c3418;
   --highlight-foreground: #eaf0ea;
   --highlight-border: #a08a2e;
+  --highlight-hover: #363f1d;
   --progress: #f2c94c;
   --star: #c9a443;
   --link: #f2c94c;
@@ -115,6 +117,7 @@
   --color-highlight: var(--highlight);
   --color-highlight-foreground: var(--highlight-foreground);
   --color-highlight-border: var(--highlight-border);
+  --color-highlight-hover: var(--highlight-hover);
   --color-progress: var(--progress);
   --color-star: var(--star);
   --color-link: var(--link);
