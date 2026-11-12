@@ -23,7 +23,7 @@ const triggerTones = {
 // into a piece of the shell with chalk on it.
 const badgeTones = {
   header:
-    'border-shell bg-chalk-yellow text-chalk-yellow-foreground md:border-background md:bg-shell md:text-chalk-yellow md:dark:bg-chalk-yellow md:dark:text-chalk-yellow-foreground',
+    'border-shell bg-chalk-yellow text-chalk-yellow-foreground md:dark:border-background md:dark:bg-chalk-yellow md:dark:text-chalk-yellow-foreground md:bg-shell md:text-chalk-yellow',
   shell: 'border-shell bg-chalk-yellow text-chalk-yellow-foreground',
 };
 
@@ -51,7 +51,7 @@ export function NotificationBell({
           <span
             aria-hidden="true"
             className={cn(
-              'absolute top-0.5 left-[21px] h-5 min-w-5 rounded-full border px-1.5 text-center text-xs leading-[18px] font-bold',
+              'absolute top-0.5 -right-1.5 h-5 min-w-5 rounded-full border px-1.5 text-center text-xs leading-[18px] font-bold whitespace-nowrap',
               badgeTones[tone],
             )}
           >
@@ -61,7 +61,9 @@ export function NotificationBell({
       </PopoverTrigger>
       <PopoverContent
         align="end"
+        sideOffset={14}
         collisionPadding={8}
+        aria-labelledby="notificacoes-titulo"
         className="w-[400px] max-w-[calc(100vw-16px)] overflow-hidden p-0"
         onOpenAutoFocus={(event) => {
           event.preventDefault();
