@@ -55,13 +55,13 @@ export function NotificationPanel({
   return (
     <section
       aria-labelledby="notificacoes-titulo"
-      className="flex max-h-[min(560px,calc(100dvh-5rem))] flex-col"
+      className="flex max-h-[min(560px,calc(100dvh-5rem))] flex-col max-md:max-h-[min(720px,calc(100dvh-5rem))]"
     >
       <div className="flex items-center gap-2 border-b py-3 pr-2 pl-4">
         <h2
           id="notificacoes-titulo"
           tabIndex={-1}
-          className="flex-1 font-display text-xl font-bold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          className="flex-1 font-display text-xl font-bold whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         >
           Notificações
         </h2>
@@ -69,6 +69,7 @@ export function NotificationPanel({
           <Button
             variant="ghost"
             size="sm"
+            className="px-3 text-sm"
             disabled={markAll.isPending}
             onClick={markAllRead}
           >
