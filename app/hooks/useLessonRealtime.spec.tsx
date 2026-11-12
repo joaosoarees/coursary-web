@@ -123,7 +123,11 @@ describe('useLessonRealtime', () => {
   it('should reload the whole lesson after coming back, not on the first open', async () => {
     const { reloaded } = renderLive();
     await connected();
-    expect(reloaded()).toEqual([]);
+    // Answered only once the client is open, and the first open reloaded nothing.
+    sockets[0]?.send(JSON.stringify({ type: 'questions', lessonId: 'l1' }));
+    await waitFor(() => {
+      expect(reloaded()).toEqual([['questions', 'c1', 'l1', { limit: 10 }]]);
+    });
 
     sockets[0]?.close(1001);
 
