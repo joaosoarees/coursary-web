@@ -113,9 +113,13 @@ describe('RealtimeProvider', () => {
 
     sockets[0]?.close(1001);
 
-    await waitFor(() => {
-      expect(reloaded()).toHaveLength(2);
-    });
+    // The first retry waits a random delay of up to a second, waitFor's own limit.
+    await waitFor(
+      () => {
+        expect(reloaded()).toHaveLength(2);
+      },
+      { timeout: 3000 },
+    );
   });
 
   it('should reconnect with the lesson when one is watched, and without it after', async () => {
