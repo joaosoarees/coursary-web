@@ -77,7 +77,6 @@ export function RealtimeProvider({
     }
 
     if (keyOf(watcher.current?.lesson) !== ticketFor.current) {
-      opened.current = false;
       reconnect();
     }
   }, [enabled, watched, reconnect]);
