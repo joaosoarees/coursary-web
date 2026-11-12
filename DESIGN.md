@@ -20,6 +20,7 @@ colors:
   success-soft: "#e3f1e8"
   highlight: "#fcf3d4"
   highlight-border: "#b8952a"
+  highlight-hover: "#f8eabd"
   progress: "#a08a2e"
   star: "#8a6d12"
   link: "#2b6b52"
@@ -56,6 +57,7 @@ colors:
   success-soft-dark: "#1f4a35"
   highlight-dark: "#2c3418"
   highlight-border-dark: "#a08a2e"
+  highlight-hover-dark: "#363f1d"
   progress-dark: "#f2c94c"
   star-dark: "#c9a443"
   link-dark: "#f2c94c"
@@ -255,7 +257,7 @@ A Coursary toma emprestada a lousa verde da sala de aula brasileira e a usa como
 
 O tom é sereno, legível e deliberado. A densidade é de ferramenta: títulos firmes em Bricolage Grotesque, todo o resto em Atkinson Hyperlegible Next, números com largura fixa para que colunas e contadores se alinhem. Cada controle se anuncia com clareza (fundo ou borda no hover, contorno de foco de 2 px, alvo de pelo menos 40 px) e nada se ergue da página sem motivo. O sistema recusa o padrão da categoria: página branca, botão de marca roxo e cards de curso todos iguais.
 
-O que já está construído é o mundo e a sua gramática: tokens nos dois temas, o trilho com o traço de giz, os componentes e os estados. As telas próprias do mundo ainda não existem e ficam aqui só como direção, **ainda não construídas**: capas de curso como placas de giz (um bloco cor de lousa com o título escrito em display numa única cor de giz: branco, azul ou rosa; o amarelo fica fora, porque marca o que está ativo), e um aviso amarelo que fica marcado até ser visto. O progresso já existe: seis traços de giz que nunca contradizem a contagem ao lado, cheios no que foi feito e tracejados no que falta; um curso começado mostra ao menos um traço cheio, e um inacabado deixa ao menos um aberto.
+O que já está construído é o mundo e a sua gramática: tokens nos dois temas, o trilho com o traço de giz, os componentes e os estados. As telas próprias do mundo ainda não existem e ficam aqui só como direção, **ainda não construídas**: capas de curso como placas de giz (um bloco cor de lousa com o título escrito em display numa única cor de giz: branco, azul ou rosa; o amarelo fica fora, porque marca o que está ativo). O aviso que fica marcado até ser visto já existe: a notificação não lida, em Creme de Giz, no sino do topo. O progresso já existe: seis traços de giz que nunca contradizem a contagem ao lado, cheios no que foi feito e tracejados no que falta; um curso começado mostra ao menos um traço cheio, e um inacabado deixa ao menos um aberto.
 
 **Key Characteristics:**
 - A lousa verde como moldura (o trilho) e o giz como única marca sobre ela.
@@ -281,7 +283,7 @@ Uma paleta de lousa: verdes profundos e frios como estrutura, giz claro como mar
 ### Tertiary
 - **Tijolo** (#b3372a): ação destrutiva e erro no tema claro, com hover em **Tijolo Queimado** (#8f2a20). No escuro vira **Tijolo Claro** (#f08a7a), com hover **Tijolo Rosado** (#f5ada1) e texto em Lousa Noturna.
 - **Verde Aprovado** (#1d5c3a) sobre **Verde Aprovado Suave** (#e3f1e8): sucesso. No escuro, **Verde Broto** (#b8ecc9) sobre **Verde Mata** (#1f4a35).
-- **Creme de Giz** (#fcf3d4) com borda **Ocre de Giz** (#b8952a): o realce mantido, reservado ao aviso amarelo que fica até ser visto. No escuro, **Oliva Noturna** (#2c3418) com borda **Ocre Velho** (#a08a2e).
+- **Creme de Giz** (#fcf3d4) com borda **Ocre de Giz** (#b8952a): o realce mantido, reservado ao aviso que fica até ser visto (a notificação não lida). No hover, **Creme Tostado** (#f8eabd). No escuro, **Oliva Noturna** (#2c3418) com borda **Ocre Velho** (#a08a2e) e hover **Oliva Funda** (#363f1d); ali o fundo quase some contra o menu, e a borda e o ponto carregam o estado.
 - **Ocre Velho** (#a08a2e; no escuro, **Giz Amarelo** #f2c94c): a barra fina de navegação pendente no topo da janela. Ela passa sobre a página e sobre a lousa, então precisa de 3:1 contra as duas: 3,62:1 sobre a lousa e 3,10:1 sobre o fundo no claro. O verde primário sumiria na lousa.
 - **Ocre de Estrela** (#8a6d12; no escuro, **Ocre Claro** #c9a443): as estrelas das notas e avaliações. É ocre e não Giz Amarelo, porque uma nota não está "ativa".
 
@@ -399,6 +401,13 @@ Firmes, legíveis e marcados a giz: cada controle tem tamanho de dedo, bordas qu
 - **Menu e select:** folha de popover com borda fina, cantos de 6 px, 4 px de folga e a sombra Erguida. Itens de 40 px, cantos de 4 px, 0.875rem; o destacado ganha fundo Sálvia Pálida e um contorno interno de 2 px na cor do anel. Item destrutivo em Tijolo.
 - **Diálogo:** até 512 px de largura, chão da página como fundo, borda fina, 24 px de respiro, sombra Erguida; entra com fade e escala de 98% a 100% em 200 ms e sai em 140 ms. Botão de fechar de 40 px no canto. Véu tingido de lousa: Verde Lousa a 50% no claro, preto a 55% no escuro.
 - **Avisos (toasts):** folha de popover com borda fina, ícones de 16 px por tipo, seguindo o tema.
+
+### Notificações
+- **Sino:** botão de ícone de 40 px no canto direito da barra fina do topo (no celular, na barra de lousa, entre a marca e o avatar) e no cabeçalho de lousa da sala de aula. O nome diz a contagem ("Notificações, 3 não lidas"; "mais de 99" acima disso).
+- **Contagem:** pílula de 20 px sobre o ícone, 0.75rem em 700, "99+" acima de 99, ausente em zero. Na lousa, Giz Amarelo com texto Lousa Noturna e borda da lousa; no chão claro do topo, o amarelo sumiria (1,8:1), então ela vira um pedaço de lousa: Verde Lousa com o número em Giz Amarelo. No escuro volta ao amarelo.
+- **Painel:** popover de 400 px (a largura da tela menos 16 px no celular), até 560 px de altura, sombra Erguida. Título "Notificações" em Title, que recebe o foco ao abrir; "Marcar todas como lidas" (fantasma pequeno) só com alguma não lida. Esc e o clique fora fecham e devolvem o foco ao sino.
+- **Linha:** link de cantos de 4 px com ícone por tipo num círculo de 32 px, a frase com os nomes em negrito, o selo "do instrutor" e o horário relativo em Body small. Não lida: fundo Creme de Giz com borda Ocre, ícone em Giz Amarelo sobre a lousa, ponto em Ocre de Estrela e "Não lida:" no começo do nome para leitor de tela. Lida: texto em Verde Grafite, ícone apagado. Texto em 0.875rem, 1rem no celular.
+- **Estados:** esqueleto de três linhas, vazio com o sino riscado, erro em bloco com "Tentar de novo", e "Carregar mais" no pé.
 
 ### Tables
 - Texto em Body small, linhas separadas por Fio de Sálvia, hover de linha em Névoa de Giz a 50%; cabeçalho de 40 px em Table head. Números alinhados à direita, tabulares.
