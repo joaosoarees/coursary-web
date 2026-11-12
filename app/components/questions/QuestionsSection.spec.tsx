@@ -6,6 +6,7 @@ import {
   waitFor,
   within,
 } from '@testing-library/react';
+import { MemoryRouter } from 'react-router';
 import {
   beforeEach,
   describe,
@@ -89,22 +90,25 @@ beforeEach(() => {
 const renderSection = (
   viewer: QuestionsViewer = 'student',
   courseStatus = 'PUBLISHED',
+  entry = '/cursos/c1/aulas/l1',
 ) =>
   render(
-    <QueryClientProvider
-      client={
-        new QueryClient({ defaultOptions: { queries: { retry: false } } })
-      }
-    >
-      <RealtimeProvider enabled>
-        <QuestionsSection
-          courseId="c1"
-          lessonId="l1"
-          courseStatus={courseStatus}
-          viewer={viewer}
-        />
-      </RealtimeProvider>
-    </QueryClientProvider>,
+    <MemoryRouter initialEntries={[entry]}>
+      <QueryClientProvider
+        client={
+          new QueryClient({ defaultOptions: { queries: { retry: false } } })
+        }
+      >
+        <RealtimeProvider enabled>
+          <QuestionsSection
+            courseId="c1"
+            lessonId="l1"
+            courseStatus={courseStatus}
+            viewer={viewer}
+          />
+        </RealtimeProvider>
+      </QueryClientProvider>
+    </MemoryRouter>,
   );
 
 const question = (name: string) =>
@@ -276,6 +280,18 @@ describe('QuestionsSection', () => {
     ).toBeInTheDocument();
     expect(list).not.toHaveBeenCalled();
     expect(ticket).toHaveBeenCalledExactlyOnceWith(undefined);
+  });
+
+  it('should bring its title into view when a notice links to it', async () => {
+    const scroll = vi.fn();
+    Element.prototype.scrollIntoView = scroll;
+    renderSection('student', 'PUBLISHED', '/cursos/c1/aulas/l1#perguntas-l1');
+
+    const title = screen.getByRole('heading', { name: 'Perguntas' });
+    await waitFor(() => {
+      expect(title).toHaveFocus();
+    });
+    expect(scroll).toHaveBeenCalledOnce();
   });
 
   it('should listen for changes to the lesson it shows', async () => {
