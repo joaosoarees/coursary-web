@@ -19,6 +19,7 @@ import {
   QuestionsSection,
   type QuestionsViewer,
 } from '~/components/questions/QuestionsSection';
+import { RealtimeProvider } from '~/hooks/realtime/RealtimeProvider';
 import {
   type Answer,
   type Question,
@@ -95,12 +96,14 @@ const renderSection = (
         new QueryClient({ defaultOptions: { queries: { retry: false } } })
       }
     >
-      <QuestionsSection
-        courseId="c1"
-        lessonId="l1"
-        courseStatus={courseStatus}
-        viewer={viewer}
-      />
+      <RealtimeProvider enabled>
+        <QuestionsSection
+          courseId="c1"
+          lessonId="l1"
+          courseStatus={courseStatus}
+          viewer={viewer}
+        />
+      </RealtimeProvider>
     </QueryClientProvider>,
   );
 
@@ -272,7 +275,7 @@ describe('QuestionsSection', () => {
       screen.getByText('As perguntas abrem quando o curso for publicado.'),
     ).toBeInTheDocument();
     expect(list).not.toHaveBeenCalled();
-    expect(ticket).not.toHaveBeenCalled();
+    expect(ticket).toHaveBeenCalledExactlyOnceWith(undefined);
   });
 
   it('should listen for changes to the lesson it shows', async () => {
