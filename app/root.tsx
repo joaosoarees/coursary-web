@@ -92,7 +92,7 @@ export default function App() {
               <Outlet />
             </AccountRealtime>
           </AuthProvider>
-          <Toaster position="top-right" containerAriaLabel="Notificações" />
+          <Toaster position="top-right" containerAriaLabel="Avisos" />
         </ThemeProvider>
       </MotionConfig>
       <ReactQueryDevtools />
