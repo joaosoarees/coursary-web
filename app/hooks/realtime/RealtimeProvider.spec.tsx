@@ -84,6 +84,16 @@ const connections = async (count: number) => {
   });
 };
 
+// The server sees the connection before the client sees it open: a notice answered proves both
+// ends are open, and the first open reloads nothing.
+const opened = async (reloaded: () => unknown[]) => {
+  await connections(1);
+  sockets[0]?.send(JSON.stringify({ type: 'notifications' }));
+  await waitFor(() => {
+    expect(reloaded()).toEqual([['notifications']]);
+  });
+};
+
 describe('RealtimeProvider', () => {
   it('should open one connection for the account and reload the inbox on a notice', async () => {
     const { reloaded } = renderTab();
@@ -99,22 +109,25 @@ describe('RealtimeProvider', () => {
 
   it('should reload the inbox after coming back, not on the first open', async () => {
     const { reloaded } = renderTab();
-    await connections(1);
-    expect(reloaded()).toEqual([]);
+    await opened(reloaded);
 
     sockets[0]?.close(1001);
 
     await waitFor(() => {
-      expect(reloaded()).toEqual([['notifications']]);
+      expect(reloaded()).toHaveLength(2);
     });
   });
 
   it('should reconnect with the lesson when one is watched, and without it after', async () => {
-    const { rerender, onChange } = renderTab();
-    await connections(1);
+    const { rerender, onChange, reloaded } = renderTab();
+    await opened(reloaded);
 
     rerender({ current: lesson });
     await connections(2);
+    // Notices posted while the connection changed lesson were never pushed to this tab.
+    await waitFor(() => {
+      expect(reloaded()).toHaveLength(2);
+    });
     sockets[1]?.send(JSON.stringify({ type: 'questions', lessonId: 'l1' }));
     await waitFor(() => {
       expect(onChange).toHaveBeenCalledWith({
