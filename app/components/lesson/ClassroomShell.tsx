@@ -1,6 +1,7 @@
 import { ChevronLeft } from 'lucide-react';
 import { Link } from 'react-router';
 
+import { NotificationBell } from '~/components/notifications/NotificationBell';
 import { SkipLink } from '~/components/SkipLink';
 import { BoardMark } from '~/components/Wordmark';
 import { useFocusOnNavigation } from '~/hooks/useFocusOnNavigation';
@@ -37,9 +38,12 @@ export function ClassroomShell({
           <span className="hidden md:block">
             <BoardMark size={26} />
           </span>
-          <span className="truncate font-display text-base font-bold md:text-lg">
+          <span className="truncate font-display text-base font-bold md:text-xl">
             {courseTitle}
           </span>
+        </span>
+        <span className="ml-auto shrink-0">
+          <NotificationBell tone="shell" />
         </span>
       </header>
       <main
