@@ -131,9 +131,13 @@ describe('useLessonRealtime', () => {
 
     sockets[0]?.close(1001);
 
-    await waitFor(() => {
-      expect(reloaded()).toContainEqual(['questions', 'c1', 'l1']);
-    });
+    // The first retry waits a random delay of up to a second, waitFor's own limit.
+    await waitFor(
+      () => {
+        expect(reloaded()).toContainEqual(['questions', 'c1', 'l1']);
+      },
+      { timeout: 3000 },
+    );
   });
 
   it('should leave the connection to the account alone when it is off', async () => {
