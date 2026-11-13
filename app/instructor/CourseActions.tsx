@@ -31,6 +31,8 @@ export function CourseActions({
 }) {
   const hintId = useId();
   const [asking, setAsking] = useState<Action>();
+  // Kept from the click: a refusal refetches the course, and the open dialog must not change text.
+  const [deletingDraft, setDeletingDraft] = useState(true);
   const opener = useRef<HTMLElement>(null);
   // Publishing or archiving now would leave the unsaved edits behind; archiving, for good.
   const blockedBy =
@@ -44,6 +46,7 @@ export function CourseActions({
   const ask = (action: Action, from: HTMLElement) => {
     opener.current = from;
     setAsking(action);
+    setDeletingDraft(course.status === 'DRAFT');
   };
   const close = () => {
     setAsking(undefined);
@@ -141,6 +144,7 @@ export function CourseActions({
       <DeleteDialog
         course={course}
         open={asking === 'delete'}
+        draft={deletingDraft}
         onClose={close}
         onCloseAutoFocus={returnFocus}
       />
@@ -258,10 +262,11 @@ function DeleteDialog({
   open,
   onClose,
   onCloseAutoFocus,
-}: DialogProps) {
+  draft,
+}: DialogProps & { draft: boolean }) {
   const remove = useDeleteCourse(course.id);
   const navigate = useNavigate();
-  const copy = course.status === 'DRAFT' ? DRAFT_DELETION : COURSE_DELETION;
+  const copy = draft ? DRAFT_DELETION : COURSE_DELETION;
 
   return (
     <ConfirmDialog
@@ -280,19 +285,11 @@ function DeleteDialog({
       onReset={remove.reset}
       title={copy.title}
       description={
-        course.status === 'DRAFT' ? (
-          <>
-            O rascunho{' '}
-            <strong className="text-foreground">{course.title}</strong> será
-            apagado{DraftContents.of(course)}. Isso não pode ser desfeito.
-          </>
-        ) : (
-          <>
-            O curso <strong className="text-foreground">{course.title}</strong>{' '}
-            será apagado com as aulas, as perguntas e as avaliações
-            {StudentsLosingAccess.of(course)}. Isso não pode ser desfeito.
-          </>
-        )
+        <>
+          {copy.noun}{' '}
+          <strong className="text-foreground">{course.title}</strong> será
+          apagado{copy.contents(course)}. Isso não pode ser desfeito.
+        </>
       }
       confirm={{
         label: copy.confirm,
@@ -316,12 +313,17 @@ function DeleteDialog({
 
 const DRAFT_DELETION = {
   title: 'Apagar o rascunho?',
+  noun: 'O rascunho',
+  contents: (course: ManagedCourse) => DraftContents.of(course),
   confirm: 'Apagar rascunho',
   done: 'Rascunho apagado.',
 };
 
 const COURSE_DELETION = {
   title: 'Apagar o curso?',
+  noun: 'O curso',
+  contents: (course: ManagedCourse) =>
+    ` com as aulas, as perguntas e as avaliações${StudentsLosingAccess.of(course)}`,
   confirm: 'Apagar curso',
   done: 'Curso apagado.',
 };
