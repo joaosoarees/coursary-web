@@ -10,7 +10,7 @@ import { Button } from '~/components/ui/button';
 import { COURSE_ARCHIVED } from '~/instructor/instructorMessages';
 import {
   useArchiveCourse,
-  useDeleteDraft,
+  useDeleteCourse,
   usePublishCourse,
 } from '~/mutations/instructor';
 import { ApiFailure } from '~/services/ApiFailure';
@@ -31,6 +31,8 @@ export function CourseActions({
 }) {
   const hintId = useId();
   const [asking, setAsking] = useState<Action>();
+  // Kept from the click: a refusal refetches the course, and the open dialog must not change text.
+  const [deletingDraft, setDeletingDraft] = useState(true);
   const opener = useRef<HTMLElement>(null);
   // Publishing or archiving now would leave the unsaved edits behind; archiving, for good.
   const blockedBy =
@@ -44,6 +46,7 @@ export function CourseActions({
   const ask = (action: Action, from: HTMLElement) => {
     opener.current = from;
     setAsking(action);
+    setDeletingDraft(course.status === 'DRAFT');
   };
   const close = () => {
     setAsking(undefined);
@@ -110,6 +113,16 @@ export function CourseActions({
             Arquivar
           </Button>
         )}
+        {course.status === 'ARCHIVED' && (
+          <Button
+            variant="destructive-outline"
+            onClick={(event) => {
+              ask('delete', event.currentTarget);
+            }}
+          >
+            Apagar curso
+          </Button>
+        )}
       </div>
       {blockedBy && (
         <p id={hintId} className="text-muted-foreground">
@@ -131,6 +144,7 @@ export function CourseActions({
       <DeleteDialog
         course={course}
         open={asking === 'delete'}
+        draft={deletingDraft}
         onClose={close}
         onCloseAutoFocus={returnFocus}
       />
@@ -248,9 +262,11 @@ function DeleteDialog({
   open,
   onClose,
   onCloseAutoFocus,
-}: DialogProps) {
-  const remove = useDeleteDraft(course.id);
+  draft,
+}: DialogProps & { draft: boolean }) {
+  const remove = useDeleteCourse(course.id);
   const navigate = useNavigate();
+  const copy = draft ? DRAFT_DELETION : COURSE_DELETION;
 
   return (
     <ConfirmDialog
@@ -261,26 +277,29 @@ function DeleteDialog({
       error={
         remove.error &&
         ApiFailure.message(remove.error, {
-          COURSE_NOT_DRAFT: 'Só um rascunho pode ser apagado.',
+          COURSE_PUBLISHED: 'O curso foi publicado: arquive-o antes de apagar.',
+          COURSE_RECENTLY_ARCHIVED:
+            'Os alunos ainda estão sendo avisados do arquivamento. Tente apagar daqui a uma hora.',
         })
       }
       onReset={remove.reset}
-      title="Apagar o rascunho?"
+      title={copy.title}
       description={
         <>
-          O rascunho <strong className="text-foreground">{course.title}</strong>{' '}
-          será apagado{DraftContents.of(course)}. Isso não pode ser desfeito.
+          {copy.noun}{' '}
+          <strong className="text-foreground">{course.title}</strong> será
+          apagado{copy.contents(course)}. Isso não pode ser desfeito.
         </>
       }
       confirm={{
-        label: 'Apagar rascunho',
+        label: copy.confirm,
         pending: 'Apagando…',
         destructive: true,
       }}
       onConfirm={() => {
         remove.mutate(undefined, {
           onSuccess: () => {
-            toast.success('Rascunho apagado.');
+            toast.success(copy.done);
             void navigate('/instrutor/cursos', {
               replace: true,
               state: DISCARDING,
@@ -290,6 +309,35 @@ function DeleteDialog({
       }}
     />
   );
+}
+
+const DRAFT_DELETION = {
+  title: 'Apagar o rascunho?',
+  noun: 'O rascunho',
+  contents: (course: ManagedCourse) => DraftContents.of(course),
+  confirm: 'Apagar rascunho',
+  done: 'Rascunho apagado.',
+};
+
+const COURSE_DELETION = {
+  title: 'Apagar o curso?',
+  noun: 'O curso',
+  contents: (course: ManagedCourse) =>
+    ` com as aulas, as perguntas e as avaliações${StudentsLosingAccess.of(course)}`,
+  confirm: 'Apagar curso',
+  done: 'Curso apagado.',
+};
+
+class StudentsLosingAccess {
+  static of(course: ManagedCourse): string {
+    if (course.enrollmentCount === 0) {
+      return '';
+    }
+
+    return course.enrollmentCount === 1
+      ? ', e o aluno matriculado perde o acesso'
+      : `, e os ${CourseFormat.count(course.enrollmentCount, 'aluno', 'alunos')} matriculados perdem o acesso`;
+  }
 }
 
 class DraftContents {

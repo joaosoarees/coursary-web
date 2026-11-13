@@ -28,6 +28,8 @@ const published: ManagedCourse = {
   publishedAt: '2026-09-28T12:00:00.000Z',
 };
 
+const archived: ManagedCourse = { ...published, status: 'ARCHIVED' };
+
 const renderAt = () =>
   renderRoutes(
     [
@@ -158,10 +160,101 @@ describe('course actions', () => {
     });
   });
 
+  it('should delete an archived course after saying its students lose access', async () => {
+    vi.spyOn(InstructorService, 'get').mockResolvedValue(archived);
+    const remove = vi
+      .spyOn(InstructorService, 'deleteCourse')
+      .mockResolvedValue(undefined);
+    renderAt();
+
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Apagar curso' }),
+    );
+    expect(dialog()).toHaveTextContent(
+      'será apagado com as aulas, as perguntas e as avaliações, e os 1.284 alunos matriculados perdem o acesso. Isso não pode ser desfeito.',
+    );
+    fireEvent.click(
+      within(dialog()).getByRole('button', { name: 'Apagar curso' }),
+    );
+
+    expect(
+      await screen.findByRole('heading', { name: 'Meus cursos' }),
+    ).toBeVisible();
+    expect(remove).toHaveBeenCalledWith('c1');
+  });
+
+  it('should ask to wait while the students are told of the archive', async () => {
+    vi.spyOn(InstructorService, 'get').mockResolvedValue({
+      ...archived,
+      enrollmentCount: 0,
+    });
+    vi.spyOn(InstructorService, 'deleteCourse').mockRejectedValue(
+      apiError(409, 'COURSE_RECENTLY_ARCHIVED'),
+    );
+    renderAt();
+
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Apagar curso' }),
+    );
+    expect(dialog()).toHaveTextContent(
+      'será apagado com as aulas, as perguntas e as avaliações. Isso não pode ser desfeito.',
+    );
+    fireEvent.click(
+      within(dialog()).getByRole('button', { name: 'Apagar curso' }),
+    );
+
+    expect(await within(dialog()).findByRole('alert')).toHaveTextContent(
+      'Os alunos ainda estão sendo avisados do arquivamento. Tente apagar daqui a uma hora.',
+    );
+  });
+
+  it('should name the one student who loses access', async () => {
+    vi.spyOn(InstructorService, 'get').mockResolvedValue({
+      ...archived,
+      enrollmentCount: 1,
+    });
+    renderAt();
+
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Apagar curso' }),
+    );
+
+    expect(dialog()).toHaveTextContent(
+      'as perguntas e as avaliações, e o aluno matriculado perde o acesso.',
+    );
+  });
+
+  it('should keep the draft text when the draft turns out published elsewhere', async () => {
+    vi.spyOn(InstructorService, 'get')
+      .mockResolvedValueOnce(draft)
+      .mockResolvedValue(published);
+    vi.spyOn(InstructorService, 'deleteCourse').mockRejectedValue(
+      apiError(409, 'COURSE_PUBLISHED'),
+    );
+    renderAt();
+
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Apagar rascunho' }),
+    );
+    fireEvent.click(
+      within(dialog()).getByRole('button', { name: 'Apagar rascunho' }),
+    );
+
+    expect(await within(dialog()).findByRole('alert')).toHaveTextContent(
+      'O curso foi publicado: arquive-o antes de apagar.',
+    );
+    await waitFor(() => {
+      expect(
+        screen.getByRole('button', { name: 'Arquivar', hidden: true }),
+      ).toBeInTheDocument();
+    });
+    expect(dialog()).toHaveTextContent('Apagar o rascunho?');
+  });
+
   it('should delete a draft and go back to my courses even with unsaved changes', async () => {
     vi.spyOn(InstructorService, 'get').mockResolvedValue(draft);
     const remove = vi
-      .spyOn(InstructorService, 'deleteDraft')
+      .spyOn(InstructorService, 'deleteCourse')
       .mockResolvedValue(undefined);
     renderAt();
 
