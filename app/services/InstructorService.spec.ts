@@ -125,7 +125,7 @@ describe('InstructorService course lifecycle', () => {
     await expect(InstructorService.archive('c1')).resolves.toMatchObject({
       status: 'ARCHIVED',
     });
-    await InstructorService.deleteDraft('c1');
+    await InstructorService.deleteCourse('c1');
 
     expect(
       adapter.mock.calls.map(([config]) => [config.method, config.url]),
