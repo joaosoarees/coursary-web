@@ -125,4 +125,8 @@ export class InstructorService {
   static async deleteDraft(courseId: string): Promise<void> {
     await httpClient.delete(courseUrl(courseId));
   }
+
+  static async deleteCourse(courseId: string): Promise<void> {
+    await httpClient.delete(courseUrl(courseId));
+  }
 }
