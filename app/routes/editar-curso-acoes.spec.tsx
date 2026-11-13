@@ -28,6 +28,8 @@ const published: ManagedCourse = {
   publishedAt: '2026-09-28T12:00:00.000Z',
 };
 
+const archived: ManagedCourse = { ...published, status: 'ARCHIVED' };
+
 const renderAt = () =>
   renderRoutes(
     [
@@ -156,6 +158,54 @@ describe('course actions', () => {
         screen.getByRole('heading', { level: 1, name: draft.title }),
       ).toHaveFocus();
     });
+  });
+
+  it('should delete an archived course after saying its students lose access', async () => {
+    vi.spyOn(InstructorService, 'get').mockResolvedValue(archived);
+    const remove = vi
+      .spyOn(InstructorService, 'deleteCourse')
+      .mockResolvedValue(undefined);
+    renderAt();
+
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Apagar curso' }),
+    );
+    expect(dialog()).toHaveTextContent(
+      'será apagado com as aulas, as perguntas e as avaliações, e os 1.284 alunos matriculados perdem o acesso. Isso não pode ser desfeito.',
+    );
+    fireEvent.click(
+      within(dialog()).getByRole('button', { name: 'Apagar curso' }),
+    );
+
+    expect(
+      await screen.findByRole('heading', { name: 'Meus cursos' }),
+    ).toBeVisible();
+    expect(remove).toHaveBeenCalledWith('c1');
+  });
+
+  it('should ask to wait while the students are told of the archive', async () => {
+    vi.spyOn(InstructorService, 'get').mockResolvedValue({
+      ...archived,
+      enrollmentCount: 0,
+    });
+    vi.spyOn(InstructorService, 'deleteCourse').mockRejectedValue(
+      apiError(409, 'COURSE_RECENTLY_ARCHIVED'),
+    );
+    renderAt();
+
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Apagar curso' }),
+    );
+    expect(dialog()).toHaveTextContent(
+      'será apagado com as aulas, as perguntas e as avaliações. Isso não pode ser desfeito.',
+    );
+    fireEvent.click(
+      within(dialog()).getByRole('button', { name: 'Apagar curso' }),
+    );
+
+    expect(await within(dialog()).findByRole('alert')).toHaveTextContent(
+      'Os alunos ainda estão sendo avisados do arquivamento. Tente apagar daqui a uma hora.',
+    );
   });
 
   it('should delete a draft and go back to my courses even with unsaved changes', async () => {
