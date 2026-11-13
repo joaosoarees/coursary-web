@@ -14,6 +14,7 @@ import { AuthProvider } from '~/auth/AuthProvider';
 import { ErrorState } from '~/components/ErrorState';
 import { NavigationProgress } from '~/components/NavigationProgress';
 import { Toaster } from '~/components/ui/sonner';
+import { AccountRealtime } from '~/hooks/realtime/RealtimeProvider';
 import { queryClient } from '~/lib/queryClient';
 import { installAuthInterceptors } from '~/services/authInterceptors';
 import { apiOrigin, httpClient } from '~/services/httpClient';
@@ -87,9 +88,11 @@ export default function App() {
         <ThemeProvider>
           <NavigationProgress />
           <AuthProvider>
-            <Outlet />
+            <AccountRealtime>
+              <Outlet />
+            </AccountRealtime>
           </AuthProvider>
-          <Toaster position="top-right" containerAriaLabel="Notificações" />
+          <Toaster position="top-right" containerAriaLabel="Avisos" />
         </ThemeProvider>
       </MotionConfig>
       <ReactQueryDevtools />

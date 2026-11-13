@@ -14,6 +14,7 @@ import {
 } from 'vitest';
 import { type WebSocket as ServerSocket, WebSocketServer } from 'ws';
 
+import { RealtimeProvider } from '~/hooks/realtime/RealtimeProvider';
 import { useLessonRealtime } from '~/hooks/useLessonRealtime';
 import { env } from '~/lib/env';
 import { RealtimeService } from '~/services/RealtimeService';
@@ -56,39 +57,44 @@ const renderLive = (enabled = true) => {
     .spyOn(client, 'invalidateQueries')
     .mockResolvedValue(undefined);
   const wrapper = ({ children }: { children: ReactNode }) => (
-    <QueryClientProvider client={client}>{children}</QueryClientProvider>
+    <QueryClientProvider client={client}>
+      <RealtimeProvider enabled>{children}</RealtimeProvider>
+    </QueryClientProvider>
   );
-  const view = renderHook(() => useLessonRealtime(lesson, enabled), {
-    wrapper,
-  });
+  const view = renderHook(
+    () => {
+      useLessonRealtime(lesson, enabled);
+    },
+    { wrapper },
+  );
   const reloaded = () =>
     invalidate.mock.calls.map(([filters]) => filters?.queryKey);
 
   return { ...view, reloaded };
 };
 
-const open = async (result: { current: { status: string } }) => {
+const connected = async () => {
   await waitFor(() => {
-    expect(result.current.status).toBe('open');
+    expect(sockets).toHaveLength(1);
   });
 };
 
 describe('useLessonRealtime', () => {
-  it('should reload the list when a question changes', async () => {
-    const { result, reloaded } = renderLive();
-    await open(result);
+  it('should open the tab connection with the lesson, and reload the list on a question', async () => {
+    const { reloaded } = renderLive();
+    await connected();
 
     sockets[0]?.send(JSON.stringify({ type: 'questions', lessonId: 'l1' }));
 
     await waitFor(() => {
       expect(reloaded()).toEqual([['questions', 'c1', 'l1', { limit: 10 }]]);
     });
-    expect(ticket).toHaveBeenCalledWith(lesson);
+    expect(ticket).toHaveBeenCalledExactlyOnceWith(lesson);
   });
 
   it("should reload a question's answers and the list's count", async () => {
-    const { result, reloaded } = renderLive();
-    await open(result);
+    const { reloaded } = renderLive();
+    await connected();
 
     sockets[0]?.send(
       JSON.stringify({ type: 'answers', lessonId: 'l1', questionId: 'q1' }),
@@ -103,8 +109,8 @@ describe('useLessonRealtime', () => {
   });
 
   it("should ignore another lesson's change", async () => {
-    const { result, reloaded } = renderLive();
-    await open(result);
+    const { reloaded } = renderLive();
+    await connected();
 
     sockets[0]?.send(JSON.stringify({ type: 'questions', lessonId: 'l2' }));
     sockets[0]?.send(JSON.stringify({ type: 'questions', lessonId: 'l1' }));
@@ -115,21 +121,29 @@ describe('useLessonRealtime', () => {
   });
 
   it('should reload the whole lesson after coming back, not on the first open', async () => {
-    const { result, reloaded } = renderLive();
-    await open(result);
-    expect(reloaded()).toEqual([]);
+    const { reloaded } = renderLive();
+    await connected();
+    // Answered only once the client is open, and the first open reloaded nothing.
+    sockets[0]?.send(JSON.stringify({ type: 'questions', lessonId: 'l1' }));
+    await waitFor(() => {
+      expect(reloaded()).toEqual([['questions', 'c1', 'l1', { limit: 10 }]]);
+    });
 
     sockets[0]?.close(1001);
 
-    await waitFor(() => {
-      expect(reloaded()).toEqual([['questions', 'c1', 'l1']]);
-    });
+    // The first retry waits a random delay of up to a second, waitFor's own limit.
+    await waitFor(
+      () => {
+        expect(reloaded()).toContainEqual(['questions', 'c1', 'l1']);
+      },
+      { timeout: 3000 },
+    );
   });
 
-  it('should not connect when it is off', () => {
-    const { result } = renderLive(false);
+  it('should leave the connection to the account alone when it is off', async () => {
+    renderLive(false);
+    await connected();
 
-    expect(result.current.status).toBe('idle');
-    expect(ticket).not.toHaveBeenCalled();
+    expect(ticket).toHaveBeenCalledExactlyOnceWith(undefined);
   });
 });

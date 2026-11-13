@@ -179,6 +179,7 @@ export function deleteAccount({ email, accountId }: Account) {
     .map((item) => item.id?.S ?? '');
   const keys = [
     ...partition(`ACCOUNT#${accountId}`).map(keyOf),
+    ...partition(`INBOX#${accountId}`).map(keyOf),
     ...courseItems.map(keyOf),
     ...lessonIds.flatMap((id) => partition(`LESSON#${id}`).map(keyOf)),
     key(`EMAIL_CLAIM#${email}`),

@@ -57,12 +57,15 @@ test('responde a pergunta pela prévia da aula, e o aluno a vê chegar', async (
       question.getByText('Instrutor', { exact: true }),
     ).toBeVisible();
 
-    // No reload on the student's page: only the socket can bring the count.
+    // No reload on the student's page: only the socket can bring the count and the bell.
     await expect(asked.getByRole('button', { name: '1 resposta' })).toBeVisible(
       {
         timeout: 15_000,
       },
     );
+    await expect(
+      studentPage.getByRole('button', { name: 'Notificações, 1 não lida' }),
+    ).toBeVisible({ timeout: 15_000 });
   } finally {
     await studentContext.close();
   }

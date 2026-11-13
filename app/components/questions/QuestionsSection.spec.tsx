@@ -6,12 +6,15 @@ import {
   waitFor,
   within,
 } from '@testing-library/react';
+import type { ReactNode } from 'react';
+import { Link, MemoryRouter } from 'react-router';
 import {
   beforeEach,
   describe,
   expect,
   it,
   type MockInstance,
+  onTestFinished,
   vi,
 } from 'vitest';
 
@@ -19,6 +22,7 @@ import {
   QuestionsSection,
   type QuestionsViewer,
 } from '~/components/questions/QuestionsSection';
+import { RealtimeProvider } from '~/hooks/realtime/RealtimeProvider';
 import {
   type Answer,
   type Question,
@@ -88,20 +92,28 @@ beforeEach(() => {
 const renderSection = (
   viewer: QuestionsViewer = 'student',
   courseStatus = 'PUBLISHED',
+  entry = '/cursos/c1/aulas/l1',
+  // A link to the address already open, as a second notice for the lesson.
+  again: ReactNode = null,
 ) =>
   render(
-    <QueryClientProvider
-      client={
-        new QueryClient({ defaultOptions: { queries: { retry: false } } })
-      }
-    >
-      <QuestionsSection
-        courseId="c1"
-        lessonId="l1"
-        courseStatus={courseStatus}
-        viewer={viewer}
-      />
-    </QueryClientProvider>,
+    <MemoryRouter initialEntries={[entry]}>
+      {again}
+      <QueryClientProvider
+        client={
+          new QueryClient({ defaultOptions: { queries: { retry: false } } })
+        }
+      >
+        <RealtimeProvider enabled>
+          <QuestionsSection
+            courseId="c1"
+            lessonId="l1"
+            courseStatus={courseStatus}
+            viewer={viewer}
+          />
+        </RealtimeProvider>
+      </QueryClientProvider>
+    </MemoryRouter>,
   );
 
 const question = (name: string) =>
@@ -272,7 +284,45 @@ describe('QuestionsSection', () => {
       screen.getByText('As perguntas abrem quando o curso for publicado.'),
     ).toBeInTheDocument();
     expect(list).not.toHaveBeenCalled();
-    expect(ticket).not.toHaveBeenCalled();
+    expect(ticket).toHaveBeenCalledExactlyOnceWith(undefined);
+  });
+
+  it('should bring its title into view when a notice links to it', async () => {
+    const scroll = vi.fn();
+    Element.prototype.scrollIntoView = scroll;
+    onTestFinished(() => {
+      Reflect.deleteProperty(Element.prototype, 'scrollIntoView');
+    });
+    renderSection('student', 'PUBLISHED', '/cursos/c1/aulas/l1#perguntas-l1');
+
+    const title = screen.getByRole('heading', { name: 'Perguntas' });
+    await waitFor(() => {
+      expect(title).toHaveFocus();
+    });
+    expect(scroll).toHaveBeenCalledOnce();
+  });
+
+  it('should bring its title into view again from a second link to it', async () => {
+    const scroll = vi.fn();
+    Element.prototype.scrollIntoView = scroll;
+    onTestFinished(() => {
+      Reflect.deleteProperty(Element.prototype, 'scrollIntoView');
+    });
+    renderSection(
+      'student',
+      'PUBLISHED',
+      '/cursos/c1/aulas/l1#perguntas-l1',
+      <Link to="/cursos/c1/aulas/l1#perguntas-l1">Outro aviso</Link>,
+    );
+    await waitFor(() => {
+      expect(scroll).toHaveBeenCalledOnce();
+    });
+
+    fireEvent.click(screen.getByRole('link', { name: 'Outro aviso' }));
+
+    await waitFor(() => {
+      expect(scroll).toHaveBeenCalledTimes(2);
+    });
   });
 
   it('should listen for changes to the lesson it shows', async () => {

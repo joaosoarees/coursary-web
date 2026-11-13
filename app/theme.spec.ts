@@ -60,6 +60,9 @@ const text: [string, string][] = [
   ['success', 'background'],
   ['success', 'card'],
   ['highlight-foreground', 'highlight'],
+  ['highlight-foreground', 'highlight-hover'],
+  ['muted-foreground', 'highlight'],
+  ['muted-foreground', 'popover'],
   ['link', 'background'],
   ['link', 'card'],
   ['link', 'accent'],
@@ -75,8 +78,8 @@ const text: [string, string][] = [
   ['chalk-pink', 'board'],
 ];
 
-// Borders a control is found by, the focus ring, the rating stars and the navigation bar, which
-// runs over the page and the shell: WCAG asks 3:1 of non-text
+// Borders a control is found by, the focus ring, the rating stars, the unread notification's dot
+// and the navigation bar, which runs over the page and the shell: WCAG asks 3:1 of non-text
 // contrast.
 const nonText: [string, string][] = [
   ['input', 'background'],
@@ -85,6 +88,8 @@ const nonText: [string, string][] = [
   ['ring', 'card'],
   ['star', 'background'],
   ['star', 'card'],
+  ['star', 'highlight'],
+  ['star', 'highlight-hover'],
   ['progress', 'background'],
   ['progress', 'card'],
   ['progress', 'shell'],

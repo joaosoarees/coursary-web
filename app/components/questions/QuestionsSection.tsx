@@ -4,7 +4,8 @@ import {
   Clock,
   MessageCircleQuestion,
 } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useLocation } from 'react-router';
 
 import { LoadingNote } from '~/components/LoadingNote';
 import { LoadMore } from '~/components/LoadMore';
@@ -56,6 +57,18 @@ export function QuestionsSection({
   const focusHeading = () => {
     heading.current?.focus();
   };
+  const { hash, key } = useLocation();
+  const anchored = hash === `#perguntas-${lessonId}`;
+
+  // A notice links here, but the section only exists once the lesson has loaded: too late for
+  // the browser to find the anchor by itself. Every navigation counts, the same address again
+  // included: a second notice for the lesson already open.
+  useEffect(() => {
+    if (anchored) {
+      heading.current?.scrollIntoView({ block: 'start' });
+      heading.current?.focus({ preventScroll: true });
+    }
+  }, [anchored, key]);
 
   return (
     <section

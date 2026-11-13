@@ -34,6 +34,17 @@ describe('RealtimeService', () => {
     });
   });
 
+  it('should ask for a ticket of the account alone, with an empty body', async () => {
+    answer({ ticket: 'abc', expiresAt: '2026-11-11T12:00:30.000Z' });
+
+    await expect(RealtimeService.ticket()).resolves.toBe('abc');
+    expect(adapter.mock.calls.at(-1)?.[0]).toMatchObject({
+      method: 'post',
+      url: '/realtime/tickets',
+      data: '{}',
+    });
+  });
+
   it('should refuse an answer without a ticket', async () => {
     answer({ expiresAt: '2026-11-11T12:00:30.000Z' });
 
