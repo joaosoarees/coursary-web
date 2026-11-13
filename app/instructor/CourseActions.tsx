@@ -10,7 +10,7 @@ import { Button } from '~/components/ui/button';
 import { COURSE_ARCHIVED } from '~/instructor/instructorMessages';
 import {
   useArchiveCourse,
-  useDeleteDraft,
+  useDeleteCourse,
   usePublishCourse,
 } from '~/mutations/instructor';
 import { ApiFailure } from '~/services/ApiFailure';
@@ -249,7 +249,7 @@ function DeleteDialog({
   onClose,
   onCloseAutoFocus,
 }: DialogProps) {
-  const remove = useDeleteDraft(course.id);
+  const remove = useDeleteCourse(course.id);
   const navigate = useNavigate();
 
   return (

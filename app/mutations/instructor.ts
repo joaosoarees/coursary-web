@@ -52,8 +52,8 @@ export const useUpdateCourse = (courseId: string) => {
 const STALE = new Set([
   'COURSE_ARCHIVED',
   'COURSE_EMPTY',
-  'COURSE_NOT_DRAFT',
   'COURSE_NOT_PUBLISHED',
+  'COURSE_PUBLISHED',
 ]);
 
 const refreshIfStale =
@@ -89,11 +89,11 @@ export const useArchiveCourse = (courseId: string) => {
   });
 };
 
-export const useDeleteDraft = (courseId: string) => {
+export const useDeleteCourse = (courseId: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => InstructorService.deleteDraft(courseId),
+    mutationFn: () => InstructorService.deleteCourse(courseId),
     onError: refreshIfStale(queryClient, courseId),
     onSuccess: () => {
       // Not removed: the edit page still observes it until it navigates away, and would refetch it.

@@ -161,7 +161,7 @@ describe('course actions', () => {
   it('should delete a draft and go back to my courses even with unsaved changes', async () => {
     vi.spyOn(InstructorService, 'get').mockResolvedValue(draft);
     const remove = vi
-      .spyOn(InstructorService, 'deleteDraft')
+      .spyOn(InstructorService, 'deleteCourse')
       .mockResolvedValue(undefined);
     renderAt();
 
