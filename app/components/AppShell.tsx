@@ -1,6 +1,8 @@
+import { useAuth } from '~/auth/useAuth';
 import { AccountFallback, AccountMenu } from '~/components/AccountMenu';
 import { AppSidebar } from '~/components/AppSidebar';
 import { BlockBoundary } from '~/components/BlockBoundary';
+import { NotificationBell } from '~/components/notifications/NotificationBell';
 import { SkipLink } from '~/components/SkipLink';
 import { SidebarProvider, SidebarTrigger } from '~/components/ui/sidebar';
 import { Wordmark } from '~/components/Wordmark';
@@ -8,6 +10,7 @@ import { useFocusOnNavigation } from '~/hooks/useFocusOnNavigation';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const main = useFocusOnNavigation<HTMLElement>();
+  const { signedIn } = useAuth();
 
   return (
     <SidebarProvider>
@@ -19,6 +22,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div className="flex-1 md:hidden">
             <Wordmark />
           </div>
+          {signedIn && (
+            <div className="md:ml-auto">
+              <NotificationBell />
+            </div>
+          )}
           <div className="md:hidden">
             <BlockBoundary fallback={<AccountFallback compact />}>
               <AccountMenu compact side="bottom" />
