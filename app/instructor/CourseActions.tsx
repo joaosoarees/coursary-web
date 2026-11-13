@@ -110,6 +110,16 @@ export function CourseActions({
             Arquivar
           </Button>
         )}
+        {course.status === 'ARCHIVED' && (
+          <Button
+            variant="destructive-outline"
+            onClick={(event) => {
+              ask('delete', event.currentTarget);
+            }}
+          >
+            Apagar curso
+          </Button>
+        )}
       </div>
       {blockedBy && (
         <p id={hintId} className="text-muted-foreground">
@@ -251,6 +261,7 @@ function DeleteDialog({
 }: DialogProps) {
   const remove = useDeleteCourse(course.id);
   const navigate = useNavigate();
+  const copy = course.status === 'DRAFT' ? DRAFT_DELETION : COURSE_DELETION;
 
   return (
     <ConfirmDialog
@@ -261,26 +272,37 @@ function DeleteDialog({
       error={
         remove.error &&
         ApiFailure.message(remove.error, {
-          COURSE_NOT_DRAFT: 'Só um rascunho pode ser apagado.',
+          COURSE_PUBLISHED: 'O curso foi publicado: arquive-o antes de apagar.',
+          COURSE_RECENTLY_ARCHIVED:
+            'Os alunos ainda estão sendo avisados do arquivamento. Tente apagar daqui a uma hora.',
         })
       }
       onReset={remove.reset}
-      title="Apagar o rascunho?"
+      title={copy.title}
       description={
-        <>
-          O rascunho <strong className="text-foreground">{course.title}</strong>{' '}
-          será apagado{DraftContents.of(course)}. Isso não pode ser desfeito.
-        </>
+        course.status === 'DRAFT' ? (
+          <>
+            O rascunho{' '}
+            <strong className="text-foreground">{course.title}</strong> será
+            apagado{DraftContents.of(course)}. Isso não pode ser desfeito.
+          </>
+        ) : (
+          <>
+            O curso <strong className="text-foreground">{course.title}</strong>{' '}
+            será apagado com as aulas, as perguntas e as avaliações
+            {StudentsLosingAccess.of(course)}. Isso não pode ser desfeito.
+          </>
+        )
       }
       confirm={{
-        label: 'Apagar rascunho',
+        label: copy.confirm,
         pending: 'Apagando…',
         destructive: true,
       }}
       onConfirm={() => {
         remove.mutate(undefined, {
           onSuccess: () => {
-            toast.success('Rascunho apagado.');
+            toast.success(copy.done);
             void navigate('/instrutor/cursos', {
               replace: true,
               state: DISCARDING,
@@ -290,6 +312,30 @@ function DeleteDialog({
       }}
     />
   );
+}
+
+const DRAFT_DELETION = {
+  title: 'Apagar o rascunho?',
+  confirm: 'Apagar rascunho',
+  done: 'Rascunho apagado.',
+};
+
+const COURSE_DELETION = {
+  title: 'Apagar o curso?',
+  confirm: 'Apagar curso',
+  done: 'Curso apagado.',
+};
+
+class StudentsLosingAccess {
+  static of(course: ManagedCourse): string {
+    if (course.enrollmentCount === 0) {
+      return '';
+    }
+
+    return course.enrollmentCount === 1
+      ? ', e o aluno matriculado perde o acesso'
+      : `, e os ${CourseFormat.count(course.enrollmentCount, 'aluno', 'alunos')} matriculados perdem o acesso`;
+  }
 }
 
 class DraftContents {
