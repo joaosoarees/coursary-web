@@ -208,6 +208,49 @@ describe('course actions', () => {
     );
   });
 
+  it('should name the one student who loses access', async () => {
+    vi.spyOn(InstructorService, 'get').mockResolvedValue({
+      ...archived,
+      enrollmentCount: 1,
+    });
+    renderAt();
+
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Apagar curso' }),
+    );
+
+    expect(dialog()).toHaveTextContent(
+      'as perguntas e as avaliações, e o aluno matriculado perde o acesso.',
+    );
+  });
+
+  it('should keep the draft text when the draft turns out published elsewhere', async () => {
+    vi.spyOn(InstructorService, 'get')
+      .mockResolvedValueOnce(draft)
+      .mockResolvedValue(published);
+    vi.spyOn(InstructorService, 'deleteCourse').mockRejectedValue(
+      apiError(409, 'COURSE_PUBLISHED'),
+    );
+    renderAt();
+
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Apagar rascunho' }),
+    );
+    fireEvent.click(
+      within(dialog()).getByRole('button', { name: 'Apagar rascunho' }),
+    );
+
+    expect(await within(dialog()).findByRole('alert')).toHaveTextContent(
+      'O curso foi publicado: arquive-o antes de apagar.',
+    );
+    await waitFor(() => {
+      expect(
+        screen.getByRole('button', { name: 'Arquivar', hidden: true }),
+      ).toBeInTheDocument();
+    });
+    expect(dialog()).toHaveTextContent('Apagar o rascunho?');
+  });
+
   it('should delete a draft and go back to my courses even with unsaved changes', async () => {
     vi.spyOn(InstructorService, 'get').mockResolvedValue(draft);
     const remove = vi
