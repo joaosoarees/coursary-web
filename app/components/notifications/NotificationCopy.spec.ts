@@ -13,6 +13,7 @@ const base: Notification = {
   questionId: 'q1',
   actorName: 'Marina Costa',
   byInstructor: true,
+  exportId: 'e1',
   read: false,
   createdAt: '2026-11-12T12:00:00.000Z',
 };
@@ -37,6 +38,10 @@ describe('NotificationCopy', () => {
       'Aula nova em *Python para análise de dados*: *Filtrando e agrupando*',
     ],
     ['archived', '*Python para análise de dados* foi arquivado'],
+    [
+      'export-ready',
+      'O CSV dos alunos de *Python para análise de dados* está pronto',
+    ],
   ] as const)('should write the %s notice', (kind, expected) => {
     expect(sentence({ ...base, kind })).toBe(expected);
   });
@@ -46,6 +51,7 @@ describe('NotificationCopy', () => {
     ['question', '/instrutor/cursos/c1/aulas/l1/previa#perguntas-l1'],
     ['lesson', '/cursos/c1/aulas/l1'],
     ['archived', '/minhas-matriculas'],
+    ['export-ready', '/instrutor/cursos/c1/alunos?export=e1'],
   ] as const)('should lead the %s notice to %s', (kind, path) => {
     expect(NotificationCopy.target({ ...base, kind })).toBe(path);
   });
