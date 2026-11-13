@@ -9,7 +9,7 @@ test('chega à resposta do instrutor pelo sino', async ({ page }) => {
   await page
     .getByRole('region', { name: 'Notificações' })
     .getByRole('link', {
-      name: new RegExp(`${accounts.instrutor.name} respondeu à sua pergunta`),
+      name: `${accounts.instrutor.name} respondeu à sua pergunta`,
     })
     .click();
 
