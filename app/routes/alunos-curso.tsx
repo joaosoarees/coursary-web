@@ -1,6 +1,6 @@
 import { noop } from '@tanstack/react-query';
 import { ChevronLeft, Users } from 'lucide-react';
-import { useEffect, useEffectEvent, useRef } from 'react';
+import { useEffect, useEffectEvent } from 'react';
 import { Link, useSearchParams } from 'react-router';
 
 import { BlockBoundary } from '~/components/BlockBoundary';
@@ -99,7 +99,6 @@ function CourseStudents({ course }: { course: ManagedCourse }) {
   const csv = useStudentExport(course.id);
   const [searchParams, setSearchParams] = useSearchParams();
   const exportId = searchParams.get('export');
-  const openedExport = useRef<string>(undefined);
   const openExport = useEffectEvent((id: string) => {
     void csv.open(id);
   });
@@ -108,16 +107,9 @@ function CourseStudents({ course }: { course: ManagedCourse }) {
   // does not open it again.
   useEffect(() => {
     if (!exportId) {
-      openedExport.current = undefined;
-
       return;
     }
 
-    if (openedExport.current === exportId) {
-      return;
-    }
-
-    openedExport.current = exportId;
     setSearchParams(
       (params) => {
         params.delete('export');
