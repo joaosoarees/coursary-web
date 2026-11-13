@@ -1,5 +1,6 @@
 import {
   Archive,
+  ArrowDownToLine,
   CirclePlay,
   MessageCircleQuestion,
   MessageCircleReply,
@@ -17,6 +18,7 @@ const icons = {
   question: MessageCircleQuestion,
   lesson: CirclePlay,
   archived: Archive,
+  'export-ready': ArrowDownToLine,
 } as const;
 
 export function NotificationItem({

@@ -43,6 +43,12 @@ export class NotificationCopy {
         ];
       case 'archived':
         return [strong(courseTitle), plain(' foi arquivado')];
+      case 'export-ready':
+        return [
+          plain('O CSV dos alunos de '),
+          strong(courseTitle),
+          plain(' está pronto'),
+        ];
     }
   }
 
@@ -59,6 +65,8 @@ export class NotificationCopy {
         return lessonPath(notification);
       case 'archived':
         return '/minhas-matriculas';
+      case 'export-ready':
+        return `/instrutor/cursos/${notification.courseId}/alunos?export=${notification.exportId ?? ''}`;
     }
   }
 
