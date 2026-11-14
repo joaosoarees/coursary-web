@@ -65,11 +65,23 @@ describe('NotificationService', () => {
     });
   });
 
-  it('should refuse a kind it does not know', async () => {
+  it('should leave out a kind it does not know and keep the rest', async () => {
     answer({
-      items: [{ ...reply, kind: 'promo' }],
+      items: [{ ...reply, kind: 'promo' }, archived],
       nextCursor: null,
-      unreadCount: 0,
+      unreadCount: 2,
+    });
+
+    await expect(
+      NotificationService.list({ cursor: undefined, limit: 20 }),
+    ).resolves.toEqual({ items: [archived], nextCursor: null, unreadCount: 2 });
+  });
+
+  it('should still refuse a known kind that comes broken', async () => {
+    answer({
+      items: [{ ...reply, courseId: undefined }],
+      nextCursor: null,
+      unreadCount: 1,
     });
 
     await expect(
