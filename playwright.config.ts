@@ -18,6 +18,7 @@ const journey: { name: string; role?: Role; after?: string }[] = [
   { name: 'aluno', role: 'aluno', after: 'instrutor' },
   { name: 'instrutor-alunos', role: 'instrutor', after: 'aluno' },
   { name: 'aluno-resposta', role: 'aluno', after: 'instrutor-alunos' },
+  { name: 'instrutor-fim', role: 'instrutor', after: 'aluno-resposta' },
 ];
 
 export default defineConfig<{ role: Role | undefined }>({
