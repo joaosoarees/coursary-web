@@ -1,6 +1,7 @@
 import { noop } from '@tanstack/react-query';
 import { ChevronLeft, Users } from 'lucide-react';
-import { Link } from 'react-router';
+import { useEffect, useEffectEvent } from 'react';
+import { Link, useSearchParams } from 'react-router';
 
 import { BlockBoundary } from '~/components/BlockBoundary';
 import { CourseFormat } from '~/components/course/CourseFormat';
@@ -96,6 +97,29 @@ function CourseStudents({ course }: { course: ManagedCourse }) {
   const nextCursor = students.data?.nextCursor;
   const empty = students.data?.items.length === 0 && pages.index === 0;
   const csv = useStudentExport(course.id);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const exportId = searchParams.get('export');
+  const openExport = useEffectEvent((id: string) => {
+    void csv.open(id);
+  });
+
+  // The bell's notice leads here with the export; it leaves the address once read, so a reload
+  // does not open it again.
+  useEffect(() => {
+    if (!exportId) {
+      return;
+    }
+
+    setSearchParams(
+      (params) => {
+        params.delete('export');
+
+        return params;
+      },
+      { replace: true },
+    );
+    openExport(exportId);
+  }, [exportId, setSearchParams]);
 
   return (
     <>

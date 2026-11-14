@@ -18,6 +18,7 @@ const csvIn = (
   notice: extra.notice,
   problem: extra.problem,
   start: vi.fn(() => Promise.resolve()),
+  open: vi.fn(() => Promise.resolve()),
   expire: vi.fn(),
 });
 

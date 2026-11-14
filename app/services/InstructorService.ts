@@ -122,7 +122,7 @@ export class InstructorService {
   }
 
   // 202: the draft is marked for deletion and its content goes in the background.
-  static async deleteDraft(courseId: string): Promise<void> {
+  static async deleteCourse(courseId: string): Promise<void> {
     await httpClient.delete(courseUrl(courseId));
   }
 }

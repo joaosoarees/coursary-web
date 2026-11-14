@@ -4,7 +4,7 @@ import { httpClient } from '~/services/httpClient';
 
 const notificationSchema = z.object({
   id: z.string(),
-  kind: z.enum(['answer', 'question', 'lesson', 'archived']),
+  kind: z.enum(['answer', 'question', 'lesson', 'archived', 'export-ready']),
   courseId: z.string(),
   courseTitle: z.string(),
   lessonId: z.string().optional(),
@@ -12,6 +12,7 @@ const notificationSchema = z.object({
   questionId: z.string().optional(),
   actorName: z.string().optional(),
   byInstructor: z.boolean(),
+  exportId: z.string().optional(),
   read: z.boolean(),
   createdAt: z.string(),
 });

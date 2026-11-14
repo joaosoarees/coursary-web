@@ -14,6 +14,7 @@ export const EXPORT_MESSAGES = {
   slow: 'O CSV ainda está sendo preparado. Clique em Exportar CSV de novo para conferir.',
   expired: 'O link expirou. Exporte de novo.',
   failed: 'Não deu para preparar o CSV. Tente exportar de novo.',
+  gone: 'Este CSV expirou. Exporte de novo.',
 };
 
 export type StudentExportPhase =
@@ -165,10 +166,23 @@ export function useStudentExport(courseId: string) {
     finish(await waitForFile(requested.id));
   };
 
+  // From the bell's notice: the export may have expired since.
+  const open = async (exportId: string) => {
+    setNotice(undefined);
+    setProblem(undefined);
+    setPhase({ step: 'preparing' });
+    waiting.current = exportId;
+
+    if (!(await resume(exportId))) {
+      setPhase({ step: 'idle' });
+      setNotice(EXPORT_MESSAGES.gone);
+    }
+  };
+
   const expire = () => {
     setPhase({ step: 'idle' });
     setNotice(EXPORT_MESSAGES.expired);
   };
 
-  return { phase, notice, problem, start, expire };
+  return { phase, notice, problem, start, open, expire };
 }
