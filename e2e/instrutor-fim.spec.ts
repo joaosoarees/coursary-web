@@ -65,5 +65,8 @@ test('arquiva o curso, o aluno é avisado, e o curso é apagado', async ({
 
   await expect(page.getByText('Curso apagado.')).toBeVisible();
   await expect(page).toHaveURL(/\/instrutor\/cursos$/);
-  await expect(page.getByText(course.title)).toHaveCount(0);
+  // The instructor of the run had this course only.
+  await expect(
+    page.getByText('Você ainda não criou nenhum curso'),
+  ).toBeVisible();
 });
