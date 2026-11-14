@@ -2,9 +2,17 @@ import { z } from 'zod';
 
 import { httpClient } from '~/services/httpClient';
 
+const kindSchema = z.enum([
+  'answer',
+  'question',
+  'lesson',
+  'archived',
+  'export-ready',
+]);
+
 const notificationSchema = z.object({
   id: z.string(),
-  kind: z.enum(['answer', 'question', 'lesson', 'archived', 'export-ready']),
+  kind: kindSchema,
   courseId: z.string(),
   courseTitle: z.string(),
   lessonId: z.string().optional(),
@@ -17,8 +25,15 @@ const notificationSchema = z.object({
   createdAt: z.string(),
 });
 
+// The API ships a new kind before the site that shows it: the rest of the inbox still loads.
+const knownKind = (item: unknown) =>
+  z.object({ kind: kindSchema }).safeParse(item).success;
+
 const notificationsPageSchema = z.object({
-  items: z.array(notificationSchema),
+  items: z
+    .array(z.unknown())
+    .transform((items) => items.filter(knownKind))
+    .pipe(z.array(notificationSchema)),
   nextCursor: z.string().nullable(),
   // Capped by the API: a full count is 100 or more.
   unreadCount: z.number(),
