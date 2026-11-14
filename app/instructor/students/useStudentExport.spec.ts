@@ -147,4 +147,35 @@ describe('useStudentExport', () => {
 
     expect(hook.result.current.problem).toBe(EXPORT_MESSAGES.failed);
   });
+
+  it('should open a ready export from its id without asking for another', async () => {
+    const request = vi.spyOn(ExportService, 'request');
+    vi.spyOn(ExportService, 'get').mockResolvedValue(ready);
+    const hook = renderHook(() => useStudentExport('c1'));
+
+    await act(() => hook.result.current.open('e1'));
+
+    expect(hook.result.current.phase).toMatchObject({
+      step: 'ready',
+      url: ready.downloadUrl,
+      rowCount: 47,
+    });
+    expect(request).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['gone', () => Promise.reject(apiError(404, 'EXPORT_NOT_FOUND'))],
+    [
+      'failed',
+      () => Promise.resolve({ ...pending, status: 'FAILED' as const }),
+    ],
+  ])('should say an export that is %s expired', async (_, answer) => {
+    vi.spyOn(ExportService, 'get').mockImplementation(answer);
+    const hook = renderHook(() => useStudentExport('c1'));
+
+    await act(() => hook.result.current.open('e1'));
+
+    expect(hook.result.current.phase).toEqual({ step: 'idle' });
+    expect(hook.result.current.notice).toBe(EXPORT_MESSAGES.gone);
+  });
 });

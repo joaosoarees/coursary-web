@@ -9,6 +9,7 @@ import {
 } from 'vitest';
 
 import CourseStudentsPage from '~/routes/alunos-curso';
+import { ExportService } from '~/services/ExportService';
 import {
   InstructorService,
   type ManagedCourse,
@@ -55,10 +56,10 @@ beforeEach(() => {
     );
 });
 
-const renderPage = () =>
+const renderPage = (search = '') =>
   renderRoutes(
     [{ path: '/instrutor/cursos/:id/alunos', Component: CourseStudentsPage }],
-    '/instrutor/cursos/c1/alunos',
+    `/instrutor/cursos/c1/alunos${search}`,
   );
 
 describe('course students', () => {
@@ -155,5 +156,37 @@ describe('course students', () => {
     expect(
       await screen.findByRole('heading', { name: 'Curso não encontrado' }),
     ).toBeVisible();
+  });
+
+  it('should offer the CSV a bell notice leads to, without exporting again', async () => {
+    const request = vi.spyOn(ExportService, 'request');
+    const get = vi.spyOn(ExportService, 'get').mockResolvedValue({
+      id: 'e1',
+      courseId: 'c1',
+      status: 'READY',
+      createdAt: '2026-11-13T12:00:00.000Z',
+      rowCount: 21,
+      downloadUrl: 'https://bucket.example/exports/c1/e1.csv',
+      expiresIn: 300,
+    });
+    renderPage('?export=e1');
+
+    expect(
+      await screen.findByRole('link', { name: 'Baixar CSV' }),
+    ).toHaveAttribute('href', 'https://bucket.example/exports/c1/e1.csv');
+    expect(get).toHaveBeenCalledExactlyOnceWith('e1');
+    expect(request).not.toHaveBeenCalled();
+  });
+
+  it('should say the CSV a bell notice leads to has expired', async () => {
+    vi.spyOn(ExportService, 'get').mockRejectedValue(
+      apiError(404, 'EXPORT_NOT_FOUND'),
+    );
+    renderPage('?export=e1');
+
+    expect(
+      await screen.findByText('Este CSV expirou. Exporte de novo.'),
+    ).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Exportar CSV' })).toBeVisible();
   });
 });
