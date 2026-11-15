@@ -44,3 +44,5 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm build
+      # A story that no longer builds fails the pull request; Storybook is not hosted.
+      - run: pnpm build-storybook
