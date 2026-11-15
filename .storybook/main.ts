@@ -21,10 +21,27 @@ const config: StorybookConfig = {
   addons: ['@storybook/addon-docs', '@storybook/addon-themes'],
   framework: '@storybook/react-vite',
   core: { disableTelemetry: true },
-  // The React Router plugin builds the app from its routes, which a story never has.
+  // The React Router plugin builds the app from its routes, which a story never has. It also
+  // silenced the "use client" of every Radix module, which the bundle drops anyway.
   viteFinal: (viteConfig) => ({
     ...viteConfig,
     plugins: withoutReactRouter(viteConfig.plugins ?? []),
+    build: {
+      ...viteConfig.build,
+      rolldownOptions: {
+        ...viteConfig.build?.rolldownOptions,
+        onwarn: (warning, defaultHandler) => {
+          if (
+            warning.code === 'MODULE_LEVEL_DIRECTIVE' &&
+            warning.message.includes('use client')
+          ) {
+            return;
+          }
+
+          defaultHandler(warning);
+        },
+      },
+    },
   }),
 };
 
