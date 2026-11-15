@@ -24,9 +24,17 @@ import {
   SidebarTrigger,
 } from './sidebar';
 
-const items: { label: string; Icon: LucideIcon; badge?: string }[] = [
+const items: {
+  label: string;
+  Icon: LucideIcon;
+  badge?: { count: string; meaning: string };
+}[] = [
   { label: 'Catálogo', Icon: Library },
-  { label: 'Minhas matrículas', Icon: GraduationCap, badge: '3' },
+  {
+    label: 'Minhas matrículas',
+    Icon: GraduationCap,
+    badge: { count: '3', meaning: 'cursos em andamento' },
+  },
   { label: 'Meus cursos', Icon: Presentation },
 ];
 
@@ -59,7 +67,8 @@ const meta = {
     },
     side: { control: 'inline-radio', options: ['left', 'right'] },
   },
-  // Held in the story, not in the provider: the provider would read and write the app's stored choice.
+  // Held in the story so each one starts as its args say; uncontrolled, the provider would start
+  // from the choice stored by the last story toggled.
   render: function Render({
     collapsible,
     variant,
@@ -103,7 +112,12 @@ const meta = {
                         </span>
                       </a>
                     </SidebarMenuButton>
-                    {badge && <SidebarMenuBadge>{badge}</SidebarMenuBadge>}
+                    {badge && (
+                      <SidebarMenuBadge>
+                        {badge.count}
+                        <span className="sr-only"> {badge.meaning}</span>
+                      </SidebarMenuBadge>
+                    )}
                   </SidebarMenuItem>
                 ))}
               </SidebarMenu>
@@ -135,7 +149,7 @@ const meta = {
       story: { inline: false, height: '520px' },
       description: {
         component:
-          'A navegação lateral do app. `SidebarProvider` guarda se está aberta e dá o atalho Ctrl+B; `SidebarTrigger` abre e fecha. Com `collapsible="icon"`, fechada vira uma faixa só de ícones: quem monta o menu esconde os rótulos com `group-data-[collapsible=icon]`, e o `tooltip` de cada `SidebarMenuButton` dá o nome. Abaixo de 768 px vira um Sheet. O item da página atual leva `isActive`. Fora do Storybook, o provider lembra a escolha no `localStorage`.',
+          'A navegação lateral do app. `SidebarProvider` guarda se está aberta e dá o atalho Ctrl+B; `SidebarTrigger` abre e fecha. Com `collapsible="icon"`, fechada vira uma faixa só de ícones: quem monta o menu esconde os rótulos com `group-data-[collapsible=icon]`, e o `tooltip` de cada `SidebarMenuButton` dá o nome. Abaixo de 768 px vira um Sheet. O item da página atual leva `isActive`. O provider guarda a escolha no `localStorage` e, sem `open`, começa por ela.',
       },
     },
   },
