@@ -57,7 +57,9 @@ export const WithBadge: Story = {
   render: (args) => (
     <Avatar {...args}>
       <AvatarFallback>AL</AvatarFallback>
-      <AvatarBadge />
+      <AvatarBadge>
+        <span className="sr-only">Online</span>
+      </AvatarBadge>
     </Avatar>
   ),
   args: { size: 'lg' },
