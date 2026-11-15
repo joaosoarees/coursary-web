@@ -12,6 +12,7 @@ const meta = {
     onChange: fn(),
   },
   argTypes: {
+    defaultValue: { control: false },
     disabled: { control: 'boolean' },
     'aria-invalid': { control: 'boolean' },
   },
