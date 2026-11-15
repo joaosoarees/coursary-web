@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { useId } from 'react';
 
 import { Input } from './input';
 import { Label } from './label';
@@ -6,7 +7,8 @@ import { Label } from './label';
 const meta = {
   title: 'UI/Label',
   component: Label,
-  args: { children: 'E-mail', htmlFor: 'label-email' },
+  args: { children: 'E-mail' },
+  argTypes: { htmlFor: { control: false } },
   parameters: {
     docs: {
       description: {
@@ -21,21 +23,34 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const WithInput: Story = {
-  render: (args) => (
-    <div className="flex w-80 flex-col gap-2">
-      <Label {...args} />
-      <Input id="label-email" type="email" />
-    </div>
-  ),
+  render: function Render(args) {
+    const id = useId();
+
+    return (
+      <div className="flex w-80 flex-col gap-2">
+        <Label {...args} htmlFor={`${id}-email`} />
+        <Input id={`${id}-email`} type="email" />
+      </div>
+    );
+  },
 };
 
 export const WithDisabledInput: Story = {
-  render: (args) => (
-    <div className="flex w-80 flex-col gap-2">
-      <Input id="label-email" type="email" disabled className="peer order-2" />
-      <Label {...args} className="order-1" />
-    </div>
-  ),
+  render: function Render(args) {
+    const id = useId();
+
+    return (
+      <div className="flex w-80 flex-col gap-2">
+        <Input
+          id={`${id}-email`}
+          type="email"
+          disabled
+          className="peer order-2"
+        />
+        <Label {...args} htmlFor={`${id}-email`} className="order-1" />
+      </div>
+    );
+  },
   parameters: {
     docs: {
       description: {
