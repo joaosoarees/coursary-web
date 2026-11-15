@@ -16,6 +16,7 @@ const meta = {
       control: 'select',
       options: ['text', 'email', 'password', 'search', 'number', 'file'],
     },
+    defaultValue: { control: false },
     disabled: { control: 'boolean' },
     'aria-invalid': { control: 'boolean' },
   },
