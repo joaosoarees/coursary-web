@@ -16,10 +16,8 @@ const meta = {
       control: 'inline-radio',
       options: ['horizontal', 'vertical'],
     },
-    defaultValue: {
-      control: 'inline-radio',
-      options: ['aulas', 'alunos', 'perguntas'],
-    },
+    // Radix reads it only on mount, so a control would change nothing on screen.
+    defaultValue: { control: false },
   },
   render: (args) => (
     <Tabs {...args} className="w-96">
