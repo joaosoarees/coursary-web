@@ -5,11 +5,14 @@ import betterTailwindcss from 'eslint-plugin-better-tailwindcss';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import reactHooks from 'eslint-plugin-react-hooks';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
+import storybook from 'eslint-plugin-storybook';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default defineConfig([
-  { ignores: ['node_modules/', 'build/', '.react-router/'] },
+  {
+    ignores: ['node_modules/', 'build/', '.react-router/', 'storybook-static/'],
+  },
   js.configs.recommended,
   tseslint.configs.strictTypeChecked,
   tseslint.configs.stylisticTypeChecked,
@@ -81,5 +84,6 @@ export default defineConfig([
     files: ['**/*.{js,mjs,cjs}'],
     extends: [tseslint.configs.disableTypeChecked],
   },
+  storybook.configs['flat/recommended'],
   prettier,
 ]);

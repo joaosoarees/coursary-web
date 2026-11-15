@@ -17,3 +17,7 @@ node_modules/
 # Playwright: sessions, run state and failure traces
 /e2e/.run/
 /test-results/
+
+# Storybook: the static build and its logs
+/storybook-static/
+*storybook.log
