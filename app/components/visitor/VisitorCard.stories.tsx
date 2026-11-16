@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useId } from 'react';
+import { Link } from 'react-router';
 
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
@@ -48,11 +49,22 @@ const meta = {
   args: {
     title: 'Entrar',
     description: 'Use o e-mail e a senha da sua conta.',
-    footer: 'Ainda não tem conta? Crie uma.',
+    footer: (
+      <>
+        Ainda não tem conta?{' '}
+        <Link
+          to="/cadastro"
+          className="font-bold text-link underline-offset-4 hover:underline"
+        >
+          Criar conta
+        </Link>
+      </>
+    ),
     children: <SignInFields />,
   },
   argTypes: {
     children: { control: false },
+    footer: { control: false },
     step: { control: false },
     back: { control: false },
   },
