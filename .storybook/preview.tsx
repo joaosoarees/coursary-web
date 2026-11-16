@@ -24,6 +24,11 @@ const preview: Preview = {
   parameters: {
     layout: 'centered',
     controls: { matchers: { color: /(background|color)$/i, date: /Date$/i } },
+    options: {
+      storySort: {
+        order: ['Coursary UI', ['Introdução', 'Tokens'], 'UI', 'Components'],
+      },
+    },
   },
   tags: ['autodocs'],
 };
