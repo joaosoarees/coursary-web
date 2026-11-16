@@ -6,8 +6,14 @@ const SURFACES = [
     tokens: ['background', 'foreground'],
     className: 'bg-background text-foreground',
   },
-  { tokens: ['card'], className: 'bg-card text-card-foreground' },
-  { tokens: ['popover'], className: 'bg-popover text-popover-foreground' },
+  {
+    tokens: ['card', 'card-foreground'],
+    className: 'bg-card text-card-foreground',
+  },
+  {
+    tokens: ['popover', 'popover-foreground'],
+    className: 'bg-popover text-popover-foreground',
+  },
   {
     tokens: ['primary', 'primary-foreground'],
     className: 'bg-primary text-primary-foreground',
@@ -17,14 +23,17 @@ const SURFACES = [
     className: 'bg-primary-hover text-primary-foreground',
   },
   {
-    tokens: ['secondary'],
+    tokens: ['secondary', 'secondary-foreground'],
     className: 'bg-secondary text-secondary-foreground',
   },
   {
     tokens: ['muted', 'muted-foreground'],
     className: 'bg-muted text-muted-foreground',
   },
-  { tokens: ['accent'], className: 'bg-accent text-accent-foreground' },
+  {
+    tokens: ['accent', 'accent-foreground'],
+    className: 'bg-accent text-accent-foreground',
+  },
   {
     tokens: ['destructive', 'destructive-foreground'],
     className: 'bg-destructive text-destructive-foreground',
@@ -38,8 +47,13 @@ const SURFACES = [
     className: 'bg-success-soft text-success',
   },
   {
-    tokens: ['highlight', 'highlight-border'],
+    tokens: ['highlight', 'highlight-foreground', 'highlight-border'],
     className: 'border-highlight-border bg-highlight text-highlight-foreground',
+  },
+  {
+    tokens: ['highlight-hover'],
+    className:
+      'border-highlight-border bg-highlight-hover text-highlight-foreground',
   },
   {
     tokens: ['shell', 'shell-foreground'],
@@ -50,6 +64,14 @@ const SURFACES = [
     className: 'bg-shell-hover text-shell-foreground',
   },
   { tokens: ['board', 'chalk'], className: 'bg-board text-chalk' },
+  {
+    tokens: ['chalk-yellow', 'chalk-yellow-foreground'],
+    className: 'bg-chalk-yellow text-chalk-yellow-foreground',
+  },
+  {
+    tokens: ['screen', 'screen-muted'],
+    className: 'bg-screen text-screen-muted',
+  },
 ];
 
 const LINES = [
