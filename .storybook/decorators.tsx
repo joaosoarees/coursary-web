@@ -1,7 +1,12 @@
 import type { Decorator } from '@storybook/react-vite';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { type AxiosAdapter, AxiosError, type AxiosResponse } from 'axios';
-import { useState } from 'react';
+import {
+  type AxiosAdapter,
+  AxiosError,
+  type AxiosResponse,
+  CanceledError,
+} from 'axios';
+import { createContext, use, useState } from 'react';
 import { createRoutesStub, Link, useLocation } from 'react-router';
 import { action } from 'storybook/actions';
 
@@ -63,7 +68,11 @@ const adapterFor =
     }
 
     if (reply === 'pending') {
-      return new Promise(() => undefined);
+      return new Promise((_, reject) => {
+        config.signal?.addEventListener?.('abort', () => {
+          reject(new CanceledError(undefined, undefined, config));
+        });
+      });
     }
 
     return respond(reply, config);
@@ -110,11 +119,21 @@ function Elsewhere() {
   );
 }
 
-export const withRouter: Decorator = (Story) => {
-  const Stub = createRoutesStub([
-    { path: '/', Component: Story },
-    { path: '*', Component: Elsewhere },
-  ]);
+// One stub for every story, which it reads from context: a stub made on each render would remount
+// the story, and lose where it navigated, whenever a control or the theme changed.
+const StoryContext = createContext<React.ReactNode>(null);
 
-  return <Stub initialEntries={['/']} />;
-};
+function CurrentStory() {
+  return use(StoryContext);
+}
+
+const RoutesStub = createRoutesStub([
+  { path: '/', Component: CurrentStory },
+  { path: '*', Component: Elsewhere },
+]);
+
+export const withRouter: Decorator = (Story) => (
+  <StoryContext value={<Story />}>
+    <RoutesStub initialEntries={['/']} />
+  </StoryContext>
+);
