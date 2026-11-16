@@ -17,7 +17,7 @@ const withoutReactRouter = (plugins: PluginOption[]): PluginOption[] =>
   });
 
 const config: StorybookConfig = {
-  stories: ['../app/**/*.stories.tsx'],
+  stories: ['../app/**/*.mdx', '../app/**/*.stories.tsx'],
   addons: ['@storybook/addon-docs', '@storybook/addon-themes'],
   framework: '@storybook/react-vite',
   core: { disableTelemetry: true },
