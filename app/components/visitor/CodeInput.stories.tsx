@@ -8,7 +8,7 @@ import { CodeInput } from './CodeInput';
 const meta = {
   title: 'Components/Visitor/CodeInput',
   component: CodeInput,
-  args: { maxLength: 6 },
+  argTypes: { defaultValue: { control: false } },
   render: function Render(args) {
     const id = useId();
 
