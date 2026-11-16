@@ -40,7 +40,6 @@ export default [
     layout('routes/admin-layout.tsx', [
       route('admin/usuarios', 'routes/admin-usuarios.tsx'),
     ]),
-    ...(import.meta.env.DEV ? [route('design', 'routes/design.tsx')] : []),
     route('*', 'routes/not-found.tsx'),
   ]),
 ] satisfies RouteConfig;
