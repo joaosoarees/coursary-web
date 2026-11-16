@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
-/* `.light` lets a block show the light theme inside a dark page, as the /design palette does:
+/* `.light` lets a block show the light theme inside a dark page, as the Storybook Tokens page does:
    it takes the light tokens, and dark: utilities stop inside it. */
 @custom-variant dark (&:where(.dark, .dark *):not(:where(.dark .light, .dark .light *)));
 

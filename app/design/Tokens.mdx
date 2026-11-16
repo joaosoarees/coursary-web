@@ -1,0 +1,47 @@
+import { Meta, Unstyled } from '@storybook/addon-docs/blocks';
+
+import { ColorTokens } from './ColorTokens';
+import { MotionTokens } from './MotionTokens';
+import { ShapeTokens } from './ShapeTokens';
+import { TypeTokens } from './TypeTokens';
+
+<Meta title="Coursary UI/Tokens" />
+
+# Tokens
+
+Os valores do Quadro-verde, lidos do `app/app.css` desta build. As regras de quando usar cada um ficam no `DESIGN.md`, na raiz do projeto: esta página mostra o que existe, não repete o porquê.
+
+## Cores
+
+Cada superfície com o texto que vai sobre ela. Os dois temas aparecem lado a lado, qualquer que seja o da barra. A classe do Tailwind é o nome com o prefixo (`bg-primary`, `text-muted-foreground`, `border-input`). O contraste de cada par é medido em `app/theme.spec.ts`.
+
+<Unstyled>
+  <div className="grid gap-5 xl:grid-cols-2">
+    <ColorTokens theme="light" />
+    <ColorTokens theme="dark" />
+  </div>
+</Unstyled>
+
+## Tipografia
+
+Bricolage Grotesque nos títulos (`font-display`), Atkinson Hyperlegible Next no texto (`font-sans`, o padrão). Ao lado de cada amostra: tamanho, entrelinha e peso, como o navegador os calculou.
+
+<Unstyled>
+  <TypeTokens />
+</Unstyled>
+
+## Forma e sombra
+
+Cantos de 6 px em quase tudo, 4 px dentro de um menu e pílula só para selos e avatares. O sistema é plano: a sombra Assentada é só do card, e a Erguida, do que flutua sobre a página.
+
+<Unstyled>
+  <ShapeTokens />
+</Unstyled>
+
+## Movimento
+
+Uma curva só, `ease-chalk`, sem quique. O momento autoral é o traço de giz que se desenha; com movimento reduzido, ele já aparece pronto.
+
+<Unstyled>
+  <MotionTokens />
+</Unstyled>
