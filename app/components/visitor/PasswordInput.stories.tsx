@@ -9,7 +9,10 @@ const meta = {
   title: 'Components/Visitor/PasswordInput',
   component: PasswordInput,
   args: { disabled: false, autoComplete: 'current-password' },
-  argTypes: { disabled: { control: 'boolean' } },
+  argTypes: {
+    disabled: { control: 'boolean' },
+    defaultValue: { control: false },
+  },
   render: function Render(args) {
     const id = useId();
 
