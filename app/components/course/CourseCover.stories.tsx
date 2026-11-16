@@ -37,6 +37,14 @@ export const PinkChalk: Story = {
   args: { courseId: 'c-2', title: 'Design de APIs REST na prática' },
 };
 
+const photo = `data:image/svg+xml,${encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 9"><rect width="16" height="9" fill="#2b6b52"/><circle cx="12" cy="3" r="1.6" fill="#fcf3d4"/><path d="M0 9 L5 4 L9 7 L12 5 L16 9 Z" fill="#1f3a2e"/></svg>',
+)}`;
+
+export const Uploaded: Story = {
+  args: { coverUrl: { '480': photo, '1280': photo } },
+};
+
 export const LongTitle: Story = {
   args: {
     title:
