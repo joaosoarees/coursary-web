@@ -10,6 +10,8 @@ const inbox = (unreadCount: number) => ({
   'GET /me/notifications': {
     body: { items: notifications, nextCursor: null, unreadCount },
   },
+  'POST /me/notifications/n-1/read': {},
+  'POST /me/notifications/n-2/read': {},
   'POST /me/notifications/read-all': { body: { marked: unreadCount } },
 });
 
