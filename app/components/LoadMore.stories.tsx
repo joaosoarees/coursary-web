@@ -59,3 +59,6 @@ export const Failed: Story = {
 };
 
 export const Small: Story = { args: { size: 'sm' } };
+
+// The end of the list is on screen at once, so the next page is asked for as the story opens.
+export const Automatic: Story = { args: { auto: true } };
