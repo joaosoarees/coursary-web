@@ -1,0 +1,50 @@
+import { Meta, Source } from '@storybook/addon-docs/blocks';
+
+<Meta title="Coursary UI/Introdução" />
+
+# Coursary UI
+
+Os componentes do site do Coursary, cada um nos estados que a tela real mostra, nos dois temas. Serve para ver um componente sem montar a tela inteira, para escolher o que já existe antes de criar outro e para revisar uma mudança visual.
+
+O Storybook roda só aqui e na build do CI, que falha o PR quando uma história quebra; não é publicado.
+
+<Source language="bash" code="pnpm storybook" />
+
+## O que tem aqui
+
+- **Coursary UI**: esta página e os [Tokens](?path=/docs/coursary-ui-tokens--docs) (cores, tipografia, forma e movimento).
+- **UI**: os primitivos de `app/components/ui/`, a base do shadcn com o visual do Coursary.
+- **Components**: o que é montado com eles e usado em mais de uma tela, agrupado pelo domínio (`Course`, `Notifications`, `Visitor`…). As telas de uma rota só ficam de fora; o Vitest e a jornada do Playwright as cobrem.
+
+Cada componente tem uma página **Docs** gerada: a descrição, a história principal com os controls, a tabela de props e todas as histórias.
+
+## Temas
+
+O botão de tema na barra troca entre claro e escuro, como a troca do app: a classe `light` ou `dark` no `<html>`. As histórias usam o `app/app.css` do app, então o que aparece aqui é o que o site mostra.
+
+## Escrevendo uma história
+
+- O arquivo fica ao lado do componente: `NotificationBell.stories.tsx` junto de `NotificationBell.tsx`.
+- O título segue a pasta: `UI/<Nome>` para os primitivos e `Components/<Domínio>/<Nome>` para o resto.
+- A descrição vai em `parameters.docs.description.component`, em português. Os nomes das histórias ficam em inglês, com dados do Coursary.
+- Callbacks recebem `fn()`, para aparecer no painel Actions. `defaultValue`, `defaultOpen`, `open` e `value` ficam sem control: o componente lê o valor só ao montar.
+- Um overlay tem a história fechada, com o gatilho, e a aberta; nas Docs, ele roda em iframe (`docs.story.inline: false`).
+- `play` só serve para chegar a um estado (clicar em "Salvar" para ver o envio), nunca para testar.
+
+## Router e API
+
+Dois decorators de `.storybook/decorators.tsx` deixam rodar o que depende do app:
+
+- **`withRouter`**: põe a história atrás de um router de teste. Um link mostra para onde leva e tem como voltar.
+- **`withApi`**: responde às chamadas da API com o que a história declara, sem rede, e dá a cada história um cache de queries novo. Cada chamada aparece no painel Actions como `api`.
+
+```tsx
+parameters: {
+  api: {
+    'GET /me/notifications': { body: { items, nextCursor: null, unreadCount: 2 } },
+    'POST /me/notifications/read-all': { body: { marked: 2 } },
+  },
+},
+```
+
+A resposta pode ser um corpo (status 200), `{ status: 500 }` para uma falha ou `'pending'` para nunca responder. O caminho não leva os parâmetros de query. Uma chamada sem resposta declarada recebe 404 e um erro no console, que diz qual faltou. Como o cliente HTTP é um só, as metas que usam `withApi` rodam cada história em iframe nas Docs. Os dados de exemplo compartilhados ficam em `.storybook/fixtures.ts`.
