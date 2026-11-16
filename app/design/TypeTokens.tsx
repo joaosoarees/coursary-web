@@ -32,20 +32,28 @@ export function TypeTokens() {
   return (
     <div className="flex flex-col gap-6 rounded-lg border bg-background p-5 text-foreground">
       {SPECIMENS.map(({ label, className, text }) => (
-        <div key={label} className="flex flex-col gap-1.5">
+        <div key={label} data-specimen className="flex flex-col gap-1.5">
           <span className="flex flex-wrap items-baseline justify-between gap-x-4 text-sm text-muted-foreground">
             <span className="font-bold">{label}</span>
             <CssValue
               read={(element) => {
-                const style = getComputedStyle(
-                  element.parentElement?.nextElementSibling ?? element,
-                );
+                const sample = element
+                  .closest('[data-specimen]')
+                  ?.querySelector('[data-sample]');
+
+                if (!sample) {
+                  return '';
+                }
+
+                const style = getComputedStyle(sample);
 
                 return `${style.fontSize} / ${style.lineHeight} · ${style.fontWeight}`;
               }}
             />
           </span>
-          <p className={className}>{text}</p>
+          <p data-sample className={className}>
+            {text}
+          </p>
         </div>
       ))}
       <div className="flex flex-col gap-1.5">
