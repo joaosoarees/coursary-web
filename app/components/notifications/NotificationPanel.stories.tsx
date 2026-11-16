@@ -11,6 +11,12 @@ const page = (nextCursor: string | null = null) => ({
   body: { items: notifications, nextCursor, unreadCount: 2 },
 });
 
+const marking = {
+  'POST /me/notifications/n-1/read': {},
+  'POST /me/notifications/n-2/read': {},
+  'POST /me/notifications/read-all': { body: { marked: 2 } },
+};
+
 // The panel reads the inbox query itself here, as the bell hands it in the app.
 type PanelStoryArgs = Pick<
   React.ComponentProps<typeof NotificationPanel>,
@@ -35,12 +41,7 @@ const meta = {
   },
   decorators: [withRouter, withApi],
   parameters: {
-    api: {
-      'GET /me/notifications': page(),
-      'POST /me/notifications/n-1/read': {},
-      'POST /me/notifications/n-2/read': {},
-      'POST /me/notifications/read-all': { body: { marked: 2 } },
-    },
+    api: { 'GET /me/notifications': page(), ...marking },
     docs: {
       story: { inline: false, height: '600px' },
       description: {
@@ -58,10 +59,7 @@ export const Inbox: Story = {};
 
 export const MoreToLoad: Story = {
   parameters: {
-    api: {
-      'GET /me/notifications': page('next'),
-      'POST /me/notifications/read-all': { body: { marked: 2 } },
-    },
+    api: { 'GET /me/notifications': page('next'), ...marking },
   },
 };
 
